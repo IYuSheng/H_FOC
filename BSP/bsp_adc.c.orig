@@ -1,0 +1,127 @@
+#include "bsp_adc.h"
+
+// ADC DMA缓冲区
+#define ADC_DMA_BUFFER_SIZE 7
+static uint16_t adc_dma_buffer[ADC_DMA_BUFFER_SIZE];
+
+volatile uint8_t adc_data_ready = 0;  // 数据就绪标志
+
+// 存储FOC数据
+foc_data_t foc_data = {0, 0, 0, 0, 0, 0, 0};
+
+/**
+ * @brief 初始化FOC电流和电压采样ADC
+ */
+void bsp_adc_init(void)
+{
+    ADC_InitTypeDef ADC_InitStructure;
+    ADC_CommonInitTypeDef ADC_CommonInitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    DMA_InitTypeDef DMA_InitStructure;
+
+    // 使能GPIOA、GPIOC、ADC和DMA时钟
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOC, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+
+    // 配置PC0, PC1, PC2, PC3为模拟输入模式（电流和母线电压）
+    GPIO_InitStructure.GPIO_Pin = FOC_CURRENT_IA_PIN | FOC_CURRENT_IB_PIN | 
+                                  FOC_CURRENT_IC_PIN | FOC_VOLTAGE_VBUS_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;        
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;    
+    GPIO_Init(FOC_CURRENT_GPIO_PORT, &GPIO_InitStructure);
+
+    // 配置PA0, PA1, PA2为模拟输入模式（相电压）
+    GPIO_InitStructure.GPIO_Pin = FOC_VOLTAGE_VA_PIN | FOC_VOLTAGE_VB_PIN | FOC_VOLTAGE_VC_PIN;
+    GPIO_Init(FOC_VOLTAGE_GPIO_PORT_A, &GPIO_InitStructure);
+
+    // ADC通用配置
+    ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;              
+    ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div6;           
+    ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
+    ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles; 
+    ADC_CommonInit(&ADC_CommonInitStructure);
+
+    // ADC1配置
+    ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;                
+    ADC_InitStructure.ADC_ScanConvMode = ENABLE;                          
+    ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;                   
+    ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None; 
+    ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;                
+    ADC_InitStructure.ADC_NbrOfConversion = 7;
+    ADC1->CR2 |= ADC_CR2_DDS;
+    ADC_Init(ADC1, &ADC_InitStructure);
+
+    // 配置ADC1通道采样时间
+    ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_28Cycles);
+    ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_28Cycles);
+    ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_28Cycles);
+    ADC_RegularChannelConfig(ADC1, FOC_VOLTAGE_VA_CHANNEL, 4, ADC_SampleTime_28Cycles);
+    ADC_RegularChannelConfig(ADC1, FOC_VOLTAGE_VB_CHANNEL, 5, ADC_SampleTime_28Cycles);
+    ADC_RegularChannelConfig(ADC1, FOC_VOLTAGE_VC_CHANNEL, 6, ADC_SampleTime_28Cycles);
+    ADC_RegularChannelConfig(ADC1, FOC_VOLTAGE_VBUS_CHANNEL, 7, ADC_SampleTime_28Cycles);
+
+    // 使能 ADC 的 DMA 请求
+    ADC_DMACmd(ADC1, ENABLE);
+
+    // DMA 初始化配置
+    DMA_DeInit(DMA2_Stream0);
+    DMA_InitStructure.DMA_Channel = DMA_Channel_0;
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)adc_dma_buffer;
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+    DMA_InitStructure.DMA_BufferSize = ADC_DMA_BUFFER_SIZE;
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+    DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+    DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
+    DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+    DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+    DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+    DMA_Init(DMA2_Stream0, &DMA_InitStructure);
+
+    // 清除DMA传输完成标志
+    DMA_ClearFlag(DMA2_Stream0, DMA_FLAG_TCIF0);
+    
+    // 使能 DMA 通道
+    DMA_Cmd(DMA2_Stream0, ENABLE);
+
+    // 使能ADC1
+    ADC_Cmd(ADC1, ENABLE);
+
+    // 等待ADC稳定
+    for(volatile int i=0; i<0xFFFFF; i++);
+
+    // 清除EOC标志（可选，连续模式下EOC会持续置位）
+    ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+    
+    // 启动一次转换，之后ADC自动进入连续模式
+    ADC_SoftwareStartConv(ADC1);
+}
+
+/**
+ * @brief 启动ADC转换并获取结果
+ */
+void bsp_adc_start_conversion(void)
+{
+    // 非阻塞方式 - 仅当数据就绪时更新
+    foc_data.ia = adc_dma_buffer[0];
+    foc_data.ib = adc_dma_buffer[1];
+    foc_data.ic = adc_dma_buffer[2];
+    foc_data.va = adc_dma_buffer[3];
+    foc_data.vb = adc_dma_buffer[4];
+    foc_data.vc = adc_dma_buffer[5];
+    foc_data.vbus = adc_dma_buffer[6];
+}
+
+/**
+ * @brief 获取FOC采样数据
+ * @return FOC数据结构体
+ */
+foc_data_t bsp_adc_get_RAW_Data(void)
+{
+    return foc_data;
+}

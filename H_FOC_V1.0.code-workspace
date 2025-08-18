@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.associations": {
+            "task.h": "c",
+            "stm32f4xx.h": "c",
+            "foc_init.h": "c",
+            "stdarg.h": "c",
+            "bsp_adc.h": "c",
+            "foc_debug.h": "c",
+            "bsp_timer.h": "c"
+        }
+    },
+    "extensions": {}
+}

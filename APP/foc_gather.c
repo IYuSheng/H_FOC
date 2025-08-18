@@ -1,0 +1,56 @@
+#include "foc_gather.h"
+
+foc_data_t foc_gather;
+
+static float Translate_Current = 0.0f;
+static float Translate_Voltage = 0.0f;
+void foc_gather_init(void)
+{
+    // 电流转换系数 = 3.3V / 4095 / 1mΩ / 20
+    Translate_Current = (ADC_REF_VOLTAGE / ADC_MAX_VALUE) / R_Current / INA240_GAIN;
+    // 电压转换系数 = 3.3V / 4095 * (2.2+56)kΩ / 2.2kΩ
+    Translate_Voltage = ADC_REF_VOLTAGE / ADC_MAX_VALUE * (R_Voaltage_1 + R_Voaltage_2) / R_Voaltage_2;
+}
+
+/**
+ * @brief 将ADC采集的电压值转换为相电流,母线电压及相电压值
+ * @param data 原始ADC采集的电压数据
+ * @return 转换后的相电流,母线电压及相电压数据
+ */
+static foc_data foc_transfer_data(foc_data_t data)
+{
+    foc_data Tran_data;
+    
+    Tran_data.ia = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ia) * Translate_Current;
+    Tran_data.ib = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ib) * Translate_Current;
+    Tran_data.ic = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ic) * Translate_Current;
+    Tran_data.va = data.va * Translate_Voltage;
+    Tran_data.vb = data.vb * Translate_Voltage;
+    Tran_data.vc = data.vc * Translate_Voltage;
+    Tran_data.vbus = data.vbus * Translate_Voltage;
+    
+    return Tran_data;
+}
+
+void vGatherProcessTask(void *pvParameters)
+{
+
+  while (1)
+    {
+      // 1.启动ADC采集IO实际电压
+      bsp_adc_start_conversion();
+
+      // 2.获取ADC转换原始值
+      foc_data_t Raw_data = bsp_adc_get_RAW_Data();
+
+      // 3.将采集的adc电压转换为相电流,母线电压及相电压值
+      foc_data Tran_data_ = foc_transfer_data(Raw_data);
+
+      debug_printf("vbus = %.2fV, va = %.2fV, vb = %.2fV, vc = %.2fV, ia = %.2fA, ib = %.2fA, ic = %.2fA\r\n",
+        Tran_data_.vbus,
+        Tran_data_.va, Tran_data_.vb, Tran_data_.vc,
+        Tran_data_.ia, Tran_data_.ib, Tran_data_.ic);
+
+      vTaskDelay(1000);
+    }
+}

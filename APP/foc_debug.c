@@ -27,9 +27,10 @@ void debug_printf(const char *format, ...)
   va_end(args);
 
   // 确保不会超出缓冲区范围
-  if (len > sizeof(debug_buffer) - 3) {
+  if (len > sizeof(debug_buffer) - 3)
+    {
       len = sizeof(debug_buffer) - 3;
-  }
+    }
 
   // 添加\r\n确保换行
   if (len > 0)
@@ -47,7 +48,7 @@ void vDebugProcessTask(void *pvParameters)
 {
   while (1)
     {
-      
+
       vTaskDelay(1000);
     }
 }

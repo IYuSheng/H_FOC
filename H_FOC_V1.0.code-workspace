@@ -12,7 +12,10 @@
             "stdarg.h": "c",
             "bsp_adc.h": "c",
             "foc_debug.h": "c",
-            "bsp_timer.h": "c"
+            "bsp_timer.h": "c",
+            "freertos.h": "c",
+            "foc_encoder.h": "c",
+            "config.h": "c"
         }
     },
     "extensions": {}

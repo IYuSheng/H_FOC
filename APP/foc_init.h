@@ -11,6 +11,7 @@
 #include "foc_debug.h"
 #include "foc_encoder.h"
 #include "foc_gather.h"
+#include "foc_control.h"
 
 #include "bsp_gpio.h"
 #include "bsp_uart.h"
@@ -21,6 +22,7 @@
 #define TASK_PRIO_LED           2
 #define TASK_PRIO_Debug         1
 #define TASK_PRIO_Gather        3
+#define TASK_PRIO_FOC_Control   4
 
 void foc_bsp_init(void);
 void foc_app_init(void);

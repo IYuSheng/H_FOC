@@ -5,6 +5,7 @@ BaseType_t xReturn;  /* 保存xTaskCreate返回值 */
 void LED_task_create(void);
 void Debug_task_create(void);
 void Gather_task_create(void);
+void FOC_Control_task_create(void);
 
 
 void foc_bsp_init(void)
@@ -24,6 +25,7 @@ void foc_app_init(void)
   led_init();
   debug_init();
   foc_gather_init();
+  foc_control_init();
 
   debug_log("foc_app_init");
 }
@@ -33,6 +35,7 @@ void foc_task_init(void)
   LED_task_create();
   Debug_task_create();
   Gather_task_create();
+  FOC_Control_task_create();
 
   debug_log("foc_task_init");
 }
@@ -76,4 +79,15 @@ void Gather_task_create(void)
     }
 }
 
-
+/**
+  * @brief  FOC控制任务
+  */
+void FOC_Control_task_create(void)
+{
+  xReturn = xTaskCreate(vFOCControlTask, "FOCControl", 1024,
+                        NULL, TASK_PRIO_FOC_Control, NULL);
+  if (xReturn != pdPASS)
+    {
+      debug_log("FOC Control task create Failed");
+    }
+}

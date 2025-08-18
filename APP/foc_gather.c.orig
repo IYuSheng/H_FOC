@@ -6,10 +6,10 @@ static float Translate_Current = 0.0f;
 static float Translate_Voltage = 0.0f;
 void foc_gather_init(void)
 {
-  // 电流转换系数 = 3.3V / 4095 / 1mΩ / 20
-  Translate_Current = (ADC_REF_VOLTAGE / ADC_MAX_VALUE) / R_Current / INA240_GAIN;
-  // 电压转换系数 = 3.3V / 4095 * (2.2+56)kΩ / 2.2kΩ
-  Translate_Voltage = ADC_REF_VOLTAGE / ADC_MAX_VALUE * (R_Voaltage_1 + R_Voaltage_2) / R_Voaltage_2;
+    // 电流转换系数 = 3.3V / 4095 / 1mΩ / 20
+    Translate_Current = (ADC_REF_VOLTAGE / ADC_MAX_VALUE) / R_Current / INA240_GAIN;
+    // 电压转换系数 = 3.3V / 4095 * (2.2+56)kΩ / 2.2kΩ
+    Translate_Voltage = ADC_REF_VOLTAGE / ADC_MAX_VALUE * (R_Voaltage_1 + R_Voaltage_2) / R_Voaltage_2;
 }
 
 /**
@@ -19,17 +19,17 @@ void foc_gather_init(void)
  */
 static foc_data foc_transfer_data(foc_data_t data)
 {
-  foc_data Tran_data;
-
-  Tran_data.ia = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ia) * Translate_Current;
-  Tran_data.ib = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ib) * Translate_Current;
-  Tran_data.ic = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ic) * Translate_Current;
-  Tran_data.va = data.va * Translate_Voltage;
-  Tran_data.vb = data.vb * Translate_Voltage;
-  Tran_data.vc = data.vc * Translate_Voltage;
-  Tran_data.vbus = data.vbus * Translate_Voltage;
-
-  return Tran_data;
+    foc_data Tran_data;
+    
+    Tran_data.ia = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ia) * Translate_Current;
+    Tran_data.ib = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ib) * Translate_Current;
+    Tran_data.ic = (V_REF * ADC_MAX_VALUE/ ADC_REF_VOLTAGE - data.ic) * Translate_Current;
+    Tran_data.va = data.va * Translate_Voltage;
+    Tran_data.vb = data.vb * Translate_Voltage;
+    Tran_data.vc = data.vc * Translate_Voltage;
+    Tran_data.vbus = data.vbus * Translate_Voltage;
+    
+    return Tran_data;
 }
 
 void vGatherProcessTask(void *pvParameters)

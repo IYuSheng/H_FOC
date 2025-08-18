@@ -225,6 +225,12 @@
           },
           {
             "path": "APP/foc_encoder.h"
+          },
+          {
+            "path": "APP/foc_control.c"
+          },
+          {
+            "path": "APP/foc_control.h"
           }
         ],
         "folders": []

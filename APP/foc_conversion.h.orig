@@ -7,25 +7,22 @@
 #include "math.h"
 
 // 三相坐标系结构体
-typedef struct
-{
-  float a;
-  float b;
-  float c;
+typedef struct {
+    float a;
+    float b;
+    float c;
 } ABCTypeDef;
 
 // 两相静止坐标系结构体 (Alpha-Beta)
-typedef struct
-{
-  float alpha;
-  float beta;
+typedef struct {
+    float alpha;
+    float beta;
 } AlphaBetaTypeDef;
 
 // 两相旋转坐标系结构体 (D-Q)
-typedef struct
-{
-  float d;
-  float q;
+typedef struct {
+    float d;
+    float q;
 } DQTypeDef;
 
 // FOC变换相关函数声明

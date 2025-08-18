@@ -50,24 +50,22 @@
 #define R_Voaltage_2  2.2f    // 2.2KΩ
 
 // -------------------------- 控制模式定义 --------------------------
-typedef enum
-{
-  FOC_MODE_TORQUE = 0,    // 转矩模式 (直接控制IQ)
-  FOC_MODE_SPEED,         // 速度模式 (闭环控制转速)
-  FOC_MODE_POSITION       // 位置模式 (闭环控制角度)
+typedef enum {
+    FOC_MODE_TORQUE = 0,    // 转矩模式 (直接控制IQ)
+    FOC_MODE_SPEED,         // 速度模式 (闭环控制转速)
+    FOC_MODE_POSITION       // 位置模式 (闭环控制角度)
 } FOC_ModeTypeDef;
 
 #define DEFAULT_CONTROL_MODE FOC_MODE_SPEED  // 默认控制模式
 
 // -------------------------- 故障状态定义 --------------------------
-typedef enum
-{
-  FAULT_NONE = 0,         // 无故障
-  FAULT_OVER_CURRENT,     // 过流
-  FAULT_OVER_VOLTAGE,     // 过压
-  FAULT_UNDER_VOLTAGE,    // 欠压
-  FAULT_BREAK,            // 刹车触发
-  FAULT_ENCODER           // 编码器故障
+typedef enum {
+    FAULT_NONE = 0,         // 无故障
+    FAULT_OVER_CURRENT,     // 过流
+    FAULT_OVER_VOLTAGE,     // 过压
+    FAULT_UNDER_VOLTAGE,    // 欠压
+    FAULT_BREAK,            // 刹车触发
+    FAULT_ENCODER           // 编码器故障
 } FaultTypeDef;
 
 #endif /* __CONFIG_H */

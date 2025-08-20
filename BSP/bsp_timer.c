@@ -100,12 +100,30 @@ void bsp_timer_init(void)
   TIM_BDTRInitStructure.TIM_AutomaticOutput = TIM_AutomaticOutput_Enable;
   TIM_BDTRConfig(TIM1, &TIM_BDTRInitStructure);
 
+ /*------------------------------------------TRGO配置----------------------------------------------------*/
+  // 配置TIM1 TRGO信号源为_OC4REF，用于触发ADC注入组转换
+  // 这样可以精确控制触发时机，在三相PWM都为低电平时触发
+  TIM_SelectOutputTrigger(TIM1, TIM_TRGOSource_OC4Ref);
+  
+  // 配置通道4作为触发源，不输出PWM，仅用于触发ADC
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;           // PWM模式2，确保在特定时刻触发
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable; // 不输出PWM波形
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable; // 不输出互补PWM波形
+  TIM_OCInitStructure.TIM_Pulse = PWM_PERIOD - 50;            // 在PWM周期快结束时触发（确保三相都为低电平）
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
+  TIM_OC4Init(TIM1, &TIM_OCInitStructure);
+  TIM_OC4PreloadConfig(TIM1, TIM_OCPreload_Enable);
+
   /*------------------------------------------中断配置----------------------------------------------------*/
 
   // 使能更新中断,配置为中心对齐模式1，每个PWM周期将会产生两次更新中断
   // 第一次为向下计数开始点(ARR至ARR-1)对应PWM波形峰值点
   // 第二次为向上计数开始点(0至1)对应PWM波形最低点,此时应进行电流采样
   TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
+
   // 配置NVIC
   NVIC_InitTypeDef NVIC_InitStructure;
   NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
@@ -122,9 +140,9 @@ void bsp_timer_init(void)
 
   // 使能TIM1
   TIM_Cmd(TIM1, ENABLE);
-  TIM_SetCompare1(TIM1, 1000);
-  TIM_SetCompare2(TIM1, 1000);
-  TIM_SetCompare3(TIM1, 1000);
+  // TIM_SetCompare1(TIM1, 1000);
+  // TIM_SetCompare2(TIM1, 1000);
+  // TIM_SetCompare3(TIM1, 1000);
 }
 
 /**

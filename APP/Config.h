@@ -43,6 +43,7 @@
 #define ADC_MAX_VALUE       4096.0f    // ADC分辨率 (例如：12位ADC为4096)
 #define INA240_GAIN         20.0f   // 电流采样运放增益
 #define V_REF               1.65f    // REF1 引脚电压3.3V，单位：V
+#define A_REF               2048
 #define R_Current           0.001f    // 采样电阻阻值 (1mΩ)
 
 // -------------------------- 电压采样配置 --------------------------

@@ -15,7 +15,9 @@
             "bsp_timer.h": "c",
             "freertos.h": "c",
             "foc_encoder.h": "c",
-            "config.h": "c"
+            "config.h": "c",
+            "foc_gather.h": "c",
+            "math.h": "c"
         }
     },
     "extensions": {}

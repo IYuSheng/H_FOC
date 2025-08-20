@@ -17,7 +17,7 @@ void foc_bsp_init(void)
   bsp_adc_init();
   bsp_timer_init();
 
-  debug_log("\nfoc_bsp_init");
+  debug_log("foc_bsp_init complete");
 }
 
 void foc_app_init(void)
@@ -27,7 +27,7 @@ void foc_app_init(void)
   foc_gather_init();
   foc_control_init();
 
-  debug_log("foc_app_init");
+  debug_log("foc_app_init complete");
 }
 
 void foc_task_init(void)
@@ -37,7 +37,7 @@ void foc_task_init(void)
   Gather_task_create();
   FOC_Control_task_create();
 
-  debug_log("foc_task_init");
+  debug_log("foc_task_init complete");
 }
 
 /**

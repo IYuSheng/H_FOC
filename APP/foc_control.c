@@ -10,6 +10,32 @@ foc_control_t foc_ctrl;
 // 任务句柄
 TaskHandle_t xFOCControlTaskHandle = NULL;
 
+void foc_control_init(void);
+void foc_open_loop_control(void);
+
+/**
+ * @brief FOC控制任务
+ */
+void vFOCControlTask(void *pvParameters)
+{
+  TickType_t xLastWakeTime;
+  const float xFrequency = 10000.0f / CONTROL_LOOP_FREQ; // 控制频率
+
+  // 初始化xLastWakeTime变量
+  xLastWakeTime = xTaskGetTickCount();
+
+  foc_set_open_loop_speed(10);
+
+  for (;;)
+    {
+      // 执行开环控制
+      foc_open_loop_control();
+
+      // 按固定频率延迟
+      vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(xFrequency));
+    }
+}
+
 /**
  * @brief FOC控制初始化
  */
@@ -120,27 +146,4 @@ void foc_open_loop_control(void)
 
   // 设置PWM占空比
   // bsp_pwm_set_duty(pwm_a, pwm_b, pwm_c);
-}
-
-/**
- * @brief FOC控制任务
- */
-void vFOCControlTask(void *pvParameters)
-{
-  TickType_t xLastWakeTime;
-  const float xFrequency = 10000.0f / CONTROL_LOOP_FREQ; // 控制频率
-
-  // 初始化xLastWakeTime变量
-  xLastWakeTime = xTaskGetTickCount();
-
-  foc_set_open_loop_speed(10);
-
-  for (;;)
-    {
-      // 执行开环控制
-      foc_open_loop_control();
-
-      // 按固定频率延迟
-      vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(xFrequency));
-    }
 }

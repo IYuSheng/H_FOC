@@ -3,6 +3,9 @@
 
 #include "stm32f4xx.h"
 #include "foc_debug.h"
+#include "Config.h"
+#include "foc_gather.h"
+#include "math.h"
 
 // FOC电流采样ADC通道定义
 #define FOC_CURRENT_IA_CHANNEL    ADC_Channel_10  // PC0
@@ -29,21 +32,60 @@
 #define FOC_VOLTAGE_GPIO_PORT_A   GPIOA
 #define FOC_VOLTAGE_GPIO_PORT_C   GPIOC
 
+// 注入组（电流通道，高优先级）：IA、IB、IC
+#define INJ_CHANNELS 3
+#define INJ_IA_CHANNEL ADC_Channel_0  // 示例：IA对应通道0
+#define INJ_IB_CHANNEL ADC_Channel_1  // IB对应通道1
+#define INJ_IC_CHANNEL ADC_Channel_2  // IC对应通道2
+
+// 规则组（电压通道，连续转换）：VA、VB、VC、VBUS
+#define REG_CHANNELS 4
+#define REG_VA_CHANNEL ADC_Channel_3
+#define REG_VB_CHANNEL ADC_Channel_4
+#define REG_VC_CHANNEL ADC_Channel_5
+#define REG_VBUS_CHANNEL ADC_Channel_6
+
 // FOC电流采样结构体
 typedef struct
 {
-  uint16_t ia;    // A相电流
-  uint16_t ib;    // B相电流
-  uint16_t ic;    // C相电流
-  uint16_t va;    // A相电压
-  uint16_t vb;    // B相电压
-  uint16_t vc;    // C相电压
-  uint16_t vbus;  // 母线电压
+  int16_t ia;    // A相电流
+  int16_t ib;    // B相电流
+  int16_t ic;    // C相电流
+  int16_t va;    // A相电压
+  int16_t vb;    // B相电压
+  int16_t vc;    // C相电压
+  int16_t vbus;  // 母线电压
 } foc_data_t;
+
+// FOC电流转换结构体
+typedef struct
+{
+  float ia;    // A相电流
+  float ib;    // B相电流
+  float ic;    // C相电流
+} foc_data_i;
+
+// FOC电压转换结构体
+typedef struct
+{
+  float va;    // A相电压
+  float vb;    // B相电压
+  float vc;    // C相电压
+  float vbus;  // 母线电压
+} foc_data_v;
+
+// FOC采集模式
+typedef enum
+{
+  v_mode = 0,
+  i_mode = 1
+} foc_mode;
 
 // 函数声明
 void bsp_adc_init(void);
-void bsp_adc_start_conversion(void);
+uint8_t bsp_adc_process_data(void);
 foc_data_t bsp_adc_get_RAW_Data(void);
+foc_data_v bsp_adc_get_calib_data(void);
+void bsp_adc_calib_current_offset(void);
 
 #endif /* __BSP_ADC_H */

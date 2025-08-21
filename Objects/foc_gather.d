@@ -53,3 +53,6 @@
 .\objects\foc_gather.o: .\BSP\bsp_uart.h
 .\objects\foc_gather.o: .\FreeRTOS\inc\queue.h
 .\objects\foc_gather.o: .\FreeRTOS\inc\semphr.h
+.\objects\foc_gather.o: .\APP\Config.h
+.\objects\foc_gather.o: .\APP\foc_gather.h
+.\objects\foc_gather.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h

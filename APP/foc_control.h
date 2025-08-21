@@ -4,22 +4,23 @@
 #include "stm32f4xx.h"
 #include "freertos.h"
 #include "task.h"
-#include "foc_conversion.h"
+#include "arm_math.h"
 #include "foc_encoder.h"
 #include "bsp_timer.h"
 #include "Config.h"
-#include "math.h"
 #include "foc_debug.h"
+#include "foc_gather.h"
+#include "arm_math.h"
 
 // FOC控制参数结构体
 typedef struct
 {
-  float u_d;              // D轴电压
-  float u_q;              // Q轴电压
-  float angle;            // 电角度
-  float speed;            // 速度（rad/s）
-  float speed_rpm;        // 速度（rpm）
-  float target_speed;     // 目标速度
+  float32_t u_d;          // D轴电压（使用DSP库的float32_t类型）
+  float32_t u_q;          // Q轴电压
+  float32_t angle;        // 电角度
+  float32_t speed;        // 速度（rad/s）
+  float32_t speed_rpm;    // 速度（rpm）
+  float32_t target_speed; // 目标速度
 } foc_control_t;
 
 // 函数声明

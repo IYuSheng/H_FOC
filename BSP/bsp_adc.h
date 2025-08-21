@@ -6,6 +6,7 @@
 #include "Config.h"
 #include "foc_gather.h"
 #include "math.h"
+#include "arm_math.h"
 
 // FOC电流采样ADC通道定义
 #define FOC_CURRENT_IA_CHANNEL    ADC_Channel_10  // PC0
@@ -45,33 +46,33 @@
 #define REG_VC_CHANNEL ADC_Channel_5
 #define REG_VBUS_CHANNEL ADC_Channel_6
 
-// FOC电流采样结构体
+// FOC电流采样结构体（使用DSP库整数类型）
 typedef struct
 {
-  int16_t ia;    // A相电流
-  int16_t ib;    // B相电流
-  int16_t ic;    // C相电流
-  int16_t va;    // A相电压
-  int16_t vb;    // B相电压
-  int16_t vc;    // C相电压
-  int16_t vbus;  // 母线电压
+  q15_t ia;    // A相电流（16位整数，对应int16_t）
+  q15_t ib;    // B相电流
+  q15_t ic;    // C相电流
+  q15_t va;    // A相电压
+  q15_t vb;    // B相电压
+  q15_t vc;    // C相电压
+  q15_t vbus;  // 母线电压
 } foc_data_t;
 
-// FOC电流转换结构体
+// FOC电流转换结构体（使用DSP库浮点类型）
 typedef struct
 {
-  float ia;    // A相电流
-  float ib;    // B相电流
-  float ic;    // C相电流
+  float32_t ia;    // A相电流（32位浮点）
+  float32_t ib;    // B相电流
+  float32_t ic;    // C相电流
 } foc_data_i;
 
-// FOC电压转换结构体
+// FOC电压转换结构体（使用DSP库浮点类型）
 typedef struct
 {
-  float va;    // A相电压
-  float vb;    // B相电压
-  float vc;    // C相电压
-  float vbus;  // 母线电压
+  float32_t va;    // A相电压
+  float32_t vb;    // B相电压
+  float32_t vc;    // C相电压
+  float32_t vbus;  // 母线电压
 } foc_data_v;
 
 // FOC采集模式

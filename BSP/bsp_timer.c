@@ -187,12 +187,19 @@ void bsp_pwm_disable(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+    
+    // 判断当前计数方向：DIR=1表示向下计数，且此时计数器值为0（向下计数到0的时刻）
+    // 中心对齐模式中，向下计数到0时会触发更新中断，且此时PWM输出为0
+    if ((TIM1->CR1 & TIM_CR1_DIR) == TIM_CR1_DIR) // DIR=1：向下计数
     {
-      TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-      // 调用FOC核心控制函数
-
+      // 此时对应PWM占空比为0，且ADC注入组采集（通道4触发）已完成
+      foc_open_loop_control();
     }
+  }
 }
+
 
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
@@ -201,5 +208,6 @@ void TIM1_BRK_TIM9_IRQHandler(void)
       TIM_ClearITPendingBit(TIM1, TIM_IT_Break);
       bsp_pwm_disable(); // 紧急关闭PWM
       // 可添加故障标志位设置、日志记录等
+      debug_log("PWM Fault Error!");
     }
 }

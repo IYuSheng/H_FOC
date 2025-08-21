@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "foc_gather.h"
 #include "foc_debug.h"
+#include "foc_control.h"
 
 extern uint32_t TIM1_Clock; // 84MHz
 

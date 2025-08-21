@@ -6,18 +6,9 @@
     ],
     "settings": {
         "files.associations": {
-            "task.h": "c",
-            "stm32f4xx.h": "c",
-            "foc_init.h": "c",
-            "stdarg.h": "c",
-            "bsp_adc.h": "c",
-            "foc_debug.h": "c",
-            "bsp_timer.h": "c",
-            "freertos.h": "c",
-            "foc_encoder.h": "c",
-            "config.h": "c",
-            "foc_gather.h": "c",
-            "math.h": "c"
+            "arm_math.h": "c",
+            "foc_control.h": "c",
+            "freertos.h": "c"
         }
     },
     "extensions": {}

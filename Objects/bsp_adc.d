@@ -52,3 +52,7 @@
 .\objects\bsp_adc.o: .\BSP\bsp_uart.h
 .\objects\bsp_adc.o: .\FreeRTOS\inc\queue.h
 .\objects\bsp_adc.o: .\FreeRTOS\inc\semphr.h
+.\objects\bsp_adc.o: .\APP\Config.h
+.\objects\bsp_adc.o: .\APP\foc_gather.h
+.\objects\bsp_adc.o: .\BSP\bsp_adc.h
+.\objects\bsp_adc.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h

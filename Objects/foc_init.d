@@ -48,6 +48,7 @@
 .\objects\foc_init.o: APP\Config.h
 .\objects\foc_init.o: APP\led.h
 .\objects\foc_init.o: APP\foc_conversion.h
+.\objects\foc_init.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\foc_init.o: APP\foc_debug.h
 .\objects\foc_init.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\foc_init.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\stdarg.h
@@ -58,4 +59,7 @@
 .\objects\foc_init.o: APP\foc_encoder.h
 .\objects\foc_init.o: APP\foc_gather.h
 .\objects\foc_init.o: .\BSP\bsp_adc.h
+.\objects\foc_init.o: .\APP\foc_gather.h
+.\objects\foc_init.o: APP\foc_control.h
+.\objects\foc_init.o: .\BSP\bsp_timer.h
 .\objects\foc_init.o: .\BSP\bsp_gpio.h

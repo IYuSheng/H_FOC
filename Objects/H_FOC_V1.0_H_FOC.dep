@@ -1,6 +1,6 @@
 Dependencies for Project 'H_FOC_V1.0', Target 'H_FOC': (DO NOT MODIFY !)
 CompilerVersion: 5060750::V5.06 update 6 (build 750)::ARMCC
-F (.\USER\system_stm32f4xx.c)(0x68A03ECB)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\system_stm32f4xx.o --omf_browse .\objects\system_stm32f4xx.crf --depend .\objects\system_stm32f4xx.d)
+F (.\USER\system_stm32f4xx.c)(0x68A03ECB)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\system_stm32f4xx.o --omf_browse .\objects\system_stm32f4xx.crf --depend .\objects\system_stm32f4xx.d)
 I (USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -36,7 +36,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\USER\stm32f4xx_it.c)(0x68A04152)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_it.o --omf_browse .\objects\stm32f4xx_it.crf --depend .\objects\stm32f4xx_it.d)
+F (.\USER\stm32f4xx_it.c)(0x68A04152)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_it.o --omf_browse .\objects\stm32f4xx_it.crf --depend .\objects\stm32f4xx_it.d)
 I (USER\stm32f4xx_it.h)(0x6203D001)
 I (USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -73,7 +73,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\USER\main.c)(0x68A0A807)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\USER\main.c)(0x68A0A807)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -109,7 +109,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-I (.\APP\foc_init.h)(0x68A16963)
+I (.\APP\foc_init.h)(0x68A33236)
 I (.\FreeRTOS\inc\freertos.h)(0x64020E50)
 I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
 I (.\FreeRTOS\FreeRTOSConfig.h)(0x68A0B356)
@@ -120,9 +120,10 @@ I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
 I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
-I (.\APP\Config.h)(0x68A0473D)
+I (.\APP\Config.h)(0x68A4AB86)
 I (.\APP\led.h)(0x68A0A7EB)
-I (.\APP\foc_conversion.h)(0x68A0473D)
+I (.\APP\foc_conversion.h)(0x68A34D39)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
 I (.\APP\foc_debug.h)(0x68A09D1D)
 I (D:\Keilv5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
@@ -131,11 +132,13 @@ I (.\BSP\bsp_uart.h)(0x68A16402)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
 I (.\APP\foc_encoder.h)(0x68A0473D)
-I (.\APP\foc_gather.h)(0x68A19248)
-I (.\BSP\bsp_adc.h)(0x68A1A2B1)
+I (.\APP\foc_gather.h)(0x68A5DEAC)
+I (.\BSP\bsp_adc.h)(0x68A5E5A6)
+I (.\APP\foc_control.h)(0x68A34D39)
+I (.\BSP\bsp_timer.h)(0x68A1F929)
 I (.\BSP\bsp_gpio.h)(0x68A04948)
-F (.\CORE\startup_stm32f40_41xxx.s)(0x62051C83)(--cpu Cortex-M4.fp.sp -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include--pd "__UVISION_VERSION SETA 540" --pd "STM32F405xx SETA 1" --pd "_RTE_ SETA 1"--list .\listings\startup_stm32f40_41xxx.lst --xref -o .\objects\startup_stm32f40_41xxx.o --depend .\objects\startup_stm32f40_41xxx.d)
-F (.\FWLIB\src\misc.c)(0x61F25A40)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\misc.o --omf_browse .\objects\misc.crf --depend .\objects\misc.d)
+F (.\CORE\startup_stm32f40_41xxx.s)(0x62051C83)(--cpu Cortex-M4.fp.sp -g --apcs=interwork --pd "__MICROLIB SETA 1"--pd "__UVISION_VERSION SETA 540" --pd "STM32F405xx SETA 1"--list .\listings\startup_stm32f40_41xxx.lst --xref -o .\objects\startup_stm32f40_41xxx.o --depend .\objects\startup_stm32f40_41xxx.d)
+F (.\FWLIB\src\misc.c)(0x61F25A40)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\misc.o --omf_browse .\objects\misc.crf --depend .\objects\misc.d)
 I (.\FWLIB\inc\misc.h)(0x61F25A2D)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -170,7 +173,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_adc.c)(0x61F25A40)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_adc.o --omf_browse .\objects\stm32f4xx_adc.crf --depend .\objects\stm32f4xx_adc.d)
+F (.\FWLIB\src\stm32f4xx_adc.c)(0x61F25A40)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_adc.o --omf_browse .\objects\stm32f4xx_adc.crf --depend .\objects\stm32f4xx_adc.d)
 I (.\FWLIB\inc\stm32f4xx_adc.h)(0x61F25A2D)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -205,7 +208,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_can.c)(0x620230EE)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_can.o --omf_browse .\objects\stm32f4xx_can.crf --depend .\objects\stm32f4xx_can.d)
+F (.\FWLIB\src\stm32f4xx_can.c)(0x620230EE)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_can.o --omf_browse .\objects\stm32f4xx_can.crf --depend .\objects\stm32f4xx_can.d)
 I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -240,7 +243,7 @@ I (.\FWLIB\inc\stm32f4xx_rng.h)(0x61F25A3A)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_cec.c)(0x61F25A41)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cec.o --omf_browse .\objects\stm32f4xx_cec.crf --depend .\objects\stm32f4xx_cec.d)
+F (.\FWLIB\src\stm32f4xx_cec.c)(0x61F25A41)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cec.o --omf_browse .\objects\stm32f4xx_cec.crf --depend .\objects\stm32f4xx_cec.d)
 I (.\FWLIB\inc\stm32f4xx_cec.h)(0x61F25A2E)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -276,7 +279,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_crc.c)(0x61F25A42)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_crc.o --omf_browse .\objects\stm32f4xx_crc.crf --depend .\objects\stm32f4xx_crc.d)
+F (.\FWLIB\src\stm32f4xx_crc.c)(0x61F25A42)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_crc.o --omf_browse .\objects\stm32f4xx_crc.crf --depend .\objects\stm32f4xx_crc.d)
 I (.\FWLIB\inc\stm32f4xx_crc.h)(0x61F25A2F)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -311,7 +314,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_cryp.c)(0x61F25A42)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp.o --omf_browse .\objects\stm32f4xx_cryp.crf --depend .\objects\stm32f4xx_cryp.d)
+F (.\FWLIB\src\stm32f4xx_cryp.c)(0x61F25A42)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp.o --omf_browse .\objects\stm32f4xx_cryp.crf --depend .\objects\stm32f4xx_cryp.d)
 I (.\FWLIB\inc\stm32f4xx_cryp.h)(0x61F25A2F)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -346,7 +349,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_cryp_aes.c)(0x61F25A43)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp_aes.o --omf_browse .\objects\stm32f4xx_cryp_aes.crf --depend .\objects\stm32f4xx_cryp_aes.d)
+F (.\FWLIB\src\stm32f4xx_cryp_aes.c)(0x61F25A43)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp_aes.o --omf_browse .\objects\stm32f4xx_cryp_aes.crf --depend .\objects\stm32f4xx_cryp_aes.d)
 I (.\FWLIB\inc\stm32f4xx_cryp.h)(0x61F25A2F)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -381,7 +384,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_cryp_des.c)(0x61F25A43)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp_des.o --omf_browse .\objects\stm32f4xx_cryp_des.crf --depend .\objects\stm32f4xx_cryp_des.d)
+F (.\FWLIB\src\stm32f4xx_cryp_des.c)(0x61F25A43)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp_des.o --omf_browse .\objects\stm32f4xx_cryp_des.crf --depend .\objects\stm32f4xx_cryp_des.d)
 I (.\FWLIB\inc\stm32f4xx_cryp.h)(0x61F25A2F)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -416,7 +419,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_cryp_tdes.c)(0x61F25A44)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp_tdes.o --omf_browse .\objects\stm32f4xx_cryp_tdes.crf --depend .\objects\stm32f4xx_cryp_tdes.d)
+F (.\FWLIB\src\stm32f4xx_cryp_tdes.c)(0x61F25A44)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_cryp_tdes.o --omf_browse .\objects\stm32f4xx_cryp_tdes.crf --depend .\objects\stm32f4xx_cryp_tdes.d)
 I (.\FWLIB\inc\stm32f4xx_cryp.h)(0x61F25A2F)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -451,7 +454,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_dac.c)(0x61F25A44)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dac.o --omf_browse .\objects\stm32f4xx_dac.crf --depend .\objects\stm32f4xx_dac.d)
+F (.\FWLIB\src\stm32f4xx_dac.c)(0x61F25A44)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dac.o --omf_browse .\objects\stm32f4xx_dac.crf --depend .\objects\stm32f4xx_dac.d)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -486,7 +489,7 @@ I (.\FWLIB\inc\stm32f4xx_rng.h)(0x61F25A3A)
 I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_dbgmcu.c)(0x61F25A45)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dbgmcu.o --omf_browse .\objects\stm32f4xx_dbgmcu.crf --depend .\objects\stm32f4xx_dbgmcu.d)
+F (.\FWLIB\src\stm32f4xx_dbgmcu.c)(0x61F25A45)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dbgmcu.o --omf_browse .\objects\stm32f4xx_dbgmcu.crf --depend .\objects\stm32f4xx_dbgmcu.d)
 I (.\FWLIB\inc\stm32f4xx_dbgmcu.h)(0x61F25A30)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -521,7 +524,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_dcmi.c)(0x61F25A45)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dcmi.o --omf_browse .\objects\stm32f4xx_dcmi.crf --depend .\objects\stm32f4xx_dcmi.d)
+F (.\FWLIB\src\stm32f4xx_dcmi.c)(0x61F25A45)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dcmi.o --omf_browse .\objects\stm32f4xx_dcmi.crf --depend .\objects\stm32f4xx_dcmi.d)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -556,7 +559,7 @@ I (.\FWLIB\inc\stm32f4xx_rng.h)(0x61F25A3A)
 I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_dfsdm.c)(0x61F25A46)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dfsdm.o --omf_browse .\objects\stm32f4xx_dfsdm.crf --depend .\objects\stm32f4xx_dfsdm.d)
+F (.\FWLIB\src\stm32f4xx_dfsdm.c)(0x61F25A46)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dfsdm.o --omf_browse .\objects\stm32f4xx_dfsdm.crf --depend .\objects\stm32f4xx_dfsdm.d)
 I (.\FWLIB\inc\stm32f4xx_dfsdm.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_rcc.h)(0x61F25A3A)
 I (.\USER\stm32f4xx.h)(0x68A03840)
@@ -592,7 +595,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_dma.c)(0x61F25A46)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dma.o --omf_browse .\objects\stm32f4xx_dma.crf --depend .\objects\stm32f4xx_dma.d)
+F (.\FWLIB\src\stm32f4xx_dma.c)(0x61F25A46)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dma.o --omf_browse .\objects\stm32f4xx_dma.crf --depend .\objects\stm32f4xx_dma.d)
 I (.\FWLIB\inc\stm32f4xx_dma.h)(0x61F25A31)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -627,7 +630,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_dsi.c)(0x61F25A47)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dsi.o --omf_browse .\objects\stm32f4xx_dsi.crf --depend .\objects\stm32f4xx_dsi.d)
+F (.\FWLIB\src\stm32f4xx_dsi.c)(0x61F25A47)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_dsi.o --omf_browse .\objects\stm32f4xx_dsi.crf --depend .\objects\stm32f4xx_dsi.d)
 I (.\FWLIB\inc\stm32f4xx_dsi.h)(0x61F25A32)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -663,7 +666,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_exti.c)(0x61F25A48)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_exti.o --omf_browse .\objects\stm32f4xx_exti.crf --depend .\objects\stm32f4xx_exti.d)
+F (.\FWLIB\src\stm32f4xx_exti.c)(0x61F25A48)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_exti.o --omf_browse .\objects\stm32f4xx_exti.crf --depend .\objects\stm32f4xx_exti.d)
 I (.\FWLIB\inc\stm32f4xx_exti.h)(0x61F25A33)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -698,7 +701,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_flash.c)(0x61F25A48)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_flash.o --omf_browse .\objects\stm32f4xx_flash.crf --depend .\objects\stm32f4xx_flash.d)
+F (.\FWLIB\src\stm32f4xx_flash.c)(0x61F25A48)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_flash.o --omf_browse .\objects\stm32f4xx_flash.crf --depend .\objects\stm32f4xx_flash.d)
 I (.\FWLIB\inc\stm32f4xx_flash.h)(0x61F25A33)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -733,7 +736,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_flash_ramfunc.c)(0x61F25A49)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_flash_ramfunc.o --omf_browse .\objects\stm32f4xx_flash_ramfunc.crf --depend .\objects\stm32f4xx_flash_ramfunc.d)
+F (.\FWLIB\src\stm32f4xx_flash_ramfunc.c)(0x61F25A49)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_flash_ramfunc.o --omf_browse .\objects\stm32f4xx_flash_ramfunc.crf --depend .\objects\stm32f4xx_flash_ramfunc.d)
 I (.\FWLIB\inc\stm32f4xx_flash_ramfunc.h)(0x61F25A34)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -769,7 +772,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_fmpi2c.c)(0x62028565)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_fmpi2c.o --omf_browse .\objects\stm32f4xx_fmpi2c.crf --depend .\objects\stm32f4xx_fmpi2c.d)
+F (.\FWLIB\src\stm32f4xx_fmpi2c.c)(0x62028565)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_fmpi2c.o --omf_browse .\objects\stm32f4xx_fmpi2c.crf --depend .\objects\stm32f4xx_fmpi2c.d)
 I (.\FWLIB\inc\stm32f4xx_fmpi2c.h)(0x61F25A35)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -805,7 +808,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_gpio.c)(0x61F2A912)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_gpio.o --omf_browse .\objects\stm32f4xx_gpio.crf --depend .\objects\stm32f4xx_gpio.d)
+F (.\FWLIB\src\stm32f4xx_gpio.c)(0x61F2A912)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_gpio.o --omf_browse .\objects\stm32f4xx_gpio.crf --depend .\objects\stm32f4xx_gpio.d)
 I (.\FWLIB\inc\stm32f4xx_gpio.h)(0x61F25A36)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -840,7 +843,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_hash.c)(0x61F25A4C)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_hash.o --omf_browse .\objects\stm32f4xx_hash.crf --depend .\objects\stm32f4xx_hash.d)
+F (.\FWLIB\src\stm32f4xx_hash.c)(0x61F25A4C)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_hash.o --omf_browse .\objects\stm32f4xx_hash.crf --depend .\objects\stm32f4xx_hash.d)
 I (.\FWLIB\inc\stm32f4xx_hash.h)(0x61F25A37)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -875,7 +878,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_hash_md5.c)(0x61F25A4C)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_hash_md5.o --omf_browse .\objects\stm32f4xx_hash_md5.crf --depend .\objects\stm32f4xx_hash_md5.d)
+F (.\FWLIB\src\stm32f4xx_hash_md5.c)(0x61F25A4C)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_hash_md5.o --omf_browse .\objects\stm32f4xx_hash_md5.crf --depend .\objects\stm32f4xx_hash_md5.d)
 I (.\FWLIB\inc\stm32f4xx_hash.h)(0x61F25A37)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -910,7 +913,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_hash_sha1.c)(0x61F25A4D)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_hash_sha1.o --omf_browse .\objects\stm32f4xx_hash_sha1.crf --depend .\objects\stm32f4xx_hash_sha1.d)
+F (.\FWLIB\src\stm32f4xx_hash_sha1.c)(0x61F25A4D)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_hash_sha1.o --omf_browse .\objects\stm32f4xx_hash_sha1.crf --depend .\objects\stm32f4xx_hash_sha1.d)
 I (.\FWLIB\inc\stm32f4xx_hash.h)(0x61F25A37)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -945,7 +948,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_i2c.c)(0x61F40E33)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_i2c.o --omf_browse .\objects\stm32f4xx_i2c.crf --depend .\objects\stm32f4xx_i2c.d)
+F (.\FWLIB\src\stm32f4xx_i2c.c)(0x61F40E33)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_i2c.o --omf_browse .\objects\stm32f4xx_i2c.crf --depend .\objects\stm32f4xx_i2c.d)
 I (.\FWLIB\inc\stm32f4xx_i2c.h)(0x61F25A37)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -980,7 +983,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_iwdg.c)(0x61F25A4E)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_iwdg.o --omf_browse .\objects\stm32f4xx_iwdg.crf --depend .\objects\stm32f4xx_iwdg.d)
+F (.\FWLIB\src\stm32f4xx_iwdg.c)(0x61F25A4E)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_iwdg.o --omf_browse .\objects\stm32f4xx_iwdg.crf --depend .\objects\stm32f4xx_iwdg.d)
 I (.\FWLIB\inc\stm32f4xx_iwdg.h)(0x61F25A38)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1015,7 +1018,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_lptim.c)(0x61F25A4E)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_lptim.o --omf_browse .\objects\stm32f4xx_lptim.crf --depend .\objects\stm32f4xx_lptim.d)
+F (.\FWLIB\src\stm32f4xx_lptim.c)(0x61F25A4E)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_lptim.o --omf_browse .\objects\stm32f4xx_lptim.crf --depend .\objects\stm32f4xx_lptim.d)
 I (.\FWLIB\inc\stm32f4xx_lptim.h)(0x61F25A38)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1051,7 +1054,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_pwr.c)(0x61F25A4F)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_pwr.o --omf_browse .\objects\stm32f4xx_pwr.crf --depend .\objects\stm32f4xx_pwr.d)
+F (.\FWLIB\src\stm32f4xx_pwr.c)(0x61F25A4F)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_pwr.o --omf_browse .\objects\stm32f4xx_pwr.crf --depend .\objects\stm32f4xx_pwr.d)
 I (.\FWLIB\inc\stm32f4xx_pwr.h)(0x61F25A39)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1086,7 +1089,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_qspi.c)(0x61F25A50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_qspi.o --omf_browse .\objects\stm32f4xx_qspi.crf --depend .\objects\stm32f4xx_qspi.d)
+F (.\FWLIB\src\stm32f4xx_qspi.c)(0x61F25A50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_qspi.o --omf_browse .\objects\stm32f4xx_qspi.crf --depend .\objects\stm32f4xx_qspi.d)
 I (.\FWLIB\inc\stm32f4xx_qspi.h)(0x61F25A3A)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1122,7 +1125,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_rcc.c)(0x61F25A51)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_rcc.o --omf_browse .\objects\stm32f4xx_rcc.crf --depend .\objects\stm32f4xx_rcc.d)
+F (.\FWLIB\src\stm32f4xx_rcc.c)(0x61F25A51)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_rcc.o --omf_browse .\objects\stm32f4xx_rcc.crf --depend .\objects\stm32f4xx_rcc.d)
 I (.\FWLIB\inc\stm32f4xx_rcc.h)(0x61F25A3A)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1157,7 +1160,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_rng.c)(0x61F25A51)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_rng.o --omf_browse .\objects\stm32f4xx_rng.crf --depend .\objects\stm32f4xx_rng.d)
+F (.\FWLIB\src\stm32f4xx_rng.c)(0x61F25A51)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_rng.o --omf_browse .\objects\stm32f4xx_rng.crf --depend .\objects\stm32f4xx_rng.d)
 I (.\FWLIB\inc\stm32f4xx_rng.h)(0x61F25A3A)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1192,7 +1195,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_rtc.c)(0x61F25A52)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_rtc.o --omf_browse .\objects\stm32f4xx_rtc.crf --depend .\objects\stm32f4xx_rtc.d)
+F (.\FWLIB\src\stm32f4xx_rtc.c)(0x61F25A52)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_rtc.o --omf_browse .\objects\stm32f4xx_rtc.crf --depend .\objects\stm32f4xx_rtc.d)
 I (.\FWLIB\inc\stm32f4xx_rtc.h)(0x61F25A3B)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1227,7 +1230,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_sai.c)(0x61F25A53)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_sai.o --omf_browse .\objects\stm32f4xx_sai.crf --depend .\objects\stm32f4xx_sai.d)
+F (.\FWLIB\src\stm32f4xx_sai.c)(0x61F25A53)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_sai.o --omf_browse .\objects\stm32f4xx_sai.crf --depend .\objects\stm32f4xx_sai.d)
 I (.\FWLIB\inc\stm32f4xx_sai.h)(0x61F25A3B)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1263,7 +1266,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_sdio.c)(0x61F25A53)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_sdio.o --omf_browse .\objects\stm32f4xx_sdio.crf --depend .\objects\stm32f4xx_sdio.d)
+F (.\FWLIB\src\stm32f4xx_sdio.c)(0x61F25A53)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_sdio.o --omf_browse .\objects\stm32f4xx_sdio.crf --depend .\objects\stm32f4xx_sdio.d)
 I (.\FWLIB\inc\stm32f4xx_sdio.h)(0x61F25A3C)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1298,7 +1301,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_spdifrx.c)(0x61F25A54)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_spdifrx.o --omf_browse .\objects\stm32f4xx_spdifrx.crf --depend .\objects\stm32f4xx_spdifrx.d)
+F (.\FWLIB\src\stm32f4xx_spdifrx.c)(0x61F25A54)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_spdifrx.o --omf_browse .\objects\stm32f4xx_spdifrx.crf --depend .\objects\stm32f4xx_spdifrx.d)
 I (.\FWLIB\inc\stm32f4xx_spdifrx.h)(0x61F25A3C)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1334,7 +1337,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_spi.c)(0x61F7A43B)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_spi.o --omf_browse .\objects\stm32f4xx_spi.crf --depend .\objects\stm32f4xx_spi.d)
+F (.\FWLIB\src\stm32f4xx_spi.c)(0x61F7A43B)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_spi.o --omf_browse .\objects\stm32f4xx_spi.crf --depend .\objects\stm32f4xx_spi.d)
 I (.\FWLIB\inc\stm32f4xx_spi.h)(0x61F25A3D)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1369,7 +1372,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_syscfg.c)(0x61F25A55)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_syscfg.o --omf_browse .\objects\stm32f4xx_syscfg.crf --depend .\objects\stm32f4xx_syscfg.d)
+F (.\FWLIB\src\stm32f4xx_syscfg.c)(0x61F25A55)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_syscfg.o --omf_browse .\objects\stm32f4xx_syscfg.crf --depend .\objects\stm32f4xx_syscfg.d)
 I (.\FWLIB\inc\stm32f4xx_syscfg.h)(0x61F25A3E)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1404,7 +1407,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_tim.c)(0x61F25A55)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_tim.o --omf_browse .\objects\stm32f4xx_tim.crf --depend .\objects\stm32f4xx_tim.d)
+F (.\FWLIB\src\stm32f4xx_tim.c)(0x61F25A55)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_tim.o --omf_browse .\objects\stm32f4xx_tim.crf --depend .\objects\stm32f4xx_tim.d)
 I (.\FWLIB\inc\stm32f4xx_tim.h)(0x61F25A3E)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1439,7 +1442,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_usart.c)(0x61F25A56)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_usart.o --omf_browse .\objects\stm32f4xx_usart.crf --depend .\objects\stm32f4xx_usart.d)
+F (.\FWLIB\src\stm32f4xx_usart.c)(0x61F25A56)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_usart.o --omf_browse .\objects\stm32f4xx_usart.crf --depend .\objects\stm32f4xx_usart.d)
 I (.\FWLIB\inc\stm32f4xx_usart.h)(0x61F7A884)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1474,7 +1477,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\FWLIB\src\stm32f4xx_wwdg.c)(0x61F25A57)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_wwdg.o --omf_browse .\objects\stm32f4xx_wwdg.crf --depend .\objects\stm32f4xx_wwdg.d)
+F (.\FWLIB\src\stm32f4xx_wwdg.c)(0x61F25A57)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stm32f4xx_wwdg.o --omf_browse .\objects\stm32f4xx_wwdg.crf --depend .\objects\stm32f4xx_wwdg.d)
 I (.\FWLIB\inc\stm32f4xx_wwdg.h)(0x61F25A3F)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1509,7 +1512,7 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\BSP\bsp_uart.c)(0x68A16598)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\bsp_uart.o --omf_browse .\objects\bsp_uart.crf --depend .\objects\bsp_uart.d)
+F (.\BSP\bsp_uart.c)(0x68A1E76F)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\bsp_uart.o --omf_browse .\objects\bsp_uart.crf --depend .\objects\bsp_uart.d)
 I (BSP\bsp_uart.h)(0x68A16402)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1561,7 +1564,7 @@ I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
 F (.\BSP\bsp_uart.h)(0x68A16402)()
-F (.\BSP\bsp_gpio.c)(0x68A16256)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\bsp_gpio.o --omf_browse .\objects\bsp_gpio.crf --depend .\objects\bsp_gpio.d)
+F (.\BSP\bsp_gpio.c)(0x68A16256)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\bsp_gpio.o --omf_browse .\objects\bsp_gpio.crf --depend .\objects\bsp_gpio.d)
 I (BSP\bsp_gpio.h)(0x68A04948)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1598,9 +1601,9 @@ I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
 F (.\BSP\bsp_gpio.h)(0x68A04948)()
-F (.\BSP\bsp_adc.h)(0x68A1A2B1)()
-F (.\BSP\bsp_adc.c)(0x68A1A291)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\bsp_adc.o --omf_browse .\objects\bsp_adc.crf --depend .\objects\bsp_adc.d)
-I (BSP\bsp_adc.h)(0x68A1A2B1)
+F (.\BSP\bsp_adc.h)(0x68A5E5A6)()
+F (.\BSP\bsp_adc.c)(0x68A5EF1B)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\bsp_adc.o --omf_browse .\objects\bsp_adc.crf --depend .\objects\bsp_adc.d)
+I (BSP\bsp_adc.h)(0x68A5E5A6)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -1652,8 +1655,12 @@ I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\BSP\bsp_uart.h)(0x68A16402)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
-F (.\BSP\bsp_timer.c)(0x68A045FD)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\bsp_timer.o --omf_browse .\objects\bsp_timer.crf --depend .\objects\bsp_timer.d)
-I (BSP\bsp_timer.h)(0x68A045FD)
+I (.\APP\Config.h)(0x68A4AB86)
+I (.\APP\foc_gather.h)(0x68A5DEAC)
+I (.\BSP\bsp_adc.h)(0x68A5E5A6)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
+F (.\BSP\bsp_timer.c)(0x68A5EFE5)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\bsp_timer.o --omf_browse .\objects\bsp_timer.crf --depend .\objects\bsp_timer.d)
+I (BSP\bsp_timer.h)(0x68A1F929)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -1688,10 +1695,31 @@ I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
 I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
 I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
 I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
-F (.\BSP\bsp_timer.h)(0x68A045FD)()
-F (.\APP\Config.h)(0x68A0473D)()
-F (.\APP\foc_init.c)(0x68A16AFC)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\foc_init.o --omf_browse .\objects\foc_init.crf --depend .\objects\foc_init.d)
-I (APP\foc_init.h)(0x68A16963)
+I (.\APP\Config.h)(0x68A4AB86)
+I (.\APP\foc_gather.h)(0x68A5DEAC)
+I (D:\Keilv5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
+I (D:\Keilv5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
+I (D:\Keilv5\ARM\ARMCC\include\string.h)(0x599ECD2C)
+I (.\FreeRTOS\inc\freertos.h)(0x64020E50)
+I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
+I (.\FreeRTOS\FreeRTOSConfig.h)(0x68A0B356)
+I (.\FreeRTOS\inc\projdefs.h)(0x64020E50)
+I (.\FreeRTOS\inc\portable.h)(0x64020E50)
+I (.\FreeRTOS\inc\deprecated_definitions.h)(0x64020E50)
+I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
+I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
+I (.\FreeRTOS\inc\task.h)(0x64020E50)
+I (.\FreeRTOS\inc\list.h)(0x64020E50)
+I (.\BSP\bsp_adc.h)(0x68A5E5A6)
+I (.\APP\foc_debug.h)(0x68A09D1D)
+I (.\BSP\bsp_uart.h)(0x68A16402)
+I (.\FreeRTOS\inc\queue.h)(0x64020E50)
+I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
+F (.\BSP\bsp_timer.h)(0x68A1F929)()
+F (.\APP\Config.h)(0x68A4AB86)()
+F (.\APP\foc_init.c)(0x68A5E71D)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\foc_init.o --omf_browse .\objects\foc_init.crf --depend .\objects\foc_init.d)
+I (APP\foc_init.h)(0x68A33236)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -1736,9 +1764,10 @@ I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
 I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
-I (APP\Config.h)(0x68A0473D)
+I (APP\Config.h)(0x68A4AB86)
 I (APP\led.h)(0x68A0A7EB)
-I (APP\foc_conversion.h)(0x68A0473D)
+I (APP\foc_conversion.h)(0x68A34D39)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
 I (APP\foc_debug.h)(0x68A09D1D)
 I (D:\Keilv5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
@@ -1747,11 +1776,14 @@ I (.\BSP\bsp_uart.h)(0x68A16402)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
 I (APP\foc_encoder.h)(0x68A0473D)
-I (APP\foc_gather.h)(0x68A19248)
-I (.\BSP\bsp_adc.h)(0x68A1A2B1)
+I (APP\foc_gather.h)(0x68A5DEAC)
+I (.\BSP\bsp_adc.h)(0x68A5E5A6)
+I (.\APP\foc_gather.h)(0x68A5DEAC)
+I (APP\foc_control.h)(0x68A34D39)
+I (.\BSP\bsp_timer.h)(0x68A1F929)
 I (.\BSP\bsp_gpio.h)(0x68A04948)
-F (.\APP\foc_init.h)(0x68A16963)()
-F (.\APP\led.c)(0x68A0AFDD)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\led.o --omf_browse .\objects\led.crf --depend .\objects\led.d)
+F (.\APP\foc_init.h)(0x68A33236)()
+F (.\APP\led.c)(0x68A0AFDD)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\led.o --omf_browse .\objects\led.crf --depend .\objects\led.d)
 I (APP\led.h)(0x68A0A7EB)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1804,8 +1836,8 @@ I (D:\Keilv5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
 F (.\APP\led.h)(0x68A0A7EB)()
-F (.\APP\foc_gather.c)(0x68A1A227)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\foc_gather.o --omf_browse .\objects\foc_gather.crf --depend .\objects\foc_gather.d)
-I (APP\foc_gather.h)(0x68A19248)
+F (.\APP\foc_gather.c)(0x68A5F026)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\foc_gather.o --omf_browse .\objects\foc_gather.crf --depend .\objects\foc_gather.d)
+I (APP\foc_gather.h)(0x68A5DEAC)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -1853,13 +1885,16 @@ I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
 I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
-I (.\BSP\bsp_adc.h)(0x68A1A2B1)
-I (APP\foc_debug.h)(0x68A09D1D)
+I (.\BSP\bsp_adc.h)(0x68A5E5A6)
+I (.\APP\foc_debug.h)(0x68A09D1D)
 I (.\BSP\bsp_uart.h)(0x68A16402)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
-F (.\APP\foc_gather.h)(0x68A19248)()
-F (.\APP\foc_debug.c)(0x68A17FA2)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\foc_debug.o --omf_browse .\objects\foc_debug.crf --depend .\objects\foc_debug.d)
+I (.\APP\Config.h)(0x68A4AB86)
+I (.\APP\foc_gather.h)(0x68A5DEAC)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
+F (.\APP\foc_gather.h)(0x68A5DEAC)()
+F (.\APP\foc_debug.c)(0x68A34D39)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\foc_debug.o --omf_browse .\objects\foc_debug.crf --depend .\objects\foc_debug.d)
 I (APP\foc_debug.h)(0x68A09D1D)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -1912,8 +1947,8 @@ I (.\BSP\bsp_uart.h)(0x68A16402)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
 F (.\APP\foc_debug.h)(0x68A09D1D)()
-F (.\APP\foc_conversion.c)(0x68A0473D)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\foc_conversion.o --omf_browse .\objects\foc_conversion.crf --depend .\objects\foc_conversion.d)
-I (APP\foc_conversion.h)(0x68A0473D)
+F (.\APP\foc_conversion.c)(0x68A5F1B5)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\foc_conversion.o --omf_browse .\objects\foc_conversion.crf --depend .\objects\foc_conversion.d)
+I (APP\foc_conversion.h)(0x68A34D39)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -1958,8 +1993,9 @@ I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
 I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
-F (.\APP\foc_conversion.h)(0x68A0473D)()
-F (.\APP\foc_encoder.c)(0x68A0473D)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\foc_encoder.o --omf_browse .\objects\foc_encoder.crf --depend .\objects\foc_encoder.d)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
+F (.\APP\foc_conversion.h)(0x68A34D39)()
+F (.\APP\foc_encoder.c)(0x68A0473D)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\foc_encoder.o --omf_browse .\objects\foc_encoder.crf --depend .\objects\foc_encoder.d)
 I (APP\foc_encoder.h)(0x68A0473D)
 I (.\USER\stm32f4xx.h)(0x68A03840)
 I (.\CORE\core_cm4.h)(0x61F12857)
@@ -2006,7 +2042,68 @@ I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 F (.\APP\foc_encoder.h)(0x68A0473D)()
-F (.\FreeRTOS\port\heap_4.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\heap_4.o --omf_browse .\objects\heap_4.crf --depend .\objects\heap_4.d)
+F (.\APP\foc_control.c)(0x68A5F21E)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\foc_control.o --omf_browse .\objects\foc_control.crf --depend .\objects\foc_control.d)
+I (APP\foc_control.h)(0x68A34D39)
+I (.\USER\stm32f4xx.h)(0x68A03840)
+I (.\CORE\core_cm4.h)(0x61F12857)
+I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
+I (.\CORE\core_cmInstr.h)(0x61F12857)
+I (.\CORE\core_cmFunc.h)(0x61F12857)
+I (.\CORE\core_cmSimd.h)(0x61F12857)
+I (.\USER\system_stm32f4xx.h)(0x62051C84)
+I (.\USER\stm32f4xx_conf.h)(0x6203D002)
+I (.\FWLIB\inc\stm32f4xx_adc.h)(0x61F25A2D)
+I (.\FWLIB\inc\stm32f4xx_crc.h)(0x61F25A2F)
+I (.\FWLIB\inc\stm32f4xx_dbgmcu.h)(0x61F25A30)
+I (.\FWLIB\inc\stm32f4xx_dma.h)(0x61F25A31)
+I (.\FWLIB\inc\stm32f4xx_exti.h)(0x61F25A33)
+I (.\FWLIB\inc\stm32f4xx_flash.h)(0x61F25A33)
+I (.\FWLIB\inc\stm32f4xx_gpio.h)(0x61F25A36)
+I (.\FWLIB\inc\stm32f4xx_i2c.h)(0x61F25A37)
+I (.\FWLIB\inc\stm32f4xx_iwdg.h)(0x61F25A38)
+I (.\FWLIB\inc\stm32f4xx_pwr.h)(0x61F25A39)
+I (.\FWLIB\inc\stm32f4xx_rcc.h)(0x61F25A3A)
+I (.\FWLIB\inc\stm32f4xx_rtc.h)(0x61F25A3B)
+I (.\FWLIB\inc\stm32f4xx_sdio.h)(0x61F25A3C)
+I (.\FWLIB\inc\stm32f4xx_spi.h)(0x61F25A3D)
+I (.\FWLIB\inc\stm32f4xx_syscfg.h)(0x61F25A3E)
+I (.\FWLIB\inc\stm32f4xx_tim.h)(0x61F25A3E)
+I (.\FWLIB\inc\stm32f4xx_usart.h)(0x61F7A884)
+I (.\FWLIB\inc\stm32f4xx_wwdg.h)(0x61F25A3F)
+I (.\FWLIB\inc\misc.h)(0x61F25A2D)
+I (.\FWLIB\inc\stm32f4xx_cryp.h)(0x61F25A2F)
+I (.\FWLIB\inc\stm32f4xx_hash.h)(0x61F25A37)
+I (.\FWLIB\inc\stm32f4xx_rng.h)(0x61F25A3A)
+I (.\FWLIB\inc\stm32f4xx_can.h)(0x61F25A2E)
+I (.\FWLIB\inc\stm32f4xx_dac.h)(0x61F25A30)
+I (.\FWLIB\inc\stm32f4xx_dcmi.h)(0x61F25A31)
+I (.\FWLIB\inc\stm32f4xx_fsmc.h)(0x61F25A36)
+I (.\FreeRTOS\inc\freertos.h)(0x64020E50)
+I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
+I (.\FreeRTOS\FreeRTOSConfig.h)(0x68A0B356)
+I (.\FreeRTOS\inc\projdefs.h)(0x64020E50)
+I (.\FreeRTOS\inc\portable.h)(0x64020E50)
+I (.\FreeRTOS\inc\deprecated_definitions.h)(0x64020E50)
+I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
+I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
+I (.\FreeRTOS\inc\task.h)(0x64020E50)
+I (.\FreeRTOS\inc\list.h)(0x64020E50)
+I (APP\foc_conversion.h)(0x68A34D39)
+I (D:\Keilv5\ARM\ARMCC\include\math.h)(0x599ECD2E)
+I (APP\foc_encoder.h)(0x68A0473D)
+I (.\BSP\bsp_timer.h)(0x68A1F929)
+I (.\APP\Config.h)(0x68A4AB86)
+I (.\APP\foc_gather.h)(0x68A5DEAC)
+I (D:\Keilv5\ARM\ARMCC\include\stdio.h)(0x599ECD2C)
+I (D:\Keilv5\ARM\ARMCC\include\stdarg.h)(0x599ECD2A)
+I (D:\Keilv5\ARM\ARMCC\include\string.h)(0x599ECD2C)
+I (.\BSP\bsp_adc.h)(0x68A5E5A6)
+I (.\APP\foc_debug.h)(0x68A09D1D)
+I (.\BSP\bsp_uart.h)(0x68A16402)
+I (.\FreeRTOS\inc\queue.h)(0x64020E50)
+I (.\FreeRTOS\inc\semphr.h)(0x64020E50)
+F (.\APP\foc_control.h)(0x68A34D39)()
+F (.\FreeRTOS\port\heap_4.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\heap_4.o --omf_browse .\objects\heap_4.crf --depend .\objects\heap_4.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\string.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
@@ -2020,7 +2117,7 @@ I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
 I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
-F (.\FreeRTOS\port\port.c)(0x68A0B072)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\port.o --omf_browse .\objects\port.crf --depend .\objects\port.d)
+F (.\FreeRTOS\port\port.c)(0x68A0B072)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\port.o --omf_browse .\objects\port.crf --depend .\objects\port.d)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
 I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -2051,7 +2148,7 @@ F (.\FreeRTOS\inc\StackMacros.h)(0x64020E50)()
 F (.\FreeRTOS\inc\stream_buffer.h)(0x64020E50)()
 F (.\FreeRTOS\inc\task.h)(0x64020E50)()
 F (.\FreeRTOS\inc\timers.h)(0x64020E50)()
-F (.\FreeRTOS\src\croutine.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\croutine.o --omf_browse .\objects\croutine.crf --depend .\objects\croutine.d)
+F (.\FreeRTOS\src\croutine.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\croutine.o --omf_browse .\objects\croutine.crf --depend .\objects\croutine.d)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
 I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
@@ -2064,7 +2161,7 @@ I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\croutine.h)(0x64020E50)
-F (.\FreeRTOS\src\event_groups.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\event_groups.o --omf_browse .\objects\event_groups.crf --depend .\objects\event_groups.d)
+F (.\FreeRTOS\src\event_groups.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\event_groups.o --omf_browse .\objects\event_groups.crf --depend .\objects\event_groups.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
 I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
@@ -2079,7 +2176,7 @@ I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\timers.h)(0x64020E50)
 I (.\FreeRTOS\inc\event_groups.h)(0x64020E50)
-F (.\FreeRTOS\src\list.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\list.o --omf_browse .\objects\list.crf --depend .\objects\list.d)
+F (.\FreeRTOS\src\list.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\list.o --omf_browse .\objects\list.crf --depend .\objects\list.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
 I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
@@ -2091,7 +2188,7 @@ I (.\FreeRTOS\inc\deprecated_definitions.h)(0x64020E50)
 I (.\FreeRTOS\port\portmacro.h)(0x64020E50)
 I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
-F (.\FreeRTOS\src\queue.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\queue.o --omf_browse .\objects\queue.crf --depend .\objects\queue.d)
+F (.\FreeRTOS\src\queue.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\queue.o --omf_browse .\objects\queue.crf --depend .\objects\queue.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\string.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
@@ -2106,7 +2203,7 @@ I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
-F (.\FreeRTOS\src\stream_buffer.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\stream_buffer.o --omf_browse .\objects\stream_buffer.crf --depend .\objects\stream_buffer.d)
+F (.\FreeRTOS\src\stream_buffer.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\stream_buffer.o --omf_browse .\objects\stream_buffer.crf --depend .\objects\stream_buffer.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdint.h)(0x599ECD2E)
 I (D:\Keilv5\ARM\ARMCC\include\string.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
@@ -2120,7 +2217,7 @@ I (.\FreeRTOS\inc\mpu_wrappers.h)(0x64020E50)
 I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\stream_buffer.h)(0x64020E50)
-F (.\FreeRTOS\src\tasks.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\tasks.o --omf_browse .\objects\tasks.crf --depend .\objects\tasks.d)
+F (.\FreeRTOS\src\tasks.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\tasks.o --omf_browse .\objects\tasks.crf --depend .\objects\tasks.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (D:\Keilv5\ARM\ARMCC\include\string.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
@@ -2136,7 +2233,7 @@ I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\timers.h)(0x64020E50)
 I (.\FreeRTOS\inc\stack_macros.h)(0x64020E50)
-F (.\FreeRTOS\src\timers.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP-I.\RTE\_H_FOC-ID:\Keilv5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-D__UVISION_VERSION="540" -DSTM32F405xx -D_RTE_ -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -D__TARGET_FPU_VFP-o .\objects\timers.o --omf_browse .\objects\timers.crf --depend .\objects\timers.d)
+F (.\FreeRTOS\src\timers.c)(0x64020E50)(--c99 --gnu -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I .\CORE -I .\FWLIB\inc -I .\USER -I .\FreeRTOS\inc -I .\FreeRTOS -I .\FreeRTOS\port -I .\FreeRTOS\src -I .\APP -I .\BSP -I .\DSP_LIB -I .\DSP_LIB\Include-D__UVISION_VERSION="540" -DSTM32F405xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4 -D__CC_ARM -DARM_MATH_MATRIX_CHECK -DARM_MATH_ROUNDING -D__TARGET_FPU_VFP-o .\objects\timers.o --omf_browse .\objects\timers.crf --depend .\objects\timers.d)
 I (D:\Keilv5\ARM\ARMCC\include\stdlib.h)(0x599ECD2C)
 I (.\FreeRTOS\inc\FreeRTOS.h)(0x64020E50)
 I (D:\Keilv5\ARM\ARMCC\include\stddef.h)(0x599ECD2C)
@@ -2151,3 +2248,4 @@ I (.\FreeRTOS\inc\task.h)(0x64020E50)
 I (.\FreeRTOS\inc\list.h)(0x64020E50)
 I (.\FreeRTOS\inc\queue.h)(0x64020E50)
 I (.\FreeRTOS\inc\timers.h)(0x64020E50)
+F (.\DSP_LIB\arm_cortexM4lf_math.lib)(0x61F12859)()

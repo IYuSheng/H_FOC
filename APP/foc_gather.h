@@ -11,6 +11,8 @@
 #include "foc_debug.h"
 #include "Config.h"
 
+// 外部声明采集电压
+
 void foc_gather_init(void);
 
 void vGatherProcessTask(void *pvParameters);

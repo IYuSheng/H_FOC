@@ -52,6 +52,7 @@
 ".\objects\foc_debug.o"
 ".\objects\foc_conversion.o"
 ".\objects\foc_encoder.o"
+".\objects\foc_control.o"
 ".\objects\heap_4.o"
 ".\objects\port.o"
 ".\objects\croutine.o"
@@ -61,6 +62,7 @@
 ".\objects\stream_buffer.o"
 ".\objects\tasks.o"
 ".\objects\timers.o"
+".\DSP_LIB\arm_cortexM4lf_math.lib"
 --library_type=microlib --strict --scatter ".\Objects\H_FOC_V1.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

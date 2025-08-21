@@ -1,115 +1,123 @@
 #include "bsp_adc.h"
 
 // 配置参数：根据硬件特性调整
-#define ADC_DMA_BUFFER_SIZE 4   // 单个缓冲区大小（4个电压通道）
-#define SAMPLE_AVG_COUNT 4      // 滑动平均次数（抑制随机噪声）
-#define ADC_CALIBRATION_DELAY 10000  // ADC启动校准等待延迟
-#define INJ_CHANNELS 3          // 注入组通道数（3个电流通道）
-#define REG_CHANNELS 4          // 规则组通道数（4个电压通道）
-#define LPF_ALPHA 0.4f          // 定义低通滤波系数(0 < LPF_ALPHA < 1, 越小滤波效果越强)
+#define ADC_DMA_BUFFER_SIZE 4        // 单个缓冲区大小（4个电压通道）
+#define SAMPLE_AVG_COUNT 4          // 滑动平均次数（抑制随机噪声）
+#define ADC_CALIBRATION_DELAY 10000 // ADC启动校准等待延迟
+#define INJ_CHANNELS 3              // 注入组通道数（3个电流通道）
+#define REG_CHANNELS 4              // 规则组通道数（4个电压通道）
+#define LPF_ALPHA 0.4f              // 低通滤波系数(0 < LPF_ALPHA < 1)
 
-// ADC DMA双缓冲区（循环模式下交替使用，只包含规则组电压通道）
-static uint16_t adc_dma_buffer[2][ADC_DMA_BUFFER_SIZE];
+// ADC DMA双缓冲区（循环模式，规则组电压通道）
+static uint16_t adc_dma_buffer[2][ADC_DMA_BUFFER_SIZE];  // DMA传输为16位
 
 // 数据标志与存储
 volatile uint8_t adc_data_ready = 0;  // 0:无新数据, 1:缓冲区0就绪, 2:缓冲区1就绪
 foc_data_t foc_raw_data = {0};        // 原始数据
-foc_data_v foc_datav = {0};            // 最终处理后的采样电压数据
-foc_data_i foc_datai = {0};           // 最终处理后的采样电流数据
+foc_data_v foc_datav = {0};           // 处理后电压数据
+foc_data_i foc_datai = {0};           // 处理后电流数据
 
 // 电流转换系数 = 3.3 / 4096 / 1mΩ / 20
-const float I_tran = ADC_REF_VOLTAGE / ADC_MAX_VALUE / R_Current / INA240_GAIN;
+float32_t I_tran = ADC_REF_VOLTAGE / ADC_MAX_VALUE / R_Current / INA240_GAIN;
 
 // 滑动平均值缓冲区(电压)
-static int32_t va_avg_buf[SAMPLE_AVG_COUNT] = {0};
-static int32_t vb_avg_buf[SAMPLE_AVG_COUNT] = {0};
-static int32_t vc_avg_buf[SAMPLE_AVG_COUNT] = {0};
-static int32_t vbus_avg_buf[SAMPLE_AVG_COUNT] = {0};
+static q31_t va_avg_buf[SAMPLE_AVG_COUNT] = {0};
+static q31_t vb_avg_buf[SAMPLE_AVG_COUNT] = {0};
+static q31_t vc_avg_buf[SAMPLE_AVG_COUNT] = {0};
+static q31_t vbus_avg_buf[SAMPLE_AVG_COUNT] = {0};
 static uint8_t avg_idx = 0;  // 滑动平均索引
 
 static uint8_t is_filter_initialized_i = 0;  // 电流滤波器初始化标志
 static uint8_t is_filter_initialized_v = 0;  // 电压滤波器初始化标志
 
- // 低通滤波状态变量(电流)
-static float ia_lpf = 0.0f, ib_lpf = 0.0f, ic_lpf = 0.0f;
+// 低通滤波状态变量(电流) - 使用DSP浮点类型
+static float32_t ia_lpf = 0.0f, ib_lpf = 0.0f, ic_lpf = 0.0f;
 
-// 校准参数（需通过实际校准获取）
+// 校准参数（需实际校准获取）
 typedef struct
 {
-  int16_t ia_offset;  // 电流A相零点偏移
-  int16_t ib_offset;  // 电流B相零点偏移
-  int16_t ic_offset;  // 电流C相零点偏移
-  float v_gain;      // 相电压增益
+  q15_t ia_offset;  // 电流A相零点偏移（q15_t对应int16_t）
+  q15_t ib_offset;  // 电流B相零点偏移
+  q15_t ic_offset;  // 电流C相零点偏移
+  float32_t v_gain; // 相电压增益（浮点）
 } adc_calib_t;
 
-// 电压转换系数 = 3.3V / 4095 * (2.2+56)kΩ / 2.2kΩ  电流转换系数 = 3.3V / 4095 / 1mΩ / 20
+// 电压转换系数 = 3.3V / 4095 * (2.2+56)kΩ / 2.2kΩ
 static adc_calib_t adc_calib = {0, 0, 0, ADC_REF_VOLTAGE / ADC_MAX_VALUE * (R_Voaltage_1 + R_Voaltage_2) / R_Voaltage_2};
 
-void bsp_adc_calib_current_offset(void);
-
 /**
- * @brief 电压电流采样通用滤波器
+ * @brief 电压电流采样通用滤波器（DSP库优化）
  */
 static inline void adc_apply_filter(foc_mode mode)
 {
-  // 电流滤波模式(一阶低通滤波)
+  // 电流滤波（一阶低通滤波）
   if(mode == i_mode)
   {
-    // 如果是第一次采集，用第一次的值初始化
+    // 初始化时填充初始值
     if (!is_filter_initialized_i) {
-      for (uint8_t i = 0; i < SAMPLE_AVG_COUNT; i++)
-      {
-        ia_lpf = foc_raw_data.ia;
-        ib_lpf = foc_raw_data.ib;
-        ic_lpf = foc_raw_data.ic;
-      }
+      arm_fill_f32((float32_t)foc_raw_data.ia, &ia_lpf, 1);
+      arm_fill_f32((float32_t)foc_raw_data.ib, &ib_lpf, 1);
+      arm_fill_f32((float32_t)foc_raw_data.ic, &ic_lpf, 1);
       is_filter_initialized_i = 1;
     }
 
-    // 应用一阶低通滤波器
-    ia_lpf = LPF_ALPHA * (float)foc_raw_data.ia + (1.0f - LPF_ALPHA) * ia_lpf;
-    ib_lpf = LPF_ALPHA * (float)foc_raw_data.ib + (1.0f - LPF_ALPHA) * ib_lpf;
-    ic_lpf = LPF_ALPHA * (float)foc_raw_data.ic + (1.0f - LPF_ALPHA) * ic_lpf;
+    // 应用一阶低通滤波器：y = α*x + (1-α)*y_prev
+    float32_t x_ia = (float32_t)foc_raw_data.ia;
+    float32_t x_ib = (float32_t)foc_raw_data.ib;
+    float32_t x_ic = (float32_t)foc_raw_data.ic;
+    float32_t coeff1 = LPF_ALPHA;
+    float32_t coeff2 = 1.0f - LPF_ALPHA;
+    
+    // 用DSP库函数计算滤波值（优化浮点运算）
+    float32_t temp1, temp2;
+    arm_mult_f32(&coeff1, &x_ia, &temp1, 1);  // α*x
+    arm_mult_f32(&coeff2, &ia_lpf, &temp2, 1); // (1-α)*y_prev
+    arm_add_f32(&temp1, &temp2, &ia_lpf, 1);   // 求和
+    
+    arm_mult_f32(&coeff1, &x_ib, &temp1, 1);
+    arm_mult_f32(&coeff2, &ib_lpf, &temp2, 1);
+    arm_add_f32(&temp1, &temp2, &ib_lpf, 1);
+    
+    arm_mult_f32(&coeff1, &x_ic, &temp1, 1);
+    arm_mult_f32(&coeff2, &ic_lpf, &temp2, 1);
+    arm_add_f32(&temp1, &temp2, &ic_lpf, 1);
 
     // 保存滤波后的数据
     foc_datai.ia = ia_lpf;
     foc_datai.ib = ib_lpf;
     foc_datai.ic = ic_lpf;
   }
-  // 电压滤波模式(滑动平均值滤波)
+  // 电压滤波（滑动平均值滤波）
   else if(mode == v_mode)
   {
-    int32_t va_sum = 0, vb_sum = 0, vc_sum = 0, vbus_sum = 0;
+    q31_t va_mean, vb_mean, vc_mean, vbus_mean;  // 均值结果（32位整数）
     
-    // 如果是第一次采集，用第一次的值初始化缓冲区
+    // 初始化时填充缓冲区
     if (!is_filter_initialized_v) {
-      for (uint8_t i = 0; i < SAMPLE_AVG_COUNT; i++)
-      {
-        va_avg_buf[i] = foc_raw_data.va;
-        vb_avg_buf[i] = foc_raw_data.vb;
-        vc_avg_buf[i] = foc_raw_data.vc;
-        vbus_avg_buf[i] = foc_raw_data.vbus;
-      }
+      arm_fill_q31((q31_t)foc_raw_data.va, va_avg_buf, SAMPLE_AVG_COUNT);
+      arm_fill_q31((q31_t)foc_raw_data.vb, vb_avg_buf, SAMPLE_AVG_COUNT);
+      arm_fill_q31((q31_t)foc_raw_data.vc, vc_avg_buf, SAMPLE_AVG_COUNT);
+      arm_fill_q31((q31_t)foc_raw_data.vbus, vbus_avg_buf, SAMPLE_AVG_COUNT);
       is_filter_initialized_v = 1;
     }
 
-    va_avg_buf[avg_idx] = foc_raw_data.va;
-    vb_avg_buf[avg_idx] = foc_raw_data.vb;
-    vc_avg_buf[avg_idx] = foc_raw_data.vc;
-    vbus_avg_buf[avg_idx] = foc_raw_data.vbus;
+    // 更新滑动窗口数据（q15_t转q31_t存储，避免溢出）
+    va_avg_buf[avg_idx] = (q31_t)foc_raw_data.va;
+    vb_avg_buf[avg_idx] = (q31_t)foc_raw_data.vb;
+    vc_avg_buf[avg_idx] = (q31_t)foc_raw_data.vc;
+    vbus_avg_buf[avg_idx] = (q31_t)foc_raw_data.vbus;
 
-    for (uint8_t i = 0; i < SAMPLE_AVG_COUNT; i++)
-    {
-      va_sum += va_avg_buf[i];
-      vb_sum += vb_avg_buf[i];
-      vc_sum += vc_avg_buf[i];
-      vbus_sum += vbus_avg_buf[i];
-    }
-    // 保存滤波后乘上转换系数后的最终电压数据
-    foc_datav.va = (va_sum / SAMPLE_AVG_COUNT) * adc_calib.v_gain;
-    foc_datav.vb = (vb_sum / SAMPLE_AVG_COUNT) * adc_calib.v_gain;
-    foc_datav.vc = (vc_sum / SAMPLE_AVG_COUNT) * adc_calib.v_gain;
-    foc_datav.vbus = (vbus_sum / SAMPLE_AVG_COUNT) * adc_calib.v_gain;
+    // 用DSP库计算平均值（替代手动求和）
+    arm_mean_q31(va_avg_buf, SAMPLE_AVG_COUNT, &va_mean);
+    arm_mean_q31(vb_avg_buf, SAMPLE_AVG_COUNT, &vb_mean);
+    arm_mean_q31(vc_avg_buf, SAMPLE_AVG_COUNT, &vc_mean);
+    arm_mean_q31(vbus_avg_buf, SAMPLE_AVG_COUNT, &vbus_mean);
+
+    // 转换为最终电压数据（均值×转换系数）
+    foc_datav.va = ((float32_t)va_mean) * adc_calib.v_gain;
+    foc_datav.vb = ((float32_t)vb_mean) * adc_calib.v_gain;
+    foc_datav.vc = ((float32_t)vc_mean) * adc_calib.v_gain;
+    foc_datav.vbus = ((float32_t)vbus_mean) * adc_calib.v_gain;
     
     // 更新平均索引
     avg_idx = (avg_idx + 1) % SAMPLE_AVG_COUNT;
@@ -123,51 +131,62 @@ void DMA2_Stream0_IRQHandler(void)
 {
   // 半传输完成（缓冲区0满）
   if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_HTIF0))
-    {
-      DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_HTIF0);
-      // 读取缓冲区0数据（电压）
-      foc_raw_data.va = adc_dma_buffer[0][0];
-      foc_raw_data.vb = adc_dma_buffer[0][1];
-      foc_raw_data.vc = adc_dma_buffer[0][2];
-      foc_raw_data.vbus = adc_dma_buffer[0][3];
-      adc_data_ready = 1;  // 标记缓冲区0数据就绪
-    }
+  {
+    DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_HTIF0);
+    // 读取缓冲区0数据（电压，uint16_t转q15_t）
+    foc_raw_data.va = (q15_t)adc_dma_buffer[0][0];
+    foc_raw_data.vb = (q15_t)adc_dma_buffer[0][1];
+    foc_raw_data.vc = (q15_t)adc_dma_buffer[0][2];
+    foc_raw_data.vbus = (q15_t)adc_dma_buffer[0][3];
+    adc_data_ready = 1;  // 标记缓冲区0数据就绪
+  }
 
   // 传输完成（缓冲区1满）
   if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0))
-    {
-      DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_TCIF0);
-      // 读取缓冲区1数据（电压）
-      foc_raw_data.va = adc_dma_buffer[1][0];
-      foc_raw_data.vb = adc_dma_buffer[1][1];
-      foc_raw_data.vc = adc_dma_buffer[1][2];
-      foc_raw_data.vbus = adc_dma_buffer[1][3];
-      adc_data_ready = 2;  // 标记缓冲区1数据就绪
-    }
+  {
+    DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_TCIF0);
+    // 读取缓冲区1数据（电压，uint16_t转q15_t）
+    foc_raw_data.va = (q15_t)adc_dma_buffer[1][0];
+    foc_raw_data.vb = (q15_t)adc_dma_buffer[1][1];
+    foc_raw_data.vc = (q15_t)adc_dma_buffer[1][2];
+    foc_raw_data.vbus = (q15_t)adc_dma_buffer[1][3];
+    adc_data_ready = 2;  // 标记缓冲区1数据就绪
+  }
 }
 
 /**
- * @brief ADC注入组中断服务函数（处理电流数据）(自动采样)
+ * @brief ADC注入组中断服务函数（处理电流数据）- 完全使用DSP库函数
  */
 void ADC_IRQHandler(void)
 {
   if (ADC_GetITStatus(ADC1, ADC_IT_JEOC))
-    {
-      // 清除注入组转换完成中断标志
-      ADC_ClearITPendingBit(ADC1, ADC_IT_JEOC);
+  {
+    ADC_ClearITPendingBit(ADC1, ADC_IT_JEOC);  // 清除中断标志
 
-      // 读取注入组转换结果（电流）
-      foc_raw_data.ia = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1);
-      foc_raw_data.ib = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
-      foc_raw_data.ic = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
+    // 读取注入组转换结果（电流，uint16_t转q15_t）
+    foc_raw_data.ia = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1);
+    foc_raw_data.ib = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
+    foc_raw_data.ic = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
 
-      // 应用电流采样滤波
-      adc_apply_filter(i_mode);
+    // 应用电流滤波
+    adc_apply_filter(i_mode);
 
-      foc_datai.ia = (foc_datai.ia - adc_calib.ia_offset) * I_tran;
-      foc_datai.ib = (foc_datai.ib - adc_calib.ib_offset) * I_tran;
-      foc_datai.ic = (foc_datai.ic - adc_calib.ic_offset) * I_tran;
-    }
+    // -------------------------- 完全使用DSP库函数处理 --------------------------
+    // 1. 准备偏移量的浮点格式
+    float32_t ia_offset = (float32_t)adc_calib.ia_offset;
+    float32_t ib_offset = (float32_t)adc_calib.ib_offset;
+    float32_t ic_offset = (float32_t)adc_calib.ic_offset;
+    
+    // 2. 使用DSP库函数执行减法：校准值 = 滤波值 - 偏移量
+    arm_sub_f32(&foc_datai.ia, &ia_offset, &foc_datai.ia, 1);
+    arm_sub_f32(&foc_datai.ib, &ib_offset, &foc_datai.ib, 1);
+    arm_sub_f32(&foc_datai.ic, &ic_offset, &foc_datai.ic, 1);
+
+    // 3. 使用DSP库函数执行乘法：最终值 = 校准值 * 转换系数
+    arm_mult_f32(&foc_datai.ia, &I_tran, &foc_datai.ia, 1);
+    arm_mult_f32(&foc_datai.ib, &I_tran, &foc_datai.ib, 1);
+    arm_mult_f32(&foc_datai.ic, &I_tran, &foc_datai.ic, 1);
+  }
 }
 
 /**

@@ -45,3 +45,4 @@
 .\objects\foc_conversion.o: .\FreeRTOS\inc\mpu_wrappers.h
 .\objects\foc_conversion.o: .\FreeRTOS\inc\task.h
 .\objects\foc_conversion.o: .\FreeRTOS\inc\list.h
+.\objects\foc_conversion.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h

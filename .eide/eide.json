@@ -344,8 +344,12 @@
         ]
       },
       {
-        "name": "::CMSIS",
-        "files": [],
+        "name": "DIS_LIB",
+        "files": [
+          {
+            "path": "DSP_LIB/arm_cortexM4lf_math.lib"
+          }
+        ],
         "folders": []
       }
     ]
@@ -507,6 +511,8 @@
           "FreeRTOS/src",
           "APP",
           "BSP",
+          "DSP_LIB",
+          "DSP_LIB/Include",
           ".cmsis/include",
           "RTE/_H_FOC"
         ],
@@ -514,6 +520,10 @@
         "defineList": [
           "STM32F40_41xxx",
           "USE_STDPERIPH_DRIVER",
+          "ARM_MATH_CM4",
+          "__CC_ARM",
+          "ARM_MATH_MATRIX_CHECK",
+          "ARM_MATH_ROUNDING",
           "__TARGET_FPU_VFP"
         ]
       },
@@ -541,6 +551,7 @@
               ".bin"
             ],
             "output-format": "elf",
+            "xo-base": "",
             "ro-base": "0x08000000",
             "rw-base": "0x20000000"
           }

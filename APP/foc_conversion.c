@@ -2,6 +2,7 @@
 
 #define SQRT3_INV 0.57735026919f  // 1/sqrt(3)
 #define SQRT3    1.73205080757f   // sqrt(3)
+#define SQRT3_DIV_2 0.86602540378f // sqrt(3)/2
 
 /**
  * @brief Clark变换 (从三相坐标系转换到两相静止坐标系)
@@ -10,7 +11,7 @@
  */
 void clark_transform(ABCTypeDef *abc, AlphaBetaTypeDef *alpha_beta)
 {
-  // Clarke变换 - 等幅变换
+  // Clarke变换 - 等幅变换 (功率不变)
   // alpha = (2*a - b - c) / 3
   // beta  = (b - c) / sqrt(3)
   alpha_beta->alpha = (2.0f * abc->a - abc->b - abc->c) * 0.33333333333f;
@@ -24,13 +25,19 @@ void clark_transform(ABCTypeDef *abc, AlphaBetaTypeDef *alpha_beta)
  */
 void inv_clark_transform(AlphaBetaTypeDef *alpha_beta, ABCTypeDef *abc)
 {
-  // 反Clarke变换 - 等幅变换
+  // 反Clarke变换 - 等幅变换 (功率不变)
   // a = alpha
   // b = -0.5 * alpha + sqrt(3)/2 * beta
   // c = -0.5 * alpha - sqrt(3)/2 * beta
   abc->a = alpha_beta->alpha;
-  abc->b = -0.5f * alpha_beta->alpha + SQRT3_INV * alpha_beta->beta;
-  abc->c = -0.5f * alpha_beta->alpha - SQRT3_INV * alpha_beta->beta;
+  abc->b = -0.5f * alpha_beta->alpha + SQRT3_DIV_2 * alpha_beta->beta;
+  abc->c = -0.5f * alpha_beta->alpha - SQRT3_DIV_2 * alpha_beta->beta;
+  
+  // 确保三相和为零 (可选)
+  // float zero_seq = (abc->a + abc->b + abc->c) / 3.0f;
+  // abc->a -= zero_seq;
+  // abc->b -= zero_seq;
+  // abc->c -= zero_seq;
 }
 
 /**

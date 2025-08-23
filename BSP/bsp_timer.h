@@ -10,7 +10,7 @@
 extern uint32_t TIM1_Clock; // 84MHz
 
 // 基于TIM1时钟计算PWM周期（中心对齐模式下，频率 = TIM1_Clock/(TIM_CKD_DIV2*(PWM_PERIOD+1))）
-#define PWM_FREQUENCY     10000 // PWM频率 10K (Hz)
+#define PWM_FREQUENCY     PWM_FREQ // PWM频率 10K (Hz)
 #define PWM_PERIOD        ((TIM1_Clock / (2 * PWM_FREQUENCY)) - 1)  // 4199
 
 // 死区时间计算     死区时间基准频率 = TIM1_Clock/TIM_CKD_DIV2 = 84MHz/2 = 42MHz  死区时间步长 = 1/42MHz = 23.81ns

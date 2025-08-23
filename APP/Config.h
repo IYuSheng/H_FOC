@@ -3,6 +3,14 @@
 
 #include "stm32f4xx.h"
 
+// -------------------------- 常用常量定义 --------------------------
+#define _PI         PI
+#define _2PI        (2.0f * PI)
+#define _SQRT3      1.732050807568877f
+#define _SQRT3_2    0.866025403784439f  // sqrt(3)/2
+#define _1_SQRT3    0.577350269189626f  // 1/sqrt(3)
+#define _2_SQRT3    1.154700538379252f  // 2/sqrt(3)
+
 // -------------------------- 电源与硬件限制 --------------------------
 #define VOLTAGE_LIMIT        3.3f    // 直流母线电压限制 (V)
 #define CURRENT_LIMIT        1.0f    // 最大相电流限制 (A)
@@ -19,8 +27,10 @@
 #define ENCODER_RESOLUTION  1024    // 编码器分辨率 (线数)
 
 // -------------------------- FOC控制参数 --------------------------
-#define CONTROL_LOOP_FREQ   10000   // 控制环频率 (Hz)，建议与PWM频率一致
-#define PWM_FREQ            10000   // PWM频率 (Hz)，需与定时器配置匹配
+#define CONTROL_LOOP_FREQ   1000   // 控制环频率 (Hz)，建议与PWM频率一致
+#define PWM_FREQ            1000.0f   // PWM频率 (Hz)，需与定时器配置匹配
+#define PWM_PERIOD_S      0.001f  // PWM周期（单位：s），与PWM_FREQ对应：T = 1/F
+#define SVPWM_VOLT_COEF   (2.0f / sqrtf(3.0f)) // SVPWM基本矢量幅值系数（母线电压相关，固定值）
 
 // PI调节器参数 (初始值，需根据电机调试优化)
 // 速度环PI

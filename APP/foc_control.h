@@ -10,6 +10,7 @@
 #include "Config.h"
 #include "foc_debug.h"
 #include "foc_gather.h"
+#include "foc_conversion.h"
 #include "arm_math.h"
 
 // FOC控制参数结构体

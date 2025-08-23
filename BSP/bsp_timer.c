@@ -153,12 +153,6 @@ void bsp_timer_init(void)
  */
 void bsp_pwm_set_duty(uint16_t ha_duty, uint16_t hb_duty, uint16_t hc_duty)
 {
-  const uint16_t MIN_DUTY = PWM_PERIOD / 20; // 最小5%占空比
-  // 限制最大和最小占空比
-  ha_duty = (ha_duty < MIN_DUTY) ? MIN_DUTY : (ha_duty > PWM_PERIOD ? PWM_PERIOD : ha_duty);
-  hb_duty = (hb_duty < MIN_DUTY) ? MIN_DUTY : (hb_duty > PWM_PERIOD ? PWM_PERIOD : hb_duty);
-  hc_duty = (hc_duty < MIN_DUTY) ? MIN_DUTY : (hc_duty > PWM_PERIOD ? PWM_PERIOD : hc_duty);
-
   TIM_SetCompare1(TIM1, ha_duty);
   TIM_SetCompare2(TIM1, hb_duty);
   TIM_SetCompare3(TIM1, hc_duty);

@@ -1,18 +1,11 @@
 #include "foc_control.h"
 
-// 定义PI常量（使用DSP库精度更高的定义）
-#define _PI         PI
-#define _2PI        (2.0f * PI)
-
 // 采集电压及母线电压结构体
 extern foc_data_v foc_datav;
 
 float32_t duty_a;
 float32_t duty_b;
 float32_t duty_c;
-
-float32_t voltage_limit = VOLTAGE_AMPLITUDE_LIMIT;  // 电压限制百分比
-float32_t max_voltage;  // 最大电压限制
 
 // FOC控制变量
 foc_control_t foc_ctrl;
@@ -22,6 +15,7 @@ TaskHandle_t xFOCControlTaskHandle = NULL;
 
 void foc_control_init(void);
 void foc_open_loop_control(void);
+void foc_control_set_params(float32_t* u_d_ptr, float32_t* u_q_ptr, float32_t* angle_ptr, float32_t* speed_ptr, float32_t* target_speed_ptr);
 
 /**
  * @brief FOC控制任务
@@ -34,7 +28,8 @@ void vFOCControlTask(void *pvParameters)
   // 初始化xLastWakeTime变量
   xLastWakeTime = xTaskGetTickCount();
 
-  foc_set_open_loop_speed(1);
+  float32_t new_target_speed = 5.0f;
+  foc_control_set_params(NULL, NULL, NULL, NULL, &new_target_speed);
 
   for (;;)
     {
@@ -61,98 +56,152 @@ void foc_control_init(void)
 }
 
 /**
- * @brief 设置开环速度
- * @param speed_rpm 目标速度 (RPM)
+ * @brief 设置FOC控制参数（选择性设置）
+ * @param u_d_ptr D轴电压指针，若为NULL则不改变该项
+ * @param u_q_ptr Q轴电压指针，若为NULL则不改变该项
+ * @param angle_ptr 电角度指针，若为NULL则不改变该项
+ * @param speed_ptr 速度指针，若为NULL则不改变该项
+ * @param target_speed_ptr 目标速度指针，若为NULL则不改变该项
  */
-void foc_set_open_loop_speed(float speed_rpm)
+void foc_control_set_params(float32_t* u_d_ptr, 
+                           float32_t* u_q_ptr, 
+                           float32_t* angle_ptr, 
+                           float32_t* speed_ptr, 
+                           float32_t* target_speed_ptr)
 {
-  foc_ctrl.target_speed = speed_rpm;
+  if (u_d_ptr != NULL) {
+    foc_ctrl.u_d = *u_d_ptr;
+  }
+  
+  if (u_q_ptr != NULL) {
+    foc_ctrl.u_q = *u_q_ptr;
+  }
+  
+  if (angle_ptr != NULL) {
+    foc_ctrl.angle = *angle_ptr;
+  }
+  
+  if (speed_ptr != NULL) {
+    foc_ctrl.speed = *speed_ptr;
+  }
+  
+  if (target_speed_ptr != NULL) {
+    foc_ctrl.target_speed = *target_speed_ptr;
+  }
 }
 
 /**
- * @brief 角度归一化（0到2*PI）
- * @param angle 输入角度（可能超出范围）
- * @return 归一化后的角度
- */
-static inline float32_t angle_normalize(float32_t angle)
-{
-  while (angle > _2PI) {
-    angle -= _2PI;
-  }
-  while (angle < 0.0f) {
-    angle += _2PI;
-  }
-  return angle;
-}
-
-/**
- * @brief FOC开环控制实现
+ * @brief FOC开环控制核心（SVPWM调制实现）
+ * 流程：开环电角度计算 → DQ电压设定 → 电压限制 → 反Park变换 → SVPWM（扇区→时间→占空比）
  */
 void foc_open_loop_control(void)
 {
-  static float angle_accum = 0.0f;  // 角度累计值
+    static float32_t angle_accum = 0.0f;  // 电角度累加器（保持积分状态）
+    float32_t T1, T2, T0;                 // SVPWM作用时间（T1：基本矢量1，T2：基本矢量2，T0：零矢量）
+    float32_t Ta, Tb, Tc;                 // 三相桥臂导通时间（s）
 
-  // 将RPM转换为电角度速度（rad/s）
-  // 电角度速度 = 2*PI * RPM/60 * 极对数
-  foc_ctrl.speed = _2PI * foc_ctrl.target_speed / 60.0f * MOTOR_POLE_PAIRS;
-  foc_ctrl.speed_rpm = foc_ctrl.target_speed;
+    /************************** 1. 开环电角度计算 **************************/
+    // 机械转速 → 电角度速度（rad/s）：ω_e = 2π * (n_rpm / 60) * 极对数
+    float32_t speed_factor = _2PI / 60.0f * MOTOR_POLE_PAIRS;
+    arm_scale_f32(&foc_ctrl.target_speed, speed_factor, &foc_ctrl.speed, 1);
+    foc_ctrl.speed_rpm = foc_ctrl.target_speed;
 
-  // 积分计算电角度 angle = angle + speed * dt(100us)
-  angle_accum += foc_ctrl.speed * 0.0001f;
+    // 积分更新电角度：θ = θ + ω_e * 控制周期（控制周期 = 1/CONTROL_LOOP_FREQ）
+    float32_t ctrl_period = PWM_PERIOD_S;
+    float32_t increment;
+    arm_mult_f32(&foc_ctrl.speed, &ctrl_period, &increment, 1);
+    arm_add_f32(&angle_accum, &increment, &angle_accum, 1);
+    angle_accum = angle_normalize(angle_accum);  // 归一化到0~2π
+    foc_ctrl.angle = angle_accum;
 
-  // 归一化角度（0到2*PI）
-  angle_accum = angle_normalize(angle_accum);
-  foc_ctrl.angle = angle_accum;
+    /************************** 2. DQ轴电压设定 **************************/
+    foc_ctrl.u_d = 0.0f;           // D轴电压=0
+    foc_ctrl.u_q = 1.0f;           // Q轴电压
 
-  // 在开环控制中，直接设定DQ轴电压
-  foc_ctrl.u_d = 0.0f;  // D轴电压设为0
-  foc_ctrl.u_q = 0.6f;  // Q轴电压决定转矩，这里设为固定值
+    /************************** 3. 反Park变换（DQ→αβ） **************************/
+    float32_t sin_theta, cos_theta;
+    // 使用角度制输入
+    float32_t angle_deg;
+    arm_scale_f32(&foc_ctrl.angle, 180.0f / PI, &angle_deg, 1);
+    arm_sin_cos_f32(angle_deg, &sin_theta, &cos_theta);
 
-  // 限制电压幅值，使用DSP库的平方根函数
-  float32_t voltage_magnitude;
-  arm_status status = arm_sqrt_f32(foc_ctrl.u_d * foc_ctrl.u_d + foc_ctrl.u_q * foc_ctrl.u_q, &voltage_magnitude);
-  // 限制最大输出电压
-  arm_mult_f32(&foc_datav.vbus, &voltage_limit, &max_voltage, 1);
-  
-  // 若电压幅值超过最大值，按比例缩放
-  if (status == ARM_MATH_SUCCESS && voltage_magnitude > max_voltage)
+    // 反Park变换：将旋转DQ坐标系电压转换为静止αβ坐标系电压
+    float32_t u_alpha, u_beta;
+    arm_inv_park_f32(foc_ctrl.u_d, foc_ctrl.u_q, &u_alpha, &u_beta, sin_theta, cos_theta);
+
+    /************************** 4. SVPWM核心：扇区判断→作用时间→占空比 **************************/
+    // 扇区判断
+    int32_t current_sector = svpwm_sector_calc(u_alpha, u_beta);
+
+    // 计算基本矢量与零矢量作用时间
+    svpwm_calc_times(current_sector, u_alpha, u_beta, foc_datav.vbus, &T1, &T2, &T0);
+
+    float32_t T7_half = T0 / 2.0f;
+
+    // 按扇区计算三相导通时间
+    switch (current_sector)
     {
-      // 电压幅值限制（比例缩放）
-      float32_t scale = max_voltage / voltage_magnitude;
-      arm_scale_f32(&foc_ctrl.u_d, scale, &foc_ctrl.u_d, 1);
-      arm_scale_f32(&foc_ctrl.u_q, scale, &foc_ctrl.u_q, 1);
+        case 1:  // 扇区1：基本矢量V4(100)→V6(110)，导通顺序：A上→B上→A下→B下3
+            arm_add_f32(&T7_half, &T1, &Ta, 1);
+            arm_add_f32(&Ta, &T2, &Ta, 1);
+            arm_add_f32(&T7_half, &T2, &Tb, 1);
+            Tc = T7_half;
+            break;
+        case 2:  // 扇区2：基本矢量V6(110)→V2(010)，导通顺序：B上→A下→B下→A上1
+            arm_add_f32(&T7_half, &T2, &Ta, 1);
+            arm_add_f32(&T7_half, &T1, &Tb, 1);
+            arm_add_f32(&Tb, &T2, &Tb, 1);
+            Tc = T7_half;
+            break;
+        case 3:  // 扇区3：基本矢量V2(010)→V3(011)，导通顺序：B上→C上→B下→C下5
+            Ta = T7_half;
+            arm_add_f32(&T7_half, &T1, &Tb, 1);
+            arm_add_f32(&Tb, &T2, &Tb, 1);
+            arm_add_f32(&T7_half, &T2, &Tc, 1);
+            break;
+        case 4:  // 扇区4：基本矢量V3(011)→V1(001)，导通顺序：C上→B下→C下→B上4
+            Ta = T7_half;
+            arm_add_f32(&T7_half, &T2, &Tb, 1);
+            arm_add_f32(&T7_half, &T1, &Tc, 1);
+            arm_add_f32(&Tc, &T2, &Tc, 1);
+            break;
+        case 5:  // 扇区5：基本矢量V1(001)→V5(101)，导通顺序：C上→A上→C下→A下6
+            arm_add_f32(&T7_half, &T2, &Ta, 1);
+            Tb = T7_half;
+            arm_add_f32(&T7_half, &T1, &Tc, 1);
+            arm_add_f32(&Tc, &T2, &Tc, 1);
+            break;
+        case 6:  // 扇区6：基本矢量V5(101)→V4(100)，导通顺序：A上→C下→A下→C上2
+            arm_add_f32(&T7_half, &T1, &Ta, 1);
+            arm_add_f32(&Ta, &T2, &Ta, 1);
+            Tb = T7_half;
+            arm_add_f32(&T7_half, &T2, &Tc, 1);
+            break;
+        default:  // 异常扇区：全用零矢量（避免电机失控）
+            Ta = T7_half;
+            Tb = T7_half;
+            Tc = T7_half;
+            break;
     }
 
-  // 反Park变换: dq -> alpha_beta
-  float32_t sin_val, cos_val;
-  arm_sin_cos_f32(foc_ctrl.angle * 180.0f / PI, &sin_val, &cos_val); // 转换为角度制
-  float32_t alpha, beta;
-  arm_inv_park_f32(foc_ctrl.u_d, foc_ctrl.u_q, &alpha, &beta, sin_val, cos_val);
+    // 导通时间→占空比（占空比 = 导通时间 / PWM周期）
+    float32_t freq = PWM_FREQ;
+    arm_mult_f32(&Ta, &freq, &duty_a, 1);
+    arm_mult_f32(&Tb, &freq, &duty_b, 1);
+    arm_mult_f32(&Tc, &freq, &duty_c, 1);
 
-  // 反Clark变换: alpha_beta -> abc
-  float32_t a, b;
-  arm_inv_clarke_f32(alpha, beta, &a, &b);
-  float32_t c = -a - b; // 第三个相位电压
+    /************************** 5. 占空比限幅（避免PWM输出异常） **************************/
+    // 限制占空比在0~1范围（超出会导致桥臂直通或PWM无输出）
+    duty_a = (duty_a > 1.0f) ? 1.0f : ((duty_a < 0.0f) ? 0.0f : duty_a);
+    duty_b = (duty_b > 1.0f) ? 1.0f : ((duty_b < 0.0f) ? 0.0f : duty_b);
+    duty_c = (duty_c > 1.0f) ? 1.0f : ((duty_c < 0.0f) ? 0.0f : duty_c);
 
-  // 电压转换为PWM占空比
-  // 归一化电压到占空比 (0-1)
-  duty_a = 0.5f + (a / foc_datav.vbus / 2.0f);
-  duty_b = 0.5f + (b / foc_datav.vbus / 2.0f);
-  duty_c = 0.5f + (c / foc_datav.vbus / 2.0f);
+    /************************** 6. 占空比→PWM定时器比较值 **************************/
+    // PWM_PERIOD为定时器自动重装值（例：16位定时器→65535）
+    uint16_t pwm_a = (uint16_t)(duty_a * PWM_PERIOD);
+    uint16_t pwm_b = (uint16_t)(duty_b * PWM_PERIOD);
+    uint16_t pwm_c = (uint16_t)(duty_c * PWM_PERIOD);
 
-  // 限制占空比范围在0-1之间
-  if (duty_a > 1.0f) duty_a = 1.0f;
-  if (duty_a < 0.0f) duty_a = 0.0f;
-  if (duty_b > 1.0f) duty_b = 1.0f;
-  if (duty_b < 0.0f) duty_b = 0.0f;
-  if (duty_c > 1.0f) duty_c = 1.0f;
-  if (duty_c < 0.0f) duty_c = 0.0f;
-
-  // 转换为定时器比较值
-  uint16_t pwm_a = (uint16_t)(duty_a * PWM_PERIOD);
-  uint16_t pwm_b = (uint16_t)(duty_b * PWM_PERIOD);
-  uint16_t pwm_c = (uint16_t)(duty_c * PWM_PERIOD);
-
-  // 设置PWM占空比
-  // bsp_pwm_set_duty(pwm_a, pwm_b, pwm_c);
+    // 输出PWM到定时器（需根据硬件实现底层驱动）
+    // bsp_pwm_set_duty(pwm_a, pwm_b, pwm_c);
 }

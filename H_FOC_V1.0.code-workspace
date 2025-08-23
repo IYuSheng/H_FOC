@@ -8,7 +8,8 @@
         "files.associations": {
             "arm_math.h": "c",
             "foc_control.h": "c",
-            "freertos.h": "c"
+            "freertos.h": "c",
+            "stm32f4xx.h": "c"
         }
     },
     "extensions": {}

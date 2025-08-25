@@ -140,9 +140,6 @@ void bsp_timer_init(void)
 
   // 使能TIM1
   TIM_Cmd(TIM1, ENABLE);
-  // TIM_SetCompare1(TIM1, 1000);
-  // TIM_SetCompare2(TIM1, 1000);
-  // TIM_SetCompare3(TIM1, 1000);
 }
 
 /**

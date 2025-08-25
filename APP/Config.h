@@ -2,14 +2,22 @@
 #define __CONFIG_H
 
 #include "stm32f4xx.h"
+#include <arm_math.h>
+
+// --------------------------- 模式选项 --------------------------
+#define DEBUG_MODE  0
 
 // -------------------------- 常用常量定义 --------------------------
 #define _PI         PI
 #define _2PI        (2.0f * PI)
+#define _60_angle   2.0f * PI / 6.0f  // 60度对应的弧度
 #define _SQRT3      1.732050807568877f
 #define _SQRT3_2    0.866025403784439f  // sqrt(3)/2
 #define _1_SQRT3    0.577350269189626f  // 1/sqrt(3)
 #define _2_SQRT3    1.154700538379252f  // 2/sqrt(3)
+#define SPEED_FACTOR (_2PI / 60.0f * MOTOR_POLE_PAIRS) // 速度转换系数 (机械转速rpm → 电角速度rad/s)
+#define RAD_TO_DEG  (180.0f / PI)
+#define FACTOR       _SQRT3 / PWM_FREQ  // SVPWM时间中间计算系数
 
 // -------------------------- 电源与硬件限制 --------------------------
 #define VOLTAGE_LIMIT        3.3f    // 直流母线电压限制 (V)
@@ -20,16 +28,16 @@
 #define VOLTAGE_AMPLITUDE_LIMIT    0.6f   // 输出电压限制(%),这里设置输出电压不能高于母线电压的60%
 
 // -------------------------- 电机参数 (根据实际电机填写) --------------------------
-#define MOTOR_POLE_PAIRS    7       // 电机极对数 (例如：14极电机为7对)
+#define MOTOR_POLE_PAIRS    15       // 电机极对数 (例如：14极电机为7对)
 #define MOTOR_RESISTANCE    0.5f    // 相电阻 (Ohm)，需实测或手册值
 #define MOTOR_INDUCTANCE    0.002f  // 相电感 (H)，需实测或手册值
 #define MAX_SPEED_RPM       3000    // 最大转速限制 (RPM)
 #define ENCODER_RESOLUTION  1024    // 编码器分辨率 (线数)
 
 // -------------------------- FOC控制参数 --------------------------
-#define CONTROL_LOOP_FREQ   1000   // 控制环频率 (Hz)，建议与PWM频率一致
-#define PWM_FREQ            1000.0f   // PWM频率 (Hz)，需与定时器配置匹配
-#define PWM_PERIOD_S      0.001f  // PWM周期（单位：s），与PWM_FREQ对应：T = 1/F
+#define PWM_FREQ            10000.0f   // PWM频率 (Hz)，需与定时器配置匹配
+#define HALF_PWM_FREQ       PWM_FREQ * 0.5f   // PWM频率 (Hz)，需与定时器配置匹配
+#define PWM_PERIOD_S        1.0f / PWM_FREQ  // PWM周期（单位：s），与PWM_FREQ对应：T = 1/F
 #define SVPWM_VOLT_COEF   (2.0f / sqrtf(3.0f)) // SVPWM基本矢量幅值系数（母线电压相关，固定值）
 
 // PI调节器参数 (初始值，需根据电机调试优化)

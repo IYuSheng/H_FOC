@@ -9,6 +9,7 @@
 #include "task.h"
 #include "bsp_adc.h"
 #include "foc_debug.h"
+#include "foc_encoder.h"
 #include "Config.h"
 
 // 外部声明采集电压

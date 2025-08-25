@@ -7,7 +7,6 @@
  */
 inline float32_t angle_normalize(float32_t angle)
 {
-    // 使用fmodf函数优化角度归一化
     angle = fmodf(angle, _2PI);
     if (angle < 0.0f) angle += _2PI;
     return angle;
@@ -21,15 +20,15 @@ inline float32_t angle_normalize(float32_t angle)
  */
 inline uint8_t svpwm_sector_calc(float32_t u_alpha, float32_t u_beta)
 {
-    uint8_t sector = 0;
+    uint8_t sector, pos1, pos2, pos3 = 0;
     
-    float32_t v_ref1 = u_beta;
-    float32_t v_ref2 = (_SQRT3  * u_alpha - u_beta) / 2.0f;
-    float32_t v_ref3 = (-_SQRT3 * u_alpha - u_beta) / 2.0f;
+    float32_t X = u_beta;
+    float32_t Y = (_SQRT3  * u_alpha - u_beta);
+    float32_t Z = (-_SQRT3 * u_alpha - u_beta);
     
-    uint8_t pos1 = (v_ref1 > 1e-6f) ? 1 : 0;
-    uint8_t pos2 = (v_ref2 > 1e-6f) ? 1 : 0;
-    uint8_t pos3 = (v_ref3 > 1e-6f) ? 1 : 0;
+    pos1 = (X > 1e-6f) ? 1 : 0;
+    pos2 = (Y > 1e-6f) ? 1 : 0;
+    pos3 = (Z > 1e-6f) ? 1 : 0;
 
     sector = pos1 * 1 + pos2 * 2 + pos3 * 4;
 
@@ -80,50 +79,50 @@ inline void svpwm_calc_times(int32_t sector, float32_t u_alpha, float32_t u_beta
     }
     
     // 3. 计算与扇区判断完全一致的中间变量
-    float32_t factor = _SQRT3 * PWM_PERIOD_S / vdc;
-    float32_t v_ref1, v_ref2, v_ref3;
+    float32_t factor = FACTOR / vdc;
+    float32_t half_factor = factor * 0.5f;
+    float32_t X, Y, Z;
     
-    // 使用DSP函数进行计算
-    arm_scale_f32(&u_beta, factor, &v_ref1, 1);
-    
+    // X
+    arm_scale_f32(&u_beta, factor, &X, 1);
+    // Y
     float32_t temp1, temp2;
     float32_t sqrt3_const = _SQRT3;
     arm_scale_f32(&sqrt3_const, u_alpha, &temp1, 1);
     arm_add_f32(&temp1, &u_beta, &temp2, 1);
-    float32_t half_factor = factor / 2.0f;
-    arm_scale_f32(&temp2, half_factor, &v_ref2, 1);
-    
+    arm_scale_f32(&temp2, half_factor, &Y, 1);
+    // Z
     arm_scale_f32(&sqrt3_const, u_alpha, &temp1, 1);
     arm_sub_f32(&temp1, &u_beta, &temp2, 1);
-    arm_scale_f32(&temp2, half_factor, &v_ref3, 1);
-    arm_negate_f32(&v_ref3, &v_ref3, 1); // 取负值
+    arm_scale_f32(&temp2, half_factor, &Z, 1);
+    arm_negate_f32(&Z, &Z, 1); // 取负值
     
-    // 4. 按扇区计算T1和T2（基于v_ref1/v_ref2/v_ref3）
+    // 4. 按扇区计算T1和T2（基于X/Y/Z）
     switch (sector)
     {
-        case 1:  // 扇区1：V4(100) + V6(110) → T1=v_ref2, T2=v_ref1 3
-            *T1 = -v_ref3;
-            *T2 = v_ref1;
+        case 1:  // 扇区1：V4(100) + V6(110) → T1=Y, T2=X 3
+            *T1 = -Z;
+            *T2 = X;
             break;
-        case 2:  // 扇区2：V6(110) + V2(010) → T1=v_ref1, T2=-v_ref3 1
-            *T1 = v_ref3;
-            *T2 = v_ref2;
+        case 2:  // 扇区2：V6(110) + V2(010) → T1=X, T2=-Z 1
+            *T1 = Z;
+            *T2 = Y;
             break;
-        case 3:  // 扇区3：V2(010) + V3(011) → T1=-v_ref3, T2=-v_ref2 5
-            *T1 = v_ref1;
-            *T2 = -v_ref2;
+        case 3:  // 扇区3：V2(010) + V3(011) → T1=-Z, T2=-Y 5
+            *T1 = X;
+            *T2 = -Y;
             break;
-        case 4:  // 扇区4：V3(011) + V1(001) → T1=-v_ref2, T2=-v_ref1 4
-            *T1 = -v_ref1;
-            *T2 = v_ref3;
+        case 4:  // 扇区4：V3(011) + V1(001) → T1=-Y, T2=-X 4
+            *T1 = -X;
+            *T2 = Z;
             break;
-        case 5:  // 扇区5：V1(001) + V5(101) → T1=-v_ref1, T2=v_ref3 6
-            *T1 = -v_ref2;
-            *T2 = -v_ref3;
+        case 5:  // 扇区5：V1(001) + V5(101) → T1=-X, T2=Z 6
+            *T1 = -Y;
+            *T2 = -Z;
             break;
-        case 6:  // 扇区6：V5(101) + V4(100) → T1=v_ref3, T2=v_ref2 2
-            *T1 = v_ref2;
-            *T2 = -v_ref1;
+        case 6:  // 扇区6：V5(101) + V4(100) → T1=Z, T2=Y 2
+            *T1 = Y;
+            *T2 = -X;
             break;
         default:
             *T1 = 0.0f;
@@ -135,7 +134,6 @@ inline void svpwm_calc_times(int32_t sector, float32_t u_alpha, float32_t u_beta
     float32_t t1_t2_sum;
     arm_add_f32(T1, T2, &t1_t2_sum, 1);
     *T0 = PWM_PERIOD_S - t1_t2_sum;
-    if (*T0 < 0.0f) *T0 = 0.0f; // 增加保护，防止T1+T2超出周期
 }
 
 /**

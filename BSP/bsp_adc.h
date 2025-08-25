@@ -82,6 +82,9 @@ typedef enum
   i_mode = 1
 } foc_mode;
 
+// 采集电压及母线电压结构体
+extern foc_data_v foc_datav;
+
 // 函数声明
 void bsp_adc_init(void);
 uint8_t bsp_adc_process_data(void);

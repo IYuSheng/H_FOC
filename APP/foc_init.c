@@ -13,6 +13,7 @@ void foc_bsp_init(void)
   NVIC_SetPriorityGrouping(NVIC_PriorityGroup_4);
 
   bsp_gpio_init();
+  bsp_hall_gpio_init();
   bsp_uart_init();
   bsp_adc_init();
   bsp_timer_init();
@@ -23,6 +24,7 @@ void foc_bsp_init(void)
 void foc_app_init(void)
 {
   led_init();
+  foc_encoder_init();
   debug_init();
   foc_gather_init();
   foc_control_init();

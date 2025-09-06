@@ -6,6 +6,7 @@
 #include "task.h"
 #include "Config.h"
 #include "foc_debug.h"
+#include "bsp_timer.h"
 
 // HALL传感器引脚定义
 #define HALL_A_PIN GPIO_Pin_6

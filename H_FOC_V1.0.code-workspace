@@ -9,7 +9,11 @@
             "arm_math.h": "c",
             "foc_control.h": "c",
             "freertos.h": "c",
-            "stm32f4xx.h": "c"
+            "stm32f4xx.h": "c",
+            "foc_gather.h": "c",
+            "foc_debug.h": "c",
+            "config.h": "c",
+            "foc_conversion.h": "c"
         }
     },
     "extensions": {}

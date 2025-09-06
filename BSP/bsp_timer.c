@@ -1,6 +1,11 @@
 #include "bsp_timer.h"
 
 uint32_t TIM1_Clock;
+uint32_t TIM2_Clock;
+
+// 时间戳变量
+static volatile uint32_t timestamp_ms = 0;
+static volatile uint32_t timestamp_us = 0;
 
 /**
  * @brief 初始化TIM1高级定时器输出互补PWM波
@@ -127,7 +132,7 @@ void bsp_timer_init(void)
   // 配置NVIC
   NVIC_InitTypeDef NVIC_InitStructure;
   NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // 高优先级
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 高优先级
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -138,8 +143,49 @@ void bsp_timer_init(void)
   // 使能TIM1主输出
   TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
+  // TIM_SetCompare1(TIM1, 1000);
+
   // 使能TIM1
   TIM_Cmd(TIM1, ENABLE);
+}
+
+/**
+ * @brief 初始化TIM2提供微秒级时间戳
+ */
+void bsp_timestamp_init(void)
+{
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    
+    // 使能TIM2时钟
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    
+    // 获取TIM2时钟频率
+    RCC_ClocksTypeDef RCC_Clocks;
+    RCC_GetClocksFreq(&RCC_Clocks);
+    if (RCC_Clocks.PCLK1_Frequency < SystemCoreClock / 2) {
+        TIM2_Clock = 2 * RCC_Clocks.PCLK1_Frequency;
+    } else {
+        TIM2_Clock = RCC_Clocks.PCLK1_Frequency;
+    }
+    
+    // TIM2配置：10kHz计数频率，向上计数模式
+    TIM_TimeBaseStructure.TIM_Prescaler = (TIM2_Clock / 10000) - 1; // 10kHz计数频率，100us计数一次
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseStructure.TIM_Period = 0xFFFFFFFF; // 最大计数值
+    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+    
+    // 启动TIM2
+    TIM_Cmd(TIM2, ENABLE);
+}
+
+/**
+ * @brief 获取微秒级时间戳
+ * @return 当前时间戳(100微秒)
+ */
+uint32_t bsp_get_micros(void)
+{
+    return TIM_GetCounter(TIM2);
 }
 
 /**
@@ -186,7 +232,14 @@ void TIM1_UP_TIM10_IRQHandler(void)
     if ((TIM1->CR1 & TIM_CR1_DIR) == TIM_CR1_DIR) // DIR=1：向下计数
     {
       // 此时对应PWM占空比为0，且ADC注入组采集（通道4触发）已完成
-      foc_open_loop_control();
+      // FOC速度开环
+      // foc_open_loop_control();
+      // FOC位置闭环
+      // foc_position_control();
+      // FOC电流闭环
+      // foc_current_control();
+      // FOC速度闭环
+      foc_speed_control();
     }
   }
 }

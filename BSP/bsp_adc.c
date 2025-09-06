@@ -168,6 +168,8 @@ void ADC_IRQHandler(void)
     foc_raw_data.ib = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
     foc_raw_data.ic = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
 
+    // debug_log("%d, %d, %d", foc_raw_data.ia, foc_raw_data.ib, foc_raw_data.ic);
+
     // 应用电流滤波
     adc_apply_filter(i_mode);
 
@@ -176,11 +178,13 @@ void ADC_IRQHandler(void)
     float32_t ia_offset = (float32_t)adc_calib.ia_offset;
     float32_t ib_offset = (float32_t)adc_calib.ib_offset;
     float32_t ic_offset = (float32_t)adc_calib.ic_offset;
+    // debug_log("%.2f,%.2f,%.2f", ia_offset, ib_offset, ic_offset);
     
-    // 2. 使用DSP库函数执行减法：校准值 = 滤波值 - 偏移量
-    arm_sub_f32(&foc_datai.ia, &ia_offset, &foc_datai.ia, 1);
-    arm_sub_f32(&foc_datai.ib, &ib_offset, &foc_datai.ib, 1);
-    arm_sub_f32(&foc_datai.ic, &ic_offset, &foc_datai.ic, 1);
+    // 2. 使用DSP库函数执行减法：校准值 = 偏移量 - 滤波值(由硬件决定，采集到的电流方向应取反，最终采集值为流向电机的电流)
+    arm_sub_f32(&ia_offset, &foc_datai.ia, &foc_datai.ia, 1);
+    arm_sub_f32(&ib_offset, &foc_datai.ib, &foc_datai.ib, 1);
+    arm_sub_f32(&ic_offset, &foc_datai.ic, &foc_datai.ic, 1);
+    // debug_log("%.2f,%.2f,%.2f", foc_datai.ia, foc_datai.ia, foc_datai.ia);
 
     // 3. 使用DSP库函数执行乘法：最终值 = 校准值 * 转换系数
     arm_mult_f32(&foc_datai.ia, &I_tran, &foc_datai.ia, 1);
@@ -226,9 +230,9 @@ void bsp_adc_init_calibration(void)
   ADC_Init(ADC1, &ADC_InitStructure);
   
   // 配置规则组通道（电流）
-  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_144Cycles);
+  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_56Cycles);
+  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_56Cycles);
+  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_56Cycles);
   
   // 禁用注入组（确保不会干扰）
   ADC_InjectedSequencerLengthConfig(ADC1, 0);
@@ -307,9 +311,9 @@ void bsp_adc_init(void)
   // 注入组通道数：3个电流通道
   ADC_InjectedSequencerLengthConfig(ADC1, INJ_CHANNELS);
   // 配置注入组通道（电流）
-  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_15Cycles);
-  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_15Cycles);
-  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_15Cycles);
+  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_56Cycles);
+  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_56Cycles);
+  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_56Cycles);
   // 注入组触发源：TIM1 TRGO（更新事件）
   ADC_ExternalTrigInjectedConvConfig(ADC1, ADC_ExternalTrigInjecConv_T1_TRGO);
   ADC_ExternalTrigInjectedConvEdgeConfig(ADC1, ADC_ExternalTrigInjecConvEdge_Rising);  // 上升沿触发
@@ -414,6 +418,17 @@ void bsp_adc_calib_current_offset(void)
   // 采样多次取平均作为零点偏移
   int32_t ia_sum = 0, ib_sum = 0, ic_sum = 0;
   const uint16_t calib_count = 1000;
+
+  // 廞弃前几个采样值让系统稳定
+  for (uint16_t i = 0; i < 100; i++)
+  {
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    ADC_GetConversionValue(ADC1);
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    ADC_GetConversionValue(ADC1);
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    ADC_GetConversionValue(ADC1);
+  }
   
   for (uint16_t i = 0; i < calib_count; i++)
   {

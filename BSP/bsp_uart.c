@@ -27,7 +27,7 @@ void bsp_uart_dma_init(void)
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; // 外设数据宽度为字节
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;     // 内存数据宽度为字节
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                       // 正常模式
-  DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;               // 中等优先级
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;               // 中等优先级
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;              // 不使用FIFO
   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
@@ -35,7 +35,7 @@ void bsp_uart_dma_init(void)
   DMA_Init(DMA1_Stream3, &DMA_InitStructure);
 
   // 配置DMA中断
-  NVIC->IP[DMA1_Stream3_IRQn] = 6 << 4;  // 抢占优先级 6（4 位），子优先级 0（0 位）
+  NVIC->IP[DMA1_Stream3_IRQn] = 8 << 4;  // 抢占优先级 6（4 位），子优先级 0（0 位）
   NVIC_EnableIRQ(DMA1_Stream3_IRQn);
 
   // 使能DMA传输完成中断

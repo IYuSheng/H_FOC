@@ -11,6 +11,7 @@
 #include "foc_debug.h"
 #include "foc_encoder.h"
 #include "Config.h"
+#include "bsp_timer.h"
 
 // 外部声明采集电压
 

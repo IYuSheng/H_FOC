@@ -31,6 +31,8 @@ extern uint32_t TIM1_Clock; // 84MHz
 
 // 函数声明
 void bsp_timer_init(void);
+void bsp_timestamp_init(void);
+uint32_t bsp_get_micros(void);
 void bsp_pwm_set_duty(uint16_t ha_duty, uint16_t hb_duty, uint16_t hc_duty);
 void bsp_pwm_enable(void);
 void bsp_pwm_disable(void);

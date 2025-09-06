@@ -5,23 +5,25 @@
 #include <arm_math.h>
 
 // --------------------------- 模式选项 --------------------------
-#define DEBUG_MODE  0
+#define DEBUG_MODE  1     // 打开仿真波形打印
 
 // -------------------------- 常用常量定义 --------------------------
 #define _PI         PI
 #define _2PI        (2.0f * PI)
+#define _2_PI       1.0f / (2.0f * PI)
 #define _60_angle   2.0f * PI / 6.0f  // 60度对应的弧度
 #define _SQRT3      1.732050807568877f
 #define _SQRT3_2    0.866025403784439f  // sqrt(3)/2
 #define _1_SQRT3    0.577350269189626f  // 1/sqrt(3)
 #define _2_SQRT3    1.154700538379252f  // 2/sqrt(3)
+#define RPM_TO_PI   _2PI / 60.0f        // RPM转换为弧度系数 (RPM * 2*PI / 60)
 #define SPEED_FACTOR (_2PI / 60.0f * MOTOR_POLE_PAIRS) // 速度转换系数 (机械转速rpm → 电角速度rad/s)
 #define RAD_TO_DEG  (180.0f / PI)
 #define FACTOR       _SQRT3 / PWM_FREQ  // SVPWM时间中间计算系数
 
 // -------------------------- 电源与硬件限制 --------------------------
 #define VOLTAGE_LIMIT        3.3f    // 直流母线电压限制 (V)
-#define CURRENT_LIMIT        1.0f    // 最大相电流限制 (A)
+#define CURRENT_LIMIT        3.0f    // 最大相电流限制 (A)
 #define OVER_CURRENT_THRESH  0.6f    // 过流保护阈值 (A)，需大于CURRENT_LIMIT
 #define OVER_VOLTAGE_THRESH  3.6f    // 过压保护阈值 (V)
 #define UNDER_VOLTAGE_THRESH 2.8f   // 欠压保护阈值 (V)
@@ -31,7 +33,7 @@
 #define MOTOR_POLE_PAIRS    15       // 电机极对数 (例如：14极电机为7对)
 #define MOTOR_RESISTANCE    0.5f    // 相电阻 (Ohm)，需实测或手册值
 #define MOTOR_INDUCTANCE    0.002f  // 相电感 (H)，需实测或手册值
-#define MAX_SPEED_RPM       3000    // 最大转速限制 (RPM)
+#define MAX_SPEED_RPM       10    // 最大转速限制 (RPM)
 #define ENCODER_RESOLUTION  1024    // 编码器分辨率 (线数)
 
 // -------------------------- FOC控制参数 --------------------------

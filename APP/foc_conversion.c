@@ -1,5 +1,67 @@
 #include "foc_conversion.h"
 
+position_pid_t position_pid = {0};
+
+/**
+ * @brief 初始化位置环PI控制器
+ * @param kp 比例增益
+ * @param ki 积分增益
+ * @param integral_limit 积分限幅值
+ */
+void foc_position_pid_init(float32_t kp, float32_t ki, float32_t integral_limit)
+{
+    position_pid.kp = kp;
+    position_pid.ki = ki;
+    position_pid.integral_limit = integral_limit;
+    position_pid.integral = 0.0f;
+    position_pid.error = 0.0f;
+    position_pid.output = 0.0f;
+    position_pid.target = 0.0f;
+    position_pid.current = 0.0f;
+}
+
+/**
+ * @brief 位置环PI控制器计算
+ * @param target_position 目标位置（弧度）
+ * @param current_position 当前位置（弧度）
+ * @return PI控制器输出（速度指令，rad/s）
+ */
+float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position)
+{
+    float32_t error, p_term;
+    
+    position_pid.target = target_position;
+    position_pid.current = current_position;
+    
+    // 计算误差（目标 - 当前）
+    error = target_position - current_position;
+    if(fabsf(error) < 0.01f)
+    {
+        // 在死区内，清零输出和积分
+        position_pid.integral = 0.0f;
+        error = 0.0f; // 死区处理
+    }
+    position_pid.error = error;
+    
+    // 比例项
+    p_term = position_pid.kp * error;
+    
+    // 积分项累加
+    position_pid.integral += position_pid.ki * error;
+    
+    // 积分限幅
+    if (position_pid.integral > position_pid.integral_limit) {
+        position_pid.integral = position_pid.integral_limit;
+    } else if (position_pid.integral < -position_pid.integral_limit) {
+        position_pid.integral = -position_pid.integral_limit;
+    }
+    
+    // 输出 = 比例项 + 积分项
+    position_pid.output = p_term + position_pid.integral;
+    
+    return position_pid.output;
+}
+
 /**
  * @brief 电角度归一化（映射到0~2π范围）
  * @param angle 输入电角度（rad，范围无限制）

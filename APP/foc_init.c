@@ -15,8 +15,9 @@ void foc_bsp_init(void)
   bsp_gpio_init();
   bsp_hall_gpio_init();
   bsp_uart_init();
-  bsp_adc_init();
   bsp_timer_init();
+  bsp_timestamp_init();
+  bsp_adc_init();
 
   debug_log("foc_bsp_init complete");
 }

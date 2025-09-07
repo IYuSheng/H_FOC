@@ -220,6 +220,9 @@ void bsp_pwm_disable(void)
   TIM_SetCompare3(TIM1, 0);
 }
 
+extern float g_speed_rpm;
+static volatile uint8_t state = 0;
+
 // 中断服务程序
 void TIM1_UP_TIM10_IRQHandler(void)
 {
@@ -239,7 +242,16 @@ void TIM1_UP_TIM10_IRQHandler(void)
       // FOC电流闭环
       // foc_current_control();
       // FOC速度闭环
-      foc_speed_control();
+      // foc_speed_control();
+      if(g_speed_rpm < 60.0f && state == 0)
+      {
+        foc_open_loop_control();
+        state = 1;
+      }
+      else
+      {
+        foc_current_control();
+      }
     }
   }
 }

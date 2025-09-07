@@ -91,5 +91,9 @@ uint8_t bsp_adc_process_data(void);
 foc_data_t bsp_adc_get_RAW_Data(void);
 foc_data_v bsp_adc_get_calib_data(void);
 void bsp_adc_calib_current_offset(void);
+float32_t bsp_adc_calculate_bemf_angle(float32_t ia, float32_t ib, float32_t ic,
+                                       float32_t va, float32_t vb, float32_t vc,
+                                       float32_t dt);
+void bsp_adc_get_bemf(float32_t* alpha, float32_t* beta);
 
 #endif /* __BSP_ADC_H */

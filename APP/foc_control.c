@@ -8,6 +8,9 @@ float32_t duty_c;
 foc_control_t foc_ctrl;
 DQTypeDef current_dq;
 
+static volatile float g_speed_angle = 0.0f;
+uint8_t current_hall = 0;               // 当前霍尔状态
+
 // 电流PID控制器
 static position_pid_t id_pid;
 static position_pid_t iq_pid;
@@ -21,6 +24,7 @@ extern float g_speed_rpm;
 extern float g_total_angle;
 extern float g_total_rotations;
 extern float g_angle;
+extern float32_t bemf_angle;
 
 void foc_control_init(void);
 void foc_open_loop_control(void);
@@ -41,8 +45,9 @@ void vFOCControlTask(void *pvParameters)
   xLastWakeTime = xTaskGetTickCount();
 
   // 140大约5码
-  float32_t new_target_speed = 130.0f;
-//   foc_ctrl.target_q = 1.0f;
+  float32_t new_target_speed = 60.0f;
+  foc_ctrl.target_q = 3.0f;
+  foc_ctrl.u_q = 3.0f;
 //   float32_t target_position = 6.28f;  // 目标位置（弧度）
 
   // 初始化位置环PI参数
@@ -51,23 +56,23 @@ void vFOCControlTask(void *pvParameters)
   // 初始化电流环PI参数
   foc_current_pid_init(0.6f, 0.04f, 8.0f);
 
-  // 初始化速度环PI参数
-  foc_speed_pid_init(0.1f, 0.00001f, 2.0f);
+//   // 初始化速度环PI参数
+//   foc_speed_pid_init(0.1f, 0.00001f, 2.0f);
 
   // 设置FOC控制初始参数
   foc_control_set_params(NULL, NULL, NULL, NULL, &new_target_speed, NULL);
 
-
   for (;;)
     {
     //   abc_to_dq_current(&foc_datai, &current_dq, foc_ctrl.angle);
-      debug_printf("%.4f,%.4f,%.4f,%.4f", new_target_speed, current_dq.q, foc_ctrl.u_q,g_speed_rpm);
+    //   debug_printf("%.4f,%.4f,%.4f,%.4f", new_target_speed, current_dq.q, foc_ctrl.u_q,g_speed_rpm);
     //   debug_printf("%.4f,%.4f,%.4f,%.4f,%.4f", foc_ctrl.target_q, current_dq.d, current_dq.q, foc_ctrl.u_d, foc_ctrl.u_q);
 
+    debug_printf("%.4f,%.4f,%.4f", bemf_angle, g_speed_angle, g_speed_rpm);
       #if DEBUG_MODE
       // 最大合成的为母线电压的0.577倍
     //   debug_printf("%.4f,%.4f,%.4f", duty_a, duty_b, duty_c);
-      // debug_printf("%.4f", foc_datav.vbus);
+    //   debug_printf("%.4f", foc_datav.vbus);
       #endif
 
       // 按固定频率延迟
@@ -264,6 +269,7 @@ void foc_open_loop_control(void)
     static float32_t angle_accum = 0.0f;  // 电角度累加器（保持积分状态）
     float32_t T1, T2, T0;                 // SVPWM作用时间（T1：基本矢量1，T2：基本矢量2，T0：零矢量）
     float32_t Ta, Tb, Tc;                 // 三相桥臂导通时间（s）
+    static uint8_t last_hall_state = 0;      // 上次霍尔状态
 
     /************************** 1. 开环电角度计算 **************************/
     // 机械转速 → 电角度速度（rad/s）：ω_e = 2π * (n_rpm / 60) * 极对数
@@ -271,9 +277,16 @@ void foc_open_loop_control(void)
 
     // 积分更新电角度：θ = θ + ω_e * 控制周期（控制周期 = 1/CONTROL_LOOP_FREQ）
     float32_t ctrl_period = PWM_PERIOD_S;
-    angle_accum += foc_ctrl.speed * ctrl_period;
+    angle_accum += foc_ctrl.speed * ctrl_period * 0.5f;
     angle_accum = angle_normalize(angle_accum);
     foc_ctrl.angle = angle_accum;
+
+    current_hall = hall_sensor_read();
+    if(current_hall != last_hall_state)
+    {
+        g_speed_angle = foc_ctrl.angle;
+    }
+    last_hall_state = current_hall;
 
     /************************** 2. 反Park变换（DQ→αβ） **************************/
     float32_t sin_theta, cos_theta;
@@ -489,7 +502,8 @@ void foc_current_control(void)
     g_angle = hall_update_position_and_speed(bsp_get_micros());
 
     // 获取电角度(弧度值)
-    foc_ctrl.angle = g_angle;
+    // foc_ctrl.angle = 0.1f * bemf_angle + 0.9f * g_angle;
+    foc_ctrl.angle = bemf_angle;
 
     // 将ABC坐标系电流转换为DQ坐标系电流
     abc_to_dq_current(&foc_datai, &current_dq, foc_ctrl.angle);

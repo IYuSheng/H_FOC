@@ -3,18 +3,6 @@
 // 一阶低通滤波参数 (α值越小，滤波效果越强，响应越慢)
 #define LOWPASS_ALPHA     0.5f
 
-// HALL传感器电角度查找表 (单位: 弧度)
-const float hall_elec_angle_table[8] = {
-    0.0f,                    // 000-无效
-    1.5708f,                 // 001-90°（π/2）
-    3.6652f,                 // 010-210°（7π/6）
-    2.6180f,                 // 011-150°（5π/6）
-    5.7596f,                 // 100-330°（11π/6）
-    0.5236f,                 // 101-30°（π/6）
-    4.7124f,                 // 110-270°（3π/2）
-    0.0f                     // 111-无效
-};
-
 // HALL传感器电角度查找表 (单位: 弧度) - 精确值
 const float hall_elec_angle_precise[8] = {
     0.0f,                    // 000-无效
@@ -301,12 +289,4 @@ float hall_get_total_rotations(void)
 {
     // 一圈为2*PI弧度
     return hall_total_mechanical_angle / (2.0f * _PI);
-}
-
-/**
- * @brief 重置累计计数
- */
-void hall_reset_counts(void)
-{
-    hall_total_mechanical_angle = 0.0f;
 }

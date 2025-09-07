@@ -9,6 +9,7 @@ float g_speed_rpm = 0.0f;
 float g_total_angle = 0.0f;
 float g_total_rotations = 0.0f;
 float g_angle = 0.0f;
+float32_t bemf_angle;
 void foc_gather_init(void)
 {
 
@@ -44,11 +45,17 @@ void vGatherProcessTask(void *pvParameters)
       
       // 更新位置和速度计算，使用100us时间戳
       g_angle = hall_update_position_and_speed(bsp_get_micros());
+
+      bemf_angle = bsp_adc_calculate_bemf_angle(
+          foc_datai.ia, foc_datai.ib, foc_datai.ic,
+          foc_datav.va, foc_datav.vb, foc_datav.vc,
+          0.001f);
+      // debug_printf("%.4f", bemf_angle);
       
       // 获取速度和位置信息
       g_speed_rpm  = hall_get_speed_rpm();
-      g_total_angle  = hall_get_total_mechanical_angle();
-      g_total_rotations  = hall_get_total_rotations();
+      // g_total_angle  = hall_get_total_mechanical_angle();
+      // g_total_rotations  = hall_get_total_rotations();
       
       // 打印HALL状态、电角度、速度和位置信息
       // debug_printf("%.6f,%.6f,%.2f", 

@@ -31,8 +31,8 @@
 
 // -------------------------- 电机参数 (根据实际电机填写) --------------------------
 #define MOTOR_POLE_PAIRS    15       // 电机极对数 (例如：14极电机为7对)
-#define MOTOR_RESISTANCE    0.5f    // 相电阻 (Ohm)，需实测或手册值
-#define MOTOR_INDUCTANCE    0.002f  // 相电感 (H)，需实测或手册值
+#define MOTOR_RESISTANCE    0.16595f    // 相电阻 (欧姆)，需实测或手册值
+#define MOTOR_INDUCTANCE    0.0003937f  // 相电感 (H)，需实测或手册值
 #define MAX_SPEED_RPM       10    // 最大转速限制 (RPM)
 #define ENCODER_RESOLUTION  1024    // 编码器分辨率 (线数)
 

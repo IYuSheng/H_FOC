@@ -1,15 +1,12 @@
 #include "foc_gather.h"
 
-extern foc_data_t foc_raw_data;
-extern foc_data_i foc_datai;
-extern foc_data_v foc_datav;
-
 // 全局变量，用于在任务间共享位置和速度信息
-float g_speed_rpm = 0.0f;
-float g_total_angle = 0.0f;
-float g_total_rotations = 0.0f;
-float g_angle = 0.0f;
-float32_t bemf_angle;
+float32_t g_speed_rpm = 0.0f;
+float32_t g_total_angle = 0.0f;
+float32_t g_total_rotations = 0.0f;
+float32_t g_angle = 0.0f;
+float32_t bemf_angle = 0.0f;
+float32_t bemf_speed = 0.0f;
 void foc_gather_init(void)
 {
 
@@ -38,7 +35,6 @@ void vGatherProcessTask(void *pvParameters)
       //                foc_datai.ia, foc_datai.ib, foc_datai.ic);
       
       // debug_printf("%.4f,%.4f,%.4f",foc_datai.ia, foc_datai.ib, foc_datai.ic);
-
       }
 
 // --------------------------------------------------------------------------------------------------------------//
@@ -49,13 +45,12 @@ void vGatherProcessTask(void *pvParameters)
       bemf_angle = bsp_adc_calculate_bemf_angle(
           foc_datai.ia, foc_datai.ib, foc_datai.ic,
           foc_datav.va, foc_datav.vb, foc_datav.vc,
-          0.001f);
-      // debug_printf("%.4f", bemf_angle);
+          bsp_get_micros());
       
       // 获取速度和位置信息
       g_speed_rpm  = hall_get_speed_rpm();
-      // g_total_angle  = hall_get_total_mechanical_angle();
-      // g_total_rotations  = hall_get_total_rotations();
+      bemf_speed = bsp_adc_get_bemf_speed_rpm();
+      // debug_printf("%.4f,%.4f", bemf_speed, g_speed_rpm);
       
       // 打印HALL状态、电角度、速度和位置信息
       // debug_printf("%.6f,%.6f,%.2f", 

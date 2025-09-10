@@ -1,66 +1,9 @@
 #include "foc_conversion.h"
 
-position_pid_t position_pid = {0};
-
-/**
- * @brief 初始化位置环PI控制器
- * @param kp 比例增益
- * @param ki 积分增益
- * @param integral_limit 积分限幅值
- */
-void foc_position_pid_init(float32_t kp, float32_t ki, float32_t integral_limit)
-{
-    position_pid.kp = kp;
-    position_pid.ki = ki;
-    position_pid.integral_limit = integral_limit;
-    position_pid.integral = 0.0f;
-    position_pid.error = 0.0f;
-    position_pid.output = 0.0f;
-    position_pid.target = 0.0f;
-    position_pid.current = 0.0f;
-}
-
-/**
- * @brief 位置环PI控制器计算
- * @param target_position 目标位置（弧度）
- * @param current_position 当前位置（弧度）
- * @return PI控制器输出（速度指令，rad/s）
- */
-float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position)
-{
-    float32_t error, p_term;
-    
-    position_pid.target = target_position;
-    position_pid.current = current_position;
-    
-    // 计算误差（目标 - 当前）
-    error = target_position - current_position;
-    if(fabsf(error) < 0.01f)
-    {
-        // 在死区内，清零输出和积分
-        position_pid.integral = 0.0f;
-        error = 0.0f; // 死区处理
-    }
-    position_pid.error = error;
-    
-    // 比例项
-    p_term = position_pid.kp * error;
-    
-    // 积分项累加
-    position_pid.integral += position_pid.ki * error;
-    
-    // 积分限幅
-    if (position_pid.integral > position_pid.integral_limit) {
-        position_pid.integral = position_pid.integral_limit;
-    } else if (position_pid.integral < -position_pid.integral_limit) {
-        position_pid.integral = -position_pid.integral_limit;
-    }
-    
-    // 输出 = 比例项 + 积分项
-    position_pid.output = p_term + position_pid.integral;
-    
-    return position_pid.output;
-}
+position_pid_t position_pid;
+position_pid_t id_pid;
+position_pid_t iq_pid;
+position_pid_t speed_pid;
 
 /**
  * @brief 电角度归一化（映射到0~2π范围）
@@ -199,73 +142,226 @@ inline void svpwm_calc_times(int32_t sector, float32_t u_alpha, float32_t u_beta
 }
 
 /**
- * @brief Clark变换 (从三相坐标系转换到两相静止坐标系)
- * @param abc 输入的三相值 (a, b, c)
- * @param alpha_beta 输出的两相静止坐标系值 (alpha, beta)
+ * @brief SVPWM计算三相导通时间并转换为占空比
+ * @param sector 当前扇区 (1-6)
+ * @param T1 基本矢量1作用时间
+ * @param T2 基本矢量2作用时间
+ * @param T0 零矢量作用时间
+ * @param duty_a A相占空比指针
+ * @param duty_b B相占空比指针
+ * @param duty_c C相占空比指针
  */
-void clark_transform(ABCTypeDef *abc, AlphaBetaTypeDef *alpha_beta)
+inline void svpwm_duty_calc(int32_t sector, float32_t T1, float32_t T2, float32_t T0, 
+                     float32_t* duty_a, float32_t* duty_b, float32_t* duty_c)
 {
-  // Clarke变换 - 等幅变换 (功率不变)
-  // alpha = (2*a - b - c) / 3
-  // beta  = (b - c) / sqrt(3)
-  alpha_beta->alpha = (2.0f * abc->a - abc->b - abc->c) * 0.33333333333f;
-  alpha_beta->beta  = (abc->b - abc->c) * _1_SQRT3;
+    float32_t Ta, Tb, Tc;                 // 三相桥臂导通时间（s）
+    float32_t T0_half = T0 / 2.0f;
+
+    // 按扇区计算三相导通时间
+    switch (sector)
+    {
+        case 1:  // 扇区1
+            Ta = T0_half + T1 + T2;
+            Tb = T0_half + T2;
+            Tc = T0_half;
+            break;
+        case 2:  // 扇区2
+            Ta = T0_half + T2;
+            Tb = T0_half + T1 + T2;
+            Tc = T0_half;
+            break;
+        case 3:  // 扇区3
+            Ta = T0_half;
+            Tb = T0_half + T1 + T2;
+            Tc = T0_half + T2;
+            break;
+        case 4:  // 扇区4
+            Ta = T0_half;
+            Tb = T0_half + T2;
+            Tc = T0_half + T1 + T2;
+            break;
+        case 5:  // 扇区5
+            Ta = T0_half + T2;
+            Tb = T0_half;
+            Tc = T0_half + T1 + T2;
+            break;
+        case 6:  // 扇区6
+            Ta = T0_half + T1 + T2;
+            Tb = T0_half;
+            Tc = T0_half + T2;
+            break;
+        default:  // 异常扇区
+            Ta = T0_half;
+            Tb = T0_half;
+            Tc = T0_half;
+            break;
+    }
+    // 导通时间→占空比(此处需要将占空比除以2，因为定时器是中心对齐模式,算出来的Ta,Tb,Tc是两个PWM周期的时间下的有效时间)
+    *duty_a = Ta * HALF_PWM_FREQ;
+    *duty_b = Tb * HALF_PWM_FREQ;
+    *duty_c = Tc * HALF_PWM_FREQ;
 }
 
 /**
- * @brief 反Clark变换 (从两相静止坐标系转换到三相坐标系)
- * @param alpha_beta 输入的两相静止坐标系值 (alpha, beta)
- * @param abc 输出的三相值 (a, b, c)
+ * @brief 反Park变换
+ * @param d_ptr D轴输入指针
+ * @param q_ptr Q轴输入指针
+ * @param alpha_ptr Alpha轴输出指针
+ * @param beta_ptr Beta轴输出指针
+ * @param angle 电角度(弧度)
  */
-void inv_clark_transform(AlphaBetaTypeDef *alpha_beta, ABCTypeDef *abc)
+inline void inv_park_transform_f32(float32_t* d_ptr, float32_t* q_ptr, 
+                                          float32_t* alpha_ptr, float32_t* beta_ptr, 
+                                          float32_t angle)
 {
-  // 反Clarke变换 - 等幅变换 (功率不变)
-  // a = alpha
-  // b = -0.5 * alpha + sqrt(3)/2 * beta
-  // c = -0.5 * alpha - sqrt(3)/2 * beta
-  abc->a = alpha_beta->alpha;
-  abc->b = -0.5f * alpha_beta->alpha + _1_SQRT3 * alpha_beta->beta;
-  abc->c = -0.5f * alpha_beta->alpha - _1_SQRT3 * alpha_beta->beta;
-  
-  // 确保三相和为零 (可选)
-  // float zero_seq = (abc->a + abc->b + abc->c) / 3.0f;
-  // abc->a -= zero_seq;
-  // abc->b -= zero_seq;
-  // abc->c -= zero_seq;
+    float32_t d = *d_ptr;
+    float32_t q = *q_ptr;
+    float32_t sin_theta, cos_theta;
+    
+    // 将电角度从弧度转换为角度
+    float32_t angle_deg;
+    arm_scale_f32(&angle, RAD_TO_DEG, &angle_deg, 1);
+    arm_sin_cos_f32(angle_deg, &sin_theta, &cos_theta);
+
+    // 反Park变换：将旋转DQ坐标系电压转换为静止αβ坐标系电压
+    // 反Park变换公式
+    *alpha_ptr = d * cos_theta - q * sin_theta;
+    *beta_ptr = d * sin_theta + q * cos_theta;
 }
 
 /**
- * @brief Park变换 (从两相静止坐标系转换到两相旋转坐标系)
- * @param alpha_beta 输入的两相静止坐标系值 (alpha, beta)
- * @param dq 输出的两相旋转坐标系值 (d, q)
- * @param angle 旋转角度(电角度，弧度)
+ * @brief 将三相电流转换为dq坐标系下的电流值
+ * @param current_abc 三相电流值 (ia, ib, ic)
+ * @param current_dq 输出的dq轴电流值 (id, iq)
+ * @param angle 电角度(弧度)
  */
-void park_transform(AlphaBetaTypeDef *alpha_beta, DQTypeDef *dq, float angle)
+inline void abc_to_dq_current(void *current_abc_ptr, DQTypeDef *current_dq, float angle)
 {
-  float sin_val = sinf(angle);
-  float cos_val = cosf(angle);
+    foc_data_i *current_abc = (foc_data_i *)current_abc_ptr;
 
-  // Park变换
-  // d = alpha * cos + beta * sin
-  // q = -alpha * sin + beta * cos
-  dq->d = alpha_beta->alpha * cos_val + alpha_beta->beta * sin_val;
-  dq->q = -alpha_beta->alpha * sin_val + alpha_beta->beta * cos_val;
+    float32_t alpha, beta;
+    float32_t sin_val, cos_val;
+    
+    // 计算角度的正余弦值（需要将弧度转换为角度）
+    float32_t angle_deg = angle * RAD_TO_DEG;
+    arm_sin_cos_f32(angle_deg, &sin_val, &cos_val);
+    
+    // 使用DSP库的Clarke变换将三相电流转换为两相静止坐标系
+    arm_clarke_f32(current_abc->ia, current_abc->ib, &alpha, &beta);
+    
+    // 使用DSP库的Park变换将两相静止坐标系转换为两相旋转坐标系
+    arm_park_f32(alpha, beta, &current_dq->d, &current_dq->q, sin_val, cos_val);
 }
 
 /**
- * @brief 反Park变换 (从两相旋转坐标系转换到两相静止坐标系)
- * @param dq 输入的两相旋转坐标系值 (d, q)
- * @param alpha_beta 输出的两相静止坐标系值 (alpha, beta)
- * @param angle 旋转角度(电角度，弧度)
+ * @brief D轴电流环PID计算
+ * @param target_id 目标D轴电流
+ * @param actual_id 实际D轴电流
+ * @return D轴电压输出
  */
-void inv_park_transform(DQTypeDef *dq, AlphaBetaTypeDef *alpha_beta, float angle)
+inline float32_t foc_id_pid_calculate(float32_t target_id, float32_t actual_id)
 {
-  float sin_val = sinf(angle);
-  float cos_val = cosf(angle);
+    float32_t error = target_id - actual_id;
+    float32_t p_term = id_pid.kp * error;
+    
+    // 积分项计算与限幅
+    id_pid.integral += id_pid.ki * error;
+    if (id_pid.integral > id_pid.integral_limit) {
+        id_pid.integral = id_pid.integral_limit;
+    } else if (id_pid.integral < -id_pid.integral_limit) {
+        id_pid.integral = -id_pid.integral_limit;
+    }
+    
+    return p_term + id_pid.integral;
+}
 
-  // 反Park变换
-  // alpha = d * cos - q * sin
-  // beta  = d * sin + q * cos
-  alpha_beta->alpha = dq->d * cos_val - dq->q * sin_val;
-  alpha_beta->beta  = dq->d * sin_val + dq->q * cos_val;
+/**
+ * @brief Q轴电流环PID计算
+ * @param target_iq 目标Q轴电流
+ * @param actual_iq 实际Q轴电流
+ * @return Q轴电压输出
+ */
+inline float32_t foc_iq_pid_calculate(float32_t target_iq, float32_t actual_iq)
+{
+    float32_t error = target_iq - actual_iq;
+    float32_t p_term = iq_pid.kp * error;
+    
+    // 积分项计算与限幅
+    iq_pid.integral += iq_pid.ki * error;
+    if (iq_pid.integral > iq_pid.integral_limit) {
+        iq_pid.integral = iq_pid.integral_limit;
+    } else if (iq_pid.integral < -iq_pid.integral_limit) {
+        iq_pid.integral = -iq_pid.integral_limit;
+    }
+    
+    return p_term + iq_pid.integral;
+}
+
+/**
+ * @brief 速度环PID计算
+ * @param target_speed 目标速度(RPM)
+ * @param actual_speed 实际速度(RPM)
+ * @return 输出值(Q轴电流)
+ */
+inline float32_t foc_speed_pid_calculate(float32_t target_speed, float32_t actual_speed)
+{
+    float32_t error = target_speed - actual_speed;
+    float32_t p_term = speed_pid.kp * error;
+    
+    // 积分项计算与限幅
+    speed_pid.integral += speed_pid.ki * error;
+    if (speed_pid.integral > speed_pid.integral_limit) {
+        speed_pid.integral = speed_pid.integral_limit;
+    } else if (speed_pid.integral < -speed_pid.integral_limit) {
+        speed_pid.integral = -speed_pid.integral_limit;
+    }
+
+    // if(fabs(error) < 0.5f)
+    // {
+    //     speed_pid.integral = 0.0f;
+    // }
+    
+    return p_term + speed_pid.integral;
+}
+
+/**
+ * @brief 位置环PI控制器计算
+ * @param target_position 目标位置（弧度）
+ * @param current_position 当前位置（弧度）
+ * @return PI控制器输出（速度指令，rad/s）
+ */
+inline float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position)
+{
+    float32_t error, p_term;
+    
+    position_pid.target = target_position;
+    position_pid.current = current_position;
+    
+    // 计算误差（目标 - 当前）
+    error = target_position - current_position;
+    if(fabsf(error) < 0.01f)
+    {
+        // 在死区内，清零输出和积分
+        position_pid.integral = 0.0f;
+        error = 0.0f; // 死区处理
+    }
+    position_pid.error = error;
+    
+    // 比例项
+    p_term = position_pid.kp * error;
+    
+    // 积分项累加
+    position_pid.integral += position_pid.ki * error;
+    
+    // 积分限幅
+    if (position_pid.integral > position_pid.integral_limit) {
+        position_pid.integral = position_pid.integral_limit;
+    } else if (position_pid.integral < -position_pid.integral_limit) {
+        position_pid.integral = -position_pid.integral_limit;
+    }
+    
+    // 输出 = 比例项 + 积分项
+    position_pid.output = p_term + position_pid.integral;
+    
+    return position_pid.output;
 }

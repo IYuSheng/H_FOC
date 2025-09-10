@@ -12,6 +12,7 @@
 #include "foc_gather.h"
 #include "foc_conversion.h"
 #include "arm_math.h"
+#include "foc_settings.h"
 
 // FOC控制参数结构体
 typedef struct

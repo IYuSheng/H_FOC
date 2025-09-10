@@ -1,7 +1,7 @@
 #include "foc_encoder.h"
 
 // 一阶低通滤波参数 (α值越小，滤波效果越强，响应越慢)
-#define LOWPASS_ALPHA     0.5f
+#define LOWPASS_ALPHA     0.01f
 
 // HALL传感器电角度查找表 (单位: 弧度) - 精确值
 const float hall_elec_angle_precise[8] = {
@@ -24,6 +24,21 @@ static float filtered_speed = 0.0f;              // 滤波后转速 (rad/s)
 static float current_mechanical_angle = 0.0f;    // 当前机械角度 (rad)
 static int8_t rotation_direction = 0;            // 旋转方向: 1=正转, -1=反转, 0=未知
 const uint8_t hall_sequence_forward[6] = {5, 1, 3, 2, 6, 4};    // 正转序列
+
+// 添加反电动势计算相关变量
+static float32_t bemf_a = 0.0f, bemf_b = 0.0f, bemf_c = 0.0f;  // 三相反电动势
+static float32_t last_ia = 0.0f, last_ib = 0.0f, last_ic = 0.0f;  // 上次电流值
+static float32_t bemf_alpha = 0.0f, bemf_beta = 0.0f;  // αβ坐标系下的反电动势
+static float32_t bemf_angle = 0.0f;  // 计算出的电角度
+
+// 添加速度计算相关变量
+static float32_t last_bemf_angle = 0.0f;  // 上次电角度
+static float32_t bemf_speed_rpm = 0.0f;   // 机械速度(rpm)
+static float32_t last_bemf_speed_rpm = 0.0f;  // 上次机械速度(rpm)
+
+// 添加低通滤波系数
+#define BEMF_LPF_ALPHA 0.2f  // 反电动势滤波系数
+#define SPEED_LPF_ALPHA 0.01f // 反电动势速度滤波系数，较小的值意味着更强的滤波效果
 
 /**
  * @brief 编码器初始化函数
@@ -290,3 +305,135 @@ float hall_get_total_rotations(void)
     // 一圈为2*PI弧度
     return hall_total_mechanical_angle / (2.0f * _PI);
 }
+
+/**
+ * @brief 计算反电动势并估算电角度
+ * @param ia A相电流
+ * @param ib B相电流
+ * @param ic C相电流
+ * @param va A相电压
+ * @param vb B相电压
+ * @param vc C相电压
+ * @param dt 控制周期(s)
+ * @return 估算的电角度(弧度)
+ */
+float32_t bsp_adc_calculate_bemf_angle(float32_t ia, float32_t ib, float32_t ic,
+                                       float32_t va, float32_t vb, float32_t vc,
+                                       float32_t dt)
+{
+    static float32_t last_bemf_a = 0.0f, last_bemf_b = 0.0f, last_bemf_c = 0.0f;
+    static float32_t last_bemf_alpha = 0.0f, last_bemf_beta = 0.0f;
+    static uint32_t last_call_time = 0;  // 上次调用时间戳
+    static uint8_t first_call = 1;       // 首次调用标志
+    
+    // 电机相电阻和电感(需要根据实际电机参数调整)
+    const float32_t R = MOTOR_RESISTANCE;   // 相电阻(欧姆)
+    const float32_t L = MOTOR_INDUCTANCE; // 相电感(亨利)
+    
+    // 使用时间戳计算精确的时间间隔
+    float32_t precise_dt = dt;  // 默认使用传入的dt值
+    uint32_t current_time = bsp_get_micros();  // 获取当前时间戳
+    
+    if (!first_call && last_call_time != 0) {
+        // 计算精确的时间间隔（单位：秒）
+        if (current_time >= last_call_time) {
+            precise_dt = (current_time - last_call_time) * 0.0001f;  // 转换为秒
+        } else {
+            // 处理计数器溢出（32位无符号整数最大值为0xFFFFFFFF）
+            precise_dt = ((0xFFFFFFFF - last_call_time) + current_time) * 0.0001f;
+        }
+    } else {
+        first_call = 0;
+    }
+    
+    // 保存当前时间戳供下次使用
+    last_call_time = current_time;
+    
+    // 计算三相反电动势: bemf = v - i*R - L*di/dt
+    float32_t dia_dt = (ia - last_ia) / precise_dt;
+    float32_t dib_dt = (ib - last_ib) / precise_dt;
+    float32_t dic_dt = (ic - last_ic) / precise_dt;
+    
+    float32_t bemf_a_raw = va - ia * R - L * dia_dt;
+    float32_t bemf_b_raw = vb - ib * R - L * dib_dt;
+    float32_t bemf_c_raw = vc - ic * R - L * dic_dt;
+    
+    // 低通滤波反电动势
+    bemf_a = BEMF_LPF_ALPHA * bemf_a_raw + (1.0f - BEMF_LPF_ALPHA) * last_bemf_a;
+    bemf_b = BEMF_LPF_ALPHA * bemf_b_raw + (1.0f - BEMF_LPF_ALPHA) * last_bemf_b;
+    bemf_c = BEMF_LPF_ALPHA * bemf_c_raw + (1.0f - BEMF_LPF_ALPHA) * last_bemf_c;
+    
+    // 保存当前值供下次使用
+    last_ia = ia;
+    last_ib = ib;
+    last_ic = ic;
+    last_bemf_a = bemf_a;
+    last_bemf_b = bemf_b;
+    last_bemf_c = bemf_c;
+    
+    // Clarke变换到αβ坐标系
+    // α = (2*a - b - c)/3
+    // β = (b - c)/√3
+    bemf_alpha = (2.0f * bemf_a - bemf_b - bemf_c) / 3.0f;
+    bemf_beta = (bemf_b - bemf_c) * _1_SQRT3;
+    
+    // 低通滤波αβ分量
+    bemf_alpha = BEMF_LPF_ALPHA * bemf_alpha + (1.0f - BEMF_LPF_ALPHA) * last_bemf_alpha;
+    bemf_beta = BEMF_LPF_ALPHA * bemf_beta + (1.0f - BEMF_LPF_ALPHA) * last_bemf_beta;
+    last_bemf_alpha = bemf_alpha;
+    last_bemf_beta = bemf_beta;
+    
+    // 计算电角度(使用atan2确保正确象限)
+    bemf_angle = atan2f(bemf_beta, bemf_alpha);
+    
+    // 角度归一化到[0, 2π]
+    if (bemf_angle < 0.0f) {
+        bemf_angle += 2.0f * _PI;
+    }
+    
+    // 计算速度：通过电角度变化率估算速度
+    float32_t delta_angle = bemf_angle - last_bemf_angle;
+    
+    // 处理角度跨越2π的情况
+    if (delta_angle > _PI) {
+        delta_angle -= 2.0f * _PI;
+    } else if (delta_angle < -_PI) {
+        delta_angle += 2.0f * _PI;
+    }
+    
+    // 计算电角速度(rad/s)
+    float32_t bemf_speed_elec = delta_angle / precise_dt;
+    
+    // 转换为机械速度RPM
+    float32_t bemf_speed_rpm_raw = bemf_speed_elec * RAD_TO_DEG * 60.0f / (360.0f * MOTOR_POLE_PAIRS);
+    
+    // 对速度进行低通滤波
+    bemf_speed_rpm = SPEED_LPF_ALPHA * bemf_speed_rpm_raw + (1.0f - SPEED_LPF_ALPHA) * last_bemf_speed_rpm;
+    
+    // 保存当前角度和速度供下次使用
+    last_bemf_angle = bemf_angle;
+    last_bemf_speed_rpm = bemf_speed_rpm;
+    
+    return bemf_angle;
+}
+
+/**
+ * @brief 获取计算的反电动势
+ * @param alpha α轴反电动势指针
+ * @param beta β轴反电动势指针
+ */
+void bsp_adc_get_bemf(float32_t* alpha, float32_t* beta)
+{
+    if (alpha) *alpha = bemf_alpha;
+    if (beta) *beta = bemf_beta;
+}
+
+/**
+ * @brief 获取基于反电动势估算的机械转速(RPM)
+ * @return 机械转速(RPM)
+ */
+float32_t bsp_adc_get_bemf_speed_rpm(void)
+{
+    return bemf_speed_rpm;
+}
+

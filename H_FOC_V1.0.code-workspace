@@ -13,7 +13,11 @@
             "foc_gather.h": "c",
             "foc_debug.h": "c",
             "config.h": "c",
-            "foc_conversion.h": "c"
+            "foc_conversion.h": "c",
+            "bsp_adc.h": "c",
+            "foc_encoder.h": "c",
+            "stdarg.h": "c",
+            "foc_settings.h": "c"
         }
     },
     "extensions": {}

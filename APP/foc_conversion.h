@@ -2,12 +2,8 @@
 #define __FOC_CONVERSION_H
 
 #include "stm32f4xx.h"
-#include "freertos.h"
-#include "task.h"
-#include "math.h"
-#include "arm_math.h"
 #include "Config.h"
-#include "foc_debug.h"
+#include "bsp_adc.h"
 
 // 三相坐标系结构体
 typedef struct
@@ -43,15 +39,23 @@ typedef struct {
     float32_t current;      // 当前位置
 } position_pid_t;
 
+extern position_pid_t position_pid;
+
 // FOC变换相关函数声明
-void foc_position_pid_init(float32_t kp, float32_t ki, float32_t integral_limit);
-float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position);
 extern inline float32_t angle_normalize(float32_t angle);
+// SVPWM相关函数声明
 extern inline uint8_t svpwm_sector_calc(float32_t u_alpha, float32_t u_beta);
 extern inline void svpwm_calc_times(int32_t sector, float32_t u_alpha, float32_t u_beta, float32_t vdc, float32_t* T1, float32_t* T2, float32_t* T0);
-void clark_transform(ABCTypeDef *abc, AlphaBetaTypeDef *alpha_beta);
-void inv_clark_transform(AlphaBetaTypeDef *alpha_beta, ABCTypeDef *abc);
-void park_transform(AlphaBetaTypeDef *alpha_beta, DQTypeDef *dq, float angle);
-void inv_park_transform(DQTypeDef *dq, AlphaBetaTypeDef *alpha_beta, float angle);
+extern inline void svpwm_duty_calc(int32_t sector, float32_t T1, float32_t T2, float32_t T0, float32_t* duty_a, float32_t* duty_b, float32_t* duty_c);
+extern inline void inv_park_transform_f32(float32_t* d_ptr, float32_t* q_ptr, float32_t* alpha_ptr, float32_t* beta_ptr, float32_t angle);
+// Clarke+Park变换
+extern inline void abc_to_dq_current(void *current_abc_ptr, DQTypeDef *current_dq, float angle);
+// 电流环PID控制器计算
+extern inline float32_t foc_id_pid_calculate(float32_t target_id, float32_t actual_id);
+extern inline float32_t foc_iq_pid_calculate(float32_t target_iq, float32_t actual_iq);
+// 速度环PID控制器计算
+extern inline float32_t foc_speed_pid_calculate(float32_t target_speed, float32_t actual_speed);
+// 位置环PID控制器计算
+extern inline float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position);
 
 #endif /* __FOC_CONVERSION_H */

@@ -23,18 +23,16 @@
 
 // -------------------------- 电源与硬件限制 --------------------------
 #define VOLTAGE_LIMIT        3.3f    // 直流母线电压限制 (V)
-#define CURRENT_LIMIT        3.0f    // 最大相电流限制 (A)
-#define OVER_CURRENT_THRESH  0.6f    // 过流保护阈值 (A)，需大于CURRENT_LIMIT
+#define CURRENT_LIMIT        6.0f    // 最大相电流限制 (A)
+#define OVER_CURRENT_THRESH  0.6f    // 过流保护阈值 (A)
 #define OVER_VOLTAGE_THRESH  3.6f    // 过压保护阈值 (V)
 #define UNDER_VOLTAGE_THRESH 2.8f   // 欠压保护阈值 (V)
-#define VOLTAGE_AMPLITUDE_LIMIT    0.6f   // 输出电压限制(%),这里设置输出电压不能高于母线电压的60%
 
 // -------------------------- 电机参数 (根据实际电机填写) --------------------------
-#define MOTOR_POLE_PAIRS    15       // 电机极对数 (例如：14极电机为7对)
-#define MOTOR_RESISTANCE    0.16595f    // 相电阻 (欧姆)，需实测或手册值
-#define MOTOR_INDUCTANCE    0.0003937f  // 相电感 (H)，需实测或手册值
-#define MAX_SPEED_RPM       10    // 最大转速限制 (RPM)
-#define ENCODER_RESOLUTION  1024    // 编码器分辨率 (线数)
+#define MOTOR_POLE_PAIRS    15       // 电机极对数
+#define MOTOR_RESISTANCE    0.16595f    // 相电阻 (欧姆)
+#define MOTOR_INDUCTANCE    0.0003937f  // 相电感 (H)
+#define MAX_SPEED_RPM       100    // 最大转速限制 (RPM)
 
 // -------------------------- FOC控制参数 --------------------------
 #define PWM_FREQ            10000.0f   // PWM频率 (Hz)，需与定时器配置匹配
@@ -73,7 +71,7 @@
 // -------------------------- 控制模式定义 --------------------------
 typedef enum
 {
-  FOC_MODE_TORQUE = 0,    // 转矩模式 (直接控制IQ)
+  FOC_MODE_TORQUE = 0,    // 电流模式 (闭环控制电流)
   FOC_MODE_SPEED,         // 速度模式 (闭环控制转速)
   FOC_MODE_POSITION       // 位置模式 (闭环控制角度)
 } FOC_ModeTypeDef;

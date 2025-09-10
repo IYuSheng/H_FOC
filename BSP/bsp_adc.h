@@ -82,8 +82,9 @@ typedef enum
   i_mode = 1
 } foc_mode;
 
-// 采集电压及母线电压结构体
+extern foc_data_t foc_raw_data;
 extern foc_data_v foc_datav;
+extern foc_data_i foc_datai;
 
 // 函数声明
 void bsp_adc_init(void);
@@ -91,9 +92,5 @@ uint8_t bsp_adc_process_data(void);
 foc_data_t bsp_adc_get_RAW_Data(void);
 foc_data_v bsp_adc_get_calib_data(void);
 void bsp_adc_calib_current_offset(void);
-float32_t bsp_adc_calculate_bemf_angle(float32_t ia, float32_t ib, float32_t ic,
-                                       float32_t va, float32_t vb, float32_t vc,
-                                       float32_t dt);
-void bsp_adc_get_bemf(float32_t* alpha, float32_t* beta);
 
 #endif /* __BSP_ADC_H */

@@ -734,6 +734,16 @@
               <FileType>5</FileType>
               <FilePath>.\APP\foc_control.h</FilePath>
             </File>
+            <File>
+              <FileName>foc_settings.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\APP\foc_settings.c</FilePath>
+            </File>
+            <File>
+              <FileName>foc_settings.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\APP\foc_settings.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

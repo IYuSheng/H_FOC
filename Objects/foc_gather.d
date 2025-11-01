@@ -54,5 +54,15 @@
 .\objects\foc_gather.o: .\FreeRTOS\inc\queue.h
 .\objects\foc_gather.o: .\FreeRTOS\inc\semphr.h
 .\objects\foc_gather.o: .\APP\Config.h
-.\objects\foc_gather.o: .\APP\foc_gather.h
+.\objects\foc_gather.o: .\DSP_LIB\Include\arm_math.h
+.\objects\foc_gather.o: .\DSP_LIB\Include\core_cm4.h
 .\objects\foc_gather.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\foc_gather.o: .\APP\foc_gather.h
+.\objects\foc_gather.o: APP\foc_encoder.h
+.\objects\foc_gather.o: .\BSP\bsp_timer.h
+.\objects\foc_gather.o: .\APP\foc_control.h
+.\objects\foc_gather.o: .\APP\foc_encoder.h
+.\objects\foc_gather.o: .\BSP\bsp_timer.h
+.\objects\foc_gather.o: .\APP\foc_conversion.h
+.\objects\foc_gather.o: .\APP\foc_settings.h
+.\objects\foc_gather.o: .\APP\foc_control.h

@@ -7,14 +7,12 @@
 #include "foc_debug.h"
 #include "foc_control.h"
 
-extern uint32_t TIM1_Clock; // 84MHz
+// 基于TIM1时钟计算PWM周期（中心对齐模式下，频率 = TIM1_Clock/(TIM_CKD_DIV2*(PWM_PERIOD+1))
+#define TIM1_Clock        168000000
+#define PWM_PERIOD        ((TIM1_Clock / (2 * PWM_FREQ)) - 1)
 
-// 基于TIM1时钟计算PWM周期（中心对齐模式下，频率 = TIM1_Clock/(TIM_CKD_DIV2*(PWM_PERIOD+1))）
-#define PWM_FREQUENCY     PWM_FREQ // PWM频率 10K (Hz)
-#define PWM_PERIOD        ((TIM1_Clock / (2 * PWM_FREQUENCY)) - 1)  // 4199
-
-// 死区时间计算     死区时间基准频率 = TIM1_Clock/TIM_CKD_DIV2 = 84MHz/2 = 42MHz  死区时间步长 = 1/42MHz = 23.81ns
-#define DEAD_TIME_US      1     // 实际死区时间，单位us
+// 死区时间计算     死区时间基准频率 = TIM1_Clock/TIM_CKD_DIV2 = 168MHz/2 = 84MHz  死区时间步长 = 1/84MHz = 23.81ns
+#define DEAD_TIME_US      0     // 实际死区时间，单位us
 #define DEAD_TIME         ((uint16_t)((TIM1_Clock / (2 * 1000000)) * DEAD_TIME_US))     // 死区时间 1us = DEAD_TIME(42) * 23.81ns(死区时间步长) DEAD_TIME实际代表死区步数
 
 // 高端PWM引脚定义 (TIM1 CH1, CH2, CH3)

@@ -1,6 +1,8 @@
 #include "bsp_timer.h"
+#include "Config.h"
 
-uint32_t TIM1_Clock;
+#define FOC_CONTROL_MODE FOC_MODE
+
 uint32_t TIM2_Clock;
 
 // 时间戳变量
@@ -15,15 +17,6 @@ void bsp_timer_init(void)
   // 先获取APB2时钟，计算TIM1实际时钟
   RCC_ClocksTypeDef RCC_Clocks;
   RCC_GetClocksFreq(&RCC_Clocks);
-  // 若APB2预分频 > 1，则TIM1时钟 = 2*APB2时钟；否则等于APB2时钟
-  if (RCC_Clocks.PCLK2_Frequency < SystemCoreClock / 2)
-    {
-      TIM1_Clock = 2 * RCC_Clocks.PCLK2_Frequency;
-    }
-  else
-    {
-      TIM1_Clock = RCC_Clocks.PCLK2_Frequency;
-    }
 
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_OCInitTypeDef TIM_OCInitStructure;
@@ -143,8 +136,6 @@ void bsp_timer_init(void)
   // 使能TIM1主输出
   TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
-  // TIM_SetCompare1(TIM1, 1000);
-
   // 使能TIM1
   TIM_Cmd(TIM1, ENABLE);
 }
@@ -220,7 +211,6 @@ void bsp_pwm_disable(void)
   TIM_SetCompare3(TIM1, 0);
 }
 
-
 // 中断服务程序
 void TIM1_UP_TIM10_IRQHandler(void)
 {
@@ -232,19 +222,29 @@ void TIM1_UP_TIM10_IRQHandler(void)
     // 中心对齐模式中，向下计数到0时会触发更新中断，且此时PWM输出为0
     if ((TIM1->CR1 & TIM_CR1_DIR) == TIM_CR1_DIR) // DIR=1：向下计数
     {
-      // 此时对应PWM占空比为0，且ADC注入组采集（通道4触发）已完成
       // FOC速度开环
       // foc_open_loop_control();
       // FOC位置闭环
       // foc_position_control();
       // FOC电流闭环
-      foc_current_control();
+      // foc_current_control();
       // FOC速度闭环
+      foc_speed_control();
+      // 此时对应PWM占空比为0，且ADC注入组采集（通道4触发）已完成
+      #if (FOC_CONTROL_MODE == FOC_MODE_SPEED)
       // foc_speed_control();
+      #elif (FOC_CONTROL_MODE == FOC_MODE_CURRENT)
+      // foc_current_control();
+      #elif (FOC_CONTROL_MODE == FOC_MODE_POSITION)
+      // foc_position_control();
+      #elif (FOC_CONTROL_MODE == FOC_MODE_OPEN_LOOP)
+      // foc_open_loop_control();
+      #else
+      // foc_open_loop_control();  // 默认使用开环速度控制
+      #endif
     }
   }
 }
-
 
 void TIM1_BRK_TIM9_IRQHandler(void)
 {

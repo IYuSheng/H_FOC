@@ -230,9 +230,9 @@ void bsp_adc_init_calibration(void)
   ADC_Init(ADC1, &ADC_InitStructure);
   
   // 配置规则组通道（电流）
-  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_56Cycles);
-  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_56Cycles);
-  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_56Cycles);
+  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_84Cycles);
+  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_84Cycles);
+  ADC_RegularChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_84Cycles);
   
   // 禁用注入组（确保不会干扰）
   ADC_InjectedSequencerLengthConfig(ADC1, 0);
@@ -311,9 +311,9 @@ void bsp_adc_init(void)
   // 注入组通道数：3个电流通道
   ADC_InjectedSequencerLengthConfig(ADC1, INJ_CHANNELS);
   // 配置注入组通道（电流）
-  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_56Cycles);
-  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_56Cycles);
-  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_56Cycles);
+  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IA_CHANNEL, 1, ADC_SampleTime_84Cycles);
+  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IB_CHANNEL, 2, ADC_SampleTime_84Cycles);
+  ADC_InjectedChannelConfig(ADC1, FOC_CURRENT_IC_CHANNEL, 3, ADC_SampleTime_84Cycles);
   // 注入组触发源：TIM1 TRGO（更新事件）
   ADC_ExternalTrigInjectedConvConfig(ADC1, ADC_ExternalTrigInjecConv_T1_TRGO);
   ADC_ExternalTrigInjectedConvEdgeConfig(ADC1, ADC_ExternalTrigInjecConvEdge_Rising);  // 上升沿触发

@@ -255,15 +255,15 @@ void DMA1_Stream3_IRQHandler(void)
 /**
  * @brief UART3中断服务函数
  */
-void USART3_IRQHandler(void)
-{
-  // 判断是否为接收中断
-  if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-    {
-      // 读取接收到的数据
-      uint8_t res = USART_ReceiveData(USART3);
+//void USART3_IRQHandler(void)
+//{
+//  // 判断是否为接收中断
+//  if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+//    {
+//      // 读取接收到的数据
+//      uint8_t res = USART_ReceiveData(USART3);
 
-      // 将接收到的数据回传（回显）
-      bsp_uart_send_byte(res);
-    }
-}
+//      // 将接收到的数据回传（回显）
+//      bsp_uart_send_byte(res);
+//    }
+//}

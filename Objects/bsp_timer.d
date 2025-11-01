@@ -36,10 +36,13 @@
 .\objects\bsp_timer.o: .\FWLIB\inc\stm32f4xx_dcmi.h
 .\objects\bsp_timer.o: .\FWLIB\inc\stm32f4xx_fsmc.h
 .\objects\bsp_timer.o: .\APP\Config.h
+.\objects\bsp_timer.o: .\DSP_LIB\Include\arm_math.h
+.\objects\bsp_timer.o: .\DSP_LIB\Include\core_cm4.h
+.\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\bsp_timer.o: .\APP\foc_gather.h
 .\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\bsp_timer.o: .\FreeRTOS\inc\freertos.h
 .\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\stddef.h
 .\objects\bsp_timer.o: .\FreeRTOS\FreeRTOSConfig.h
@@ -56,4 +59,9 @@
 .\objects\bsp_timer.o: .\FreeRTOS\inc\queue.h
 .\objects\bsp_timer.o: .\FreeRTOS\inc\semphr.h
 .\objects\bsp_timer.o: .\APP\foc_gather.h
-.\objects\bsp_timer.o: D:\Keilv5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\bsp_timer.o: .\APP\foc_encoder.h
+.\objects\bsp_timer.o: .\BSP\bsp_timer.h
+.\objects\bsp_timer.o: .\APP\foc_control.h
+.\objects\bsp_timer.o: .\APP\foc_conversion.h
+.\objects\bsp_timer.o: .\APP\foc_settings.h
+.\objects\bsp_timer.o: .\APP\foc_control.h

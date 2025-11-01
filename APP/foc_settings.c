@@ -12,53 +12,12 @@ extern position_pid_t position_pid;
 void foc_control_init(void)
 {
   // 初始化控制参数
-  foc_ctrl.u_d = 0.0f;
-  foc_ctrl.u_q = 0.0f;
+  foc_ctrl.out_d = 0.0f;
+  foc_ctrl.out_q = 0.0f;
   foc_ctrl.angle = 0.0f;
   foc_ctrl.speed = 0.0f;
   foc_ctrl.speed_rpm = 0.0f;
   foc_ctrl.target_speed = 0.0f;
-}
-
-/**
- * @brief 设置FOC控制参数（选择性设置）
- * @param u_d_ptr D轴电压指针，若为NULL则不改变该项
- * @param u_q_ptr Q轴电压指针，若为NULL则不改变该项
- * @param angle_ptr 电角度指针，若为NULL则不改变该项
- * @param speed_ptr 速度指针，若为NULL则不改变该项
- * @param target_speed_ptr 目标速度指针，若为NULL则不改变该项
- */
-void foc_control_set_params(float32_t* u_d_ptr, 
-                            float32_t* u_q_ptr, 
-                            float32_t* angle_ptr, 
-                            float32_t* speed_ptr, 
-                            float32_t* target_speed_ptr,
-                            float32_t* target_position_ptr)
-{
-  if (u_d_ptr != NULL) {
-    foc_ctrl.u_d = *u_d_ptr;
-  }
-  
-  if (u_q_ptr != NULL) {
-    foc_ctrl.u_q = *u_q_ptr;
-  }
-  
-  if (angle_ptr != NULL) {
-    foc_ctrl.angle = *angle_ptr;
-  }
-  
-  if (speed_ptr != NULL) {
-    foc_ctrl.speed = *speed_ptr;
-  }
-  
-  if (target_speed_ptr != NULL) {
-    foc_ctrl.target_speed = *target_speed_ptr;
-  }
-
-  if(target_position_ptr != NULL)
-  {
-    foc_ctrl.target_position = *target_position_ptr;
-  }
 }
 
 /**

@@ -12,7 +12,6 @@ void foc_gather_init(void)
 
 }
 
-
 void vGatherProcessTask(void *pvParameters)
 {
   portTickType xLastWakeTime;
@@ -33,23 +32,14 @@ void vGatherProcessTask(void *pvParameters)
       //                foc_datav.vbus,
       //                foc_datav.va, foc_datav.vb, foc_datav.vc,
       //                foc_datai.ia, foc_datai.ib, foc_datai.ic);
-      
-      // debug_printf("%.4f,%.4f,%.4f",foc_datai.ia, foc_datai.ib, foc_datai.ic);
       }
 
 // --------------------------------------------------------------------------------------------------------------//
-      
       // 更新位置和速度计算，使用100us时间戳
       g_angle = hall_update_position_and_speed(bsp_get_micros());
-
-      bemf_angle = bsp_adc_calculate_bemf_angle(
-          foc_datai.ia, foc_datai.ib, foc_datai.ic,
-          foc_datav.va, foc_datav.vb, foc_datav.vc,
-          bsp_get_micros());
       
       // 获取速度和位置信息
       g_speed_rpm  = hall_get_speed_rpm();
-      bemf_speed = bsp_adc_get_bemf_speed_rpm();
 
       // g_total_angle = hall_get_total_mechanical_angle();
       // g_total_rotations = hall_get_total_rotations();
@@ -57,7 +47,7 @@ void vGatherProcessTask(void *pvParameters)
       
       // 打印HALL状态、电角度、速度和位置信息
       // debug_printf("%.6f,%.6f,%.2f", 
-      //             g_speed_rpm , g_angle , g_total_rotations);
+      //             g_speed_rpm , g_angle , bemf_speed);
 
       // 精确延时1ms
       vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1));

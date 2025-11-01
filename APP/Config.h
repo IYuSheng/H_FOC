@@ -5,56 +5,46 @@
 #include <arm_math.h>
 
 // --------------------------- 模式选项 --------------------------
+#ifndef FOC_MODE
+#define FOC_MODE FOC_MODE_SPEED  // 选择FOC控制模式: FOC_MODE_OPEN_LOOP, FOC_MODE_CURRENT, FOC_MODE_SPEED, FOC_MODE_POSITION
+#endif
 #define DEBUG_MODE  1     // 打开仿真波形打印
 
-// -------------------------- 常用常量定义 --------------------------
-#define _PI         PI
-#define _2PI        (2.0f * PI)
-#define _2_PI       1.0f / (2.0f * PI)
-#define _60_angle   2.0f * PI / 6.0f  // 60度对应的弧度
-#define _SQRT3      1.732050807568877f
-#define _SQRT3_2    0.866025403784439f  // sqrt(3)/2
-#define _1_SQRT3    0.577350269189626f  // 1/sqrt(3)
-#define _2_SQRT3    1.154700538379252f  // 2/sqrt(3)
-#define RPM_TO_PI   _2PI / 60.0f        // RPM转换为弧度系数 (RPM * 2*PI / 60)
-#define SPEED_FACTOR (_2PI / 60.0f * MOTOR_POLE_PAIRS) // 速度转换系数 (机械转速rpm → 电角速度rad/s)
-#define RAD_TO_DEG  (180.0f / PI)
-#define FACTOR       _SQRT3 / PWM_FREQ  // SVPWM时间中间计算系数
-
 // -------------------------- 电源与硬件限制 --------------------------
-#define VOLTAGE_LIMIT        3.3f    // 直流母线电压限制 (V)
-#define CURRENT_LIMIT        6.0f    // 最大相电流限制 (A)
+#define VOLTAGE_LIMIT        4.3f    // 直流母线电压限制 (V)
+#define CURRENT_LIMIT        4.0f    // 最大相电流限制 (A)
 #define OVER_CURRENT_THRESH  0.6f    // 过流保护阈值 (A)
 #define OVER_VOLTAGE_THRESH  3.6f    // 过压保护阈值 (V)
 #define UNDER_VOLTAGE_THRESH 2.8f   // 欠压保护阈值 (V)
 
 // -------------------------- 电机参数 (根据实际电机填写) --------------------------
 #define MOTOR_POLE_PAIRS    15       // 电机极对数
-#define MOTOR_RESISTANCE    0.16595f    // 相电阻 (欧姆)
-#define MOTOR_INDUCTANCE    0.0003937f  // 相电感 (H)
-#define MAX_SPEED_RPM       100    // 最大转速限制 (RPM)
+#define MOTOR_RESISTANCE    0.98f    // 相电阻 (欧姆)
+#define MOTOR_INDUCTANCE    0.0008f  // 相电感 (H)
+#define MAX_SPEED_RPM       200    // 最大转速限制 (RPM)
 
 // -------------------------- FOC控制参数 --------------------------
-#define PWM_FREQ            10000.0f   // PWM频率 (Hz)，需与定时器配置匹配
+#define PWM_FREQ            20000.0f   // PWM频率 (Hz)，需与定时器配置匹配
 #define HALF_PWM_FREQ       PWM_FREQ * 0.5f   // PWM频率 (Hz)，需与定时器配置匹配
 #define PWM_PERIOD_S        1.0f / PWM_FREQ  // PWM周期（单位：s），与PWM_FREQ对应：T = 1/F
 #define SVPWM_VOLT_COEF   (2.0f / sqrtf(3.0f)) // SVPWM基本矢量幅值系数（母线电压相关，固定值）
 
-// PI调节器参数 (初始值，需根据电机调试优化)
+// -------------------------- PI调节器参数 --------------------------
+// 电流环PI
+#define I_P_GAIN           5.0f
+#define I_I_GAIN           0.15f
+#define I_I_LIMIT          5.0f
+
 // 速度环PI
-#define SPEED_P_GAIN        5.0f    // 比例增益
-#define SPEED_I_GAIN        0.2f    // 积分增益
-#define SPEED_I_LIMIT       1.0f    // 积分限幅
+#define SPEED_P_GAIN        0.006f
+#define SPEED_I_GAIN        0.00003f
+#define SPEED_I_LIMIT       7.0f
+#define SPEED_Cycle         50  // 速度环PI控制周期(数值越大，控制频率越低，单位：PWM周期数)
 
-// d轴电流环PI (励磁分量)
-#define ID_P_GAIN           8.0f
-#define ID_I_GAIN           0.5f
-#define ID_I_LIMIT          0.8f
-
-// q轴电流环PI (转矩分量)
-#define IQ_P_GAIN           8.0f
-#define IQ_I_GAIN           0.5f
-#define IQ_I_LIMIT          0.8f
+// 位置环PI
+#define POSITION_P_GAIN     1.0f
+#define POSITION_I_GAIN     0.01f
+#define POSITION_I_LIMIT    10.0f
 
 // -------------------------- 电流采样配置 --------------------------
 #define ADC_REF_VOLTAGE     3.3f    // ADC参考电压 (V)
@@ -68,15 +58,29 @@
 #define R_Voaltage_1  56.0f   // 56KΩ
 #define R_Voaltage_2  2.2f    // 2.2KΩ
 
+// -------------------------- 常用常量及中间变量定义 --------------------------
+#define _PI         PI
+#define _2PI        (2.0f * PI)
+#define _2_PI       1.0f / (2.0f * PI)
+#define _60_angle   2.0f * PI / 6.0f  // 60度对应的弧度
+#define _SQRT3      1.732050807568877f
+#define _SQRT3_2    0.866025403784439f  // sqrt(3)/2
+#define _1_SQRT3    0.577350269189626f  // 1/sqrt(3)
+#define _2_SQRT3    1.154700538379252f  // 2/sqrt(3)
+#define RPM_TO_PI   _2PI / 60.0f        // RPM转换为弧度系数 (RPM * 2*PI / 60)
+#define SPEED_FACTOR (_2PI / 60.0f * MOTOR_POLE_PAIRS) // 速度转换系数 (机械转速rpm → 电角速度rad/s)
+#define RAD_TO_DEG  (180.0f / PI)
+#define FACTOR       _SQRT3 / PWM_FREQ  // SVPWM时间中间计算系数
+#define PWM_FREQ_PERIOD (PWM_FREQ * PWM_PERIOD) // SVPWM时间转比较值中间系数
+
 // -------------------------- 控制模式定义 --------------------------
 typedef enum
 {
-  FOC_MODE_TORQUE = 0,    // 电流模式 (闭环控制电流)
+  FOC_MODE_OPEN_LOOP,      // 开环模式 (无传感器开环控制)
+  FOC_MODE_CURRENT,       // 电流模式 (闭环控制电流)
   FOC_MODE_SPEED,         // 速度模式 (闭环控制转速)
   FOC_MODE_POSITION       // 位置模式 (闭环控制角度)
 } FOC_ModeTypeDef;
-
-#define DEFAULT_CONTROL_MODE FOC_MODE_SPEED  // 默认控制模式
 
 // -------------------------- 故障状态定义 --------------------------
 typedef enum

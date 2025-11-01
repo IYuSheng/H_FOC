@@ -17,8 +17,10 @@
             "bsp_adc.h": "c",
             "foc_encoder.h": "c",
             "stdarg.h": "c",
-            "foc_settings.h": "c"
-        }
+            "foc_settings.h": "c",
+            "bsp_timer.h": "c"
+        },
+        "Codegeex.RepoIndex": true
     },
     "extensions": {}
 }

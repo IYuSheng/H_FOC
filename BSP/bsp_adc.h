@@ -46,10 +46,10 @@
 #define REG_VC_CHANNEL ADC_Channel_5
 #define REG_VBUS_CHANNEL ADC_Channel_6
 
-// FOC电流采样结构体（使用DSP库整数类型）
+// FOC电流采样结构体
 typedef struct
 {
-  q15_t ia;    // A相电流（16位整数，对应int16_t）
+  q15_t ia;    // A相电流
   q15_t ib;    // B相电流
   q15_t ic;    // C相电流
   q15_t va;    // A相电压
@@ -58,15 +58,15 @@ typedef struct
   q15_t vbus;  // 母线电压
 } foc_data_t;
 
-// FOC电流转换结构体（使用DSP库浮点类型）
+// FOC电流转换结构体
 typedef struct
 {
-  float32_t ia;    // A相电流（32位浮点）
+  float32_t ia;    // A相电流
   float32_t ib;    // B相电流
   float32_t ic;    // C相电流
 } foc_data_i;
 
-// FOC电压转换结构体（使用DSP库浮点类型）
+// FOC电压转换结构体
 typedef struct
 {
   float32_t va;    // A相电压

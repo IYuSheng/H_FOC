@@ -53,6 +53,7 @@
 ".\objects\foc_conversion.o"
 ".\objects\foc_encoder.o"
 ".\objects\foc_control.o"
+".\objects\foc_settings.o"
 ".\objects\heap_4.o"
 ".\objects\port.o"
 ".\objects\croutine.o"

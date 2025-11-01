@@ -14,10 +14,10 @@ int main(void)
 	
   vTaskStartScheduler();
 	
-    while(1)
-    {
-			
-    }
+  while(1)
+  {
+		
+  }
 }
 
 /* FreeRTOS»Øµ÷º¯Êý */

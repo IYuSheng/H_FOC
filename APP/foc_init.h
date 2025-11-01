@@ -19,6 +19,7 @@
 #include "bsp_timer.h"
 
 
+
 #define TASK_PRIO_LED           2
 #define TASK_PRIO_Debug         1
 #define TASK_PRIO_Gather        3

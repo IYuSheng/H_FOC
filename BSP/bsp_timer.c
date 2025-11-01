@@ -238,9 +238,9 @@ void TIM1_UP_TIM10_IRQHandler(void)
       // FOC位置闭环
       // foc_position_control();
       // FOC电流闭环
-      // foc_current_control();
+      foc_current_control();
       // FOC速度闭环
-      foc_speed_control();
+      // foc_speed_control();
     }
   }
 }

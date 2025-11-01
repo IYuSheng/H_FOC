@@ -19,19 +19,19 @@ void vFOCControlTask(void *pvParameters)
   xLastWakeTime = xTaskGetTickCount();
 
   // 140大约5码
-  float32_t new_target_speed = 130.0f;
+  float32_t new_target_speed = 120.0f;
   foc_ctrl.target_q = 4.0f;
-  foc_ctrl.u_q = 6.0f;
+//   foc_ctrl.u_q = 6.0f;
 //   float32_t target_position = 6.28f;  // 目标位置（弧度）
 
   // 初始化位置环PI参数
-  // foc_position_pid_init(1.0f, 0.01f, 10.0f); // kp, ki, 积分限幅
+//   foc_position_pid_init(1.0f, 0.01f, 10.0f); // kp, ki, 积分限幅
 
   // 初始化电流环PI参数
   foc_current_pid_init(0.6f, 0.04f, 6.0f);
 
   // 初始化速度环PI参数
-  foc_speed_pid_init(1.0f, 0.005f, 1.0f);
+//   foc_speed_pid_init(1.0f, 0.005f, 1.0f);
 
   // 设置FOC控制初始参数
   foc_control_set_params(NULL, NULL, NULL, NULL, &new_target_speed, NULL);
@@ -157,11 +157,6 @@ void foc_current_control(void)
     float32_t T1, T2, T0;
 
     static uint32_t countsss = 0;
-    
-    bemf_angle = bsp_adc_calculate_bemf_angle(
-          foc_datai.ia, foc_datai.ib, foc_datai.ic,
-          foc_datav.va, foc_datav.vb, foc_datav.vc,
-          bsp_get_micros());             // 获取反电动势电角度
 
     if(countsss < 2000)
     {
@@ -174,7 +169,7 @@ void foc_current_control(void)
     }
 
     // 将ABC坐标系电流转换为DQ坐标系电流
-    abc_to_dq_current((void*)&foc_datai, &current_dq, foc_ctrl.angle);
+    abc_to_dq_current(&foc_datai, &current_dq, foc_ctrl.angle);
 
     // 电流环PID计算
     u_d = foc_id_pid_calculate(target_id, current_dq.d);

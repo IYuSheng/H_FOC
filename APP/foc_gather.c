@@ -50,6 +50,9 @@ void vGatherProcessTask(void *pvParameters)
       // 获取速度和位置信息
       g_speed_rpm  = hall_get_speed_rpm();
       bemf_speed = bsp_adc_get_bemf_speed_rpm();
+
+      // g_total_angle = hall_get_total_mechanical_angle();
+      // g_total_rotations = hall_get_total_rotations();
       // debug_printf("%.4f,%.4f", bemf_speed, g_speed_rpm);
       
       // 打印HALL状态、电角度、速度和位置信息

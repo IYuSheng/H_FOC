@@ -64,5 +64,5 @@
 .\objects\foc_encoder.o: .\BSP\bsp_timer.h
 .\objects\foc_encoder.o: .\APP\foc_control.h
 .\objects\foc_encoder.o: .\APP\foc_conversion.h
-.\objects\foc_encoder.o: .\APP\foc_settings.h
 .\objects\foc_encoder.o: .\APP\foc_control.h
+.\objects\foc_encoder.o: .\APP\foc_settings.h

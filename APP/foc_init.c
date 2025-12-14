@@ -25,9 +25,6 @@ void foc_app_init(void)
 {
   led_init();
   foc_encoder_init();
-  debug_init();
-  foc_gather_init();
-  foc_control_init();
 
   debug_log("foc_app_init complete");
 }

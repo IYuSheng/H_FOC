@@ -81,7 +81,6 @@ void bsp_uart_init(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;         // 复用功能
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;    // 速度50MHz
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;       // 推挽复用输出
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;         // 上拉
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
@@ -90,7 +89,7 @@ void bsp_uart_init(void)
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_USART3);
 
   // UART3初始化配置
-  USART_InitStructure.USART_BaudRate = 115200;         // 波特率设置为115200
+  USART_InitStructure.USART_BaudRate = 2000000;         // 波特率设置为115200
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;   // 字长为8位数据格式
   USART_InitStructure.USART_StopBits = USART_StopBits_1;        // 一个停止位
   USART_InitStructure.USART_Parity = USART_Parity_No;           // 无奇偶校验位
@@ -106,11 +105,11 @@ void bsp_uart_init(void)
   NVIC_Init(&NVIC_InitStructure);                      // 根据指定的参数初始化NVIC
 
   // 配置Uart中断
-  NVIC->IP[USART3_IRQn] = 5 << 4;  // 抢占优先级 5（4 位），子优先级 0（0 位）
-  NVIC_EnableIRQ(USART3_IRQn);
+//  NVIC->IP[USART3_IRQn] = 5 << 4;  // 抢占优先级 5（4 位），子优先级 0（0 位）
+//  NVIC_EnableIRQ(USART3_IRQn);
 
-  // 使能UART3接收中断
-  USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+//  // 使能UART3接收中断
+//  USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
 
   // 初始化DMA
   bsp_uart_dma_init();

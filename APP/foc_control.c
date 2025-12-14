@@ -3,6 +3,7 @@
 // FOC控制变量
 foc_control_t foc_ctrl;
 AlphaBetaTypeDef alpha_beta;
+hall_get hall_data;
 SVPWM_t svpwm;
 
 /**
@@ -11,32 +12,43 @@ SVPWM_t svpwm;
 void vFOCControlTask(void *pvParameters)
 {
   // 140大约5码
-  foc_ctrl.target_speed = 240.0f;   // 设置目标速度
-  foc_ctrl.out_q = 1.5f; // 设置q轴输出电压(开环用)
-  foc_ctrl.target_q = 0.3f;  // 设置目标Q轴电流
+  foc_ctrl.target_speed = 50.0f;   // 设置目标速度
+  foc_ctrl.out_q = 0.5f; // 设置q轴输出电压(开环用)
+  foc_ctrl.out_d = 0.0f; // 设置d轴输出电压(开环用)
+  foc_ctrl.target_q = 2.0f;  // 设置目标Q轴电流
+  foc_ctrl.target_d = 0.0f;  // 设置目标D轴电流
   foc_ctrl.target_position = 6.28f;  // 设置目标位置
 
   // 初始化电流环PI参数
-  foc_current_pid_init(I_P_GAIN, I_I_GAIN, I_I_LIMIT);
+  foc_current_pi_init(I_D_P_GAIN, I_Q_P_GAIN, I_I_GAIN, I_I_LIMIT);
 
   // 初始化速度环PI参数
-  foc_speed_pid_init(SPEED_P_GAIN, SPEED_I_GAIN, SPEED_I_LIMIT);
+  foc_speed_pi_init(SPEED_P_GAIN, SPEED_I_GAIN, SPEED_I_LIMIT);
 
   // 初始化位置环PI参数
-  foc_position_pid_init(POSITION_P_GAIN, POSITION_I_GAIN, POSITION_I_LIMIT);
+  foc_position_pi_init(POSITION_P_GAIN, POSITION_I_GAIN, POSITION_I_LIMIT);
+
+  StartMotorParameterIdentification();
+  
   for (;;)
     {
     #if DEBUG_MODE
-    debug_printf("%.4f,%.4f,%.4f,%.4f,%.4f", foc_ctrl.target_q, foc_ctrl.abc_dq.current_q, foc_ctrl.abc_dq.current_d, foc_ctrl.out_q, foc_ctrl.out_d);
-    // debug_printf("%.4f,%.4f", bemf_angle, g_angle);
-    // debug_printf("%.4f, %.4f", Angle_SMOPare.Ealpha, bemf_angle);
-    // debug_printf("%.4f,%.4f", g_speed_rpm, bemf_speed);
+    // debug_printf("%.4f,%.4f,%.4f,%.4f,%.4f", foc_ctrl.target_q, foc_ctrl.abc_dq.current_q, foc_ctrl.abc_dq.current_d, foc_ctrl.out_q, foc_ctrl.out_d);
+    // debug_log("%.4f,%.4f", Angle_SMOPare.Ealpha, Angle_SMOPare.Ebeta);
+    // debug_log("%.4f,%.4f,%.4f,%.4f", Angle_SMOPare.EstIalpha, Angle_SMOPare.EstIbeta, alpha_beta.alpha_i, alpha_beta.beta_i);
+    // debug_log("%.4f,%.4f", g_speed, foc_ctrl.angle);
+    // debug_log("%.4f,%.4f", alpha_beta.alpha_i, alpha_beta.beta_i);
+    
+    // debug_printf("%.4f,%.4f,%.4f", foc_datai.ia, foc_datai.ib, foc_datai.ic);
+    // debug_printf("%.4f,%.4f,%.4f", foc_datav.va, foc_datav.vb, foc_datav.vc);
+    // debug_printf("%.4f, %.4f", foc_ctrl.angle, bemf_angle);
+    // debug_printf("%.4f, %.4f", foc_datai.ia, foc_datav.va);
     // debug_printf("%.4f", foc_datav.vbus);
     // debug_printf("%d,%d,%d", svpwm.pwm_a, svpwm.pwm_b, svpwm.pwm_c);
-    // debug_printf("%.4f", g_speed_rpm);
+    // debug_printf("%.4f", hall_data.speed);
+    // debug_log("%.4f,%.4f", SMO_MotorPare.Rs, SMO_MotorPare.Ls);
     #endif
 
-      // 按固定频率延迟
       vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
@@ -61,6 +73,12 @@ void foc_open_loop_control(void)
     /************************** 2. 反Park变换（DQ→αβ） **************************/
     inv_park_transform_f32(&foc_ctrl, &alpha_beta, foc_ctrl.angle);
 
+    clark_transform(&foc_datai,&foc_datav, &alpha_beta);
+
+    // bemf_angle = SMO_bemf_angle(&alpha_beta);
+    // hall_update_PLL(&hall_data);
+    park_transform(&alpha_beta, &foc_ctrl);
+
     /************************** 3. SVPWM核心：扇区判断→作用时间→占空比 **************************/
     // 扇区判断
     svpwm.sector = svpwm_sector_calc(&alpha_beta);
@@ -70,11 +88,12 @@ void foc_open_loop_control(void)
 
     svpwm_duty_calc(&svpwm);
 
+    foc_datav.va = foc_datav.vbus * ((float32_t)svpwm.pwm_a) / PWM_PERIOD;
+    foc_datav.vb = foc_datav.vbus * ((float32_t)svpwm.pwm_b) / PWM_PERIOD;
+    foc_datav.vc = foc_datav.vbus * ((float32_t)svpwm.pwm_c) / PWM_PERIOD;
+
     // 输出PWM到定时器
     bsp_pwm_set_duty(svpwm.pwm_a, svpwm.pwm_b, svpwm.pwm_c);
-
-    // 更新无感估算电角度(在开环测试用)
-    bemf_angle = SMO_bemf_angle(&alpha_beta);
 }
 
 /**
@@ -82,23 +101,41 @@ void foc_open_loop_control(void)
  */
 void foc_current_control(void)
 {
+    static uint8_t sensorless_mode = FOC_HALL;
+
     // 将ABC坐标系采集电压电流转换为alpha-beta坐标系电压电流
     clark_transform(&foc_datai,&foc_datav, &alpha_beta);
 
+    // 获取霍尔电角度及速度(弧度值)
+    hall_update_PLL(&hall_data);
     // 滑模观察器估算电角度
     bemf_angle = SMO_bemf_angle(&alpha_beta);
+    hall_data.speed = g_speed;
 
-    // 有感无感切换
-    // static uint32_t countsss = 0;
-    // if(countsss < 10000)
-    // {
-    //     countsss++;
-        foc_ctrl.angle = g_angle;
-    // }
-    // else
-    // {
-    //     foc_ctrl.angle = bemf_angle;
-    // }
+    // 启动完成后，根据角度差判断是否切换到无感模式
+        if(sensorless_mode == FOC_HALL)
+        {
+            // 计算角度差
+            float angle_diff = fabsf(bemf_angle - hall_data.angle);
+            
+            // 处理角度环绕情况
+            if(angle_diff > _PI)
+            {
+                angle_diff = _2PI - angle_diff;
+            }
+            
+            // 当角度差小于阈值时切换到无感模式
+            if(angle_diff < 3.0f)
+            {
+                // sensorless_mode = FOC_Unaware;
+            }
+            foc_ctrl.angle = hall_data.angle;  // 仍使用霍尔角度
+        }
+        else
+        {
+            // 已经处于无感模式
+            foc_ctrl.angle = bemf_angle;
+        }
 
     // 将alpha-beta坐标系电流转换为DQ坐标系电流
     park_transform(&alpha_beta, &foc_ctrl);
@@ -138,7 +175,7 @@ void foc_speed_control(void)
     // {
     //     count++;
         // 获取电机编码器速度
-        foc_ctrl.speed = g_speed_rpm;
+        foc_ctrl.speed = g_speed;
     // }
     // else
     // {
@@ -169,8 +206,11 @@ void foc_position_control(void)
 {
     // 获取当前位置（机械弧度值角度）
     float32_t current_position = g_total_angle;
+
+    hall_update_PLL(&hall_data);
+
     // 获取电角度(弧度值)
-    foc_ctrl.angle = g_angle;
+    foc_ctrl.angle = hall_data.angle;
 
     // 使用PI控制器计算目标力矩
     foc_ctrl.out_q = foc_position_pid_calculate(foc_ctrl.target_position, current_position) * _2_PI;
@@ -199,4 +239,29 @@ void foc_position_control(void)
 
     // 输出PWM到定时器
     bsp_pwm_set_duty(svpwm.pwm_a, svpwm.pwm_b, svpwm.pwm_c);
+}
+
+/**
+ * @brief 电机参数辨识辅助函数（在FOC中断中调用）
+ */
+void foc_motor_parameter_identification_helper(void)
+{
+    static uint32_t ident_tick = 0;
+    
+    // 执行参数辨识状态机
+    ParamIdentState_t state = MotorParamIdent_Step(ident_tick, &alpha_beta, &foc_ctrl);
+    
+    inv_park_transform_f32(&foc_ctrl, &alpha_beta, foc_ctrl.angle);
+    svpwm.sector = svpwm_sector_calc(&alpha_beta);
+    svpwm_calc_times(&alpha_beta, &svpwm, foc_datav.vbus);
+    svpwm_duty_calc(&svpwm);
+    bsp_pwm_set_duty(svpwm.pwm_a, svpwm.pwm_b, svpwm.pwm_c);
+
+    if(state == PARAM_ID_COMPLETED)
+    {
+        return; // 辨识完成后退出
+    }
+    
+    // 递增中断计数
+    ident_tick++;
 }

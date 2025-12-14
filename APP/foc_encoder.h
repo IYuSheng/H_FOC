@@ -14,15 +14,14 @@
 #define HALL_C_PIN GPIO_Pin_8
 #define HALL_PORT GPIOC
 
+typedef struct {
+    float angle;          // 估计角度
+    float speed;          // 估计速度
+} hall_get;
+
 void foc_encoder_init(void);
-uint8_t hall_sensor_read(void);
-float hall_get_electrical_angle_rad(uint8_t hall_state);
-float hall_update_position_and_speed(uint32_t current_time);
-float hall_get_speed_rad_per_sec(void);
-float hall_get_speed_rpm(void);
-float hall_get_mechanical_angle(void);
-float hall_get_total_mechanical_angle(void);
-float hall_get_total_rotations(void);
-void hall_reset_counts(void);
+void hall_update_position_and_speed_PLL(uint32_t current_time);
+extern inline void hall_update_PLL(hall_get* hall_data);
+float calculate_motor_speed_rpm(void);
 
 #endif /* __FOC_ENCODER_H */

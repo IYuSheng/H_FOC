@@ -9,7 +9,6 @@
 #include "task.h"
 #include "bsp_uart.h"
 
-void debug_init(void);
 void debug_printf(const char *format, ...);
 
 void vDebugProcessTask(void *pvParameters);

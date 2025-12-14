@@ -20,7 +20,6 @@ void bsp_timer_init(void)
 
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_OCInitTypeDef TIM_OCInitStructure;
-  TIM_BDTRInitTypeDef TIM_BDTRInitStructure;
   GPIO_InitTypeDef GPIO_InitStructure;
 
   // 使能相关时钟
@@ -40,15 +39,6 @@ void bsp_timer_init(void)
   // 配置低端PWM引脚 (PB13, PB14, PB15)
   GPIO_InitStructure.GPIO_Pin = PWM_LA_PIN | PWM_LB_PIN | PWM_LC_PIN;
   GPIO_Init(PWM_L_PORT, &GPIO_InitStructure);
-
-  // 配置刹车引脚（使用PB12作为刹车输入）
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-  // 复用刹车功能（TIM1_BKIN）
-  GPIO_PinAFConfig(GPIOB, GPIO_PinSource12, GPIO_AF_TIM1);
 
   // 配置引脚复用功能
   GPIO_PinAFConfig(PWM_H_PORT, GPIO_PinSource8, GPIO_AF_TIM1);  // PA8 -> TIM1_CH1
@@ -88,16 +78,6 @@ void bsp_timer_init(void)
   TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);
   TIM_OC3PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
-  // 自动输出使能、断路功能、死区设置
-  TIM_BDTRInitStructure.TIM_OSSRState = TIM_OSSRState_Enable;
-  TIM_BDTRInitStructure.TIM_OSSIState = TIM_OSSIState_Enable;
-  TIM_BDTRInitStructure.TIM_LOCKLevel = TIM_LOCKLevel_1;
-  TIM_BDTRInitStructure.TIM_DeadTime = DEAD_TIME;             // DEAD_TIME = (TIM1时钟 / 2MHz) × 设置时间(μs)
-  TIM_BDTRInitStructure.TIM_Break = TIM_Break_Enable;        // 断路功能开启
-  TIM_BDTRInitStructure.TIM_BreakPolarity = TIM_BreakPolarity_High;
-  TIM_BDTRInitStructure.TIM_AutomaticOutput = TIM_AutomaticOutput_Enable;
-  TIM_BDTRConfig(TIM1, &TIM_BDTRInitStructure);
-
  /*------------------------------------------TRGO配置----------------------------------------------------*/
   // 配置TIM1 TRGO信号源为_OC4REF，用于触发ADC注入组转换
   // 这样可以精确控制触发时机，在三相PWM都为低电平时触发
@@ -107,7 +87,7 @@ void bsp_timer_init(void)
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;           // PWM模式2，确保在特定时刻触发
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Disable; // 不输出PWM波形
   TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable; // 不输出互补PWM波形
-  TIM_OCInitStructure.TIM_Pulse = PWM_PERIOD - 50;            // 在PWM周期快结束时触发（确保三相都为低电平）
+  TIM_OCInitStructure.TIM_Pulse = PWM_PERIOD - 20;            // 确保零相位触发，避开开关噪声
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
   TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High;
   TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
@@ -160,7 +140,7 @@ void bsp_timestamp_init(void)
     }
     
     // TIM2配置：10kHz计数频率，向上计数模式
-    TIM_TimeBaseStructure.TIM_Prescaler = (TIM2_Clock / 10000) - 1; // 10kHz计数频率，100us计数一次
+    TIM_TimeBaseStructure.TIM_Prescaler = (TIM2_Clock / 100000) - 1; // 100kHz计数频率，10us计数一次
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseStructure.TIM_Period = 0xFFFFFFFF; // 最大计数值
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -168,11 +148,17 @@ void bsp_timestamp_init(void)
     
     // 启动TIM2
     TIM_Cmd(TIM2, ENABLE);
+  
+  // 关闭PWM输出
+  // TIM_CtrlPWMOutputs(TIM1, DISABLE);
+  // TIM_SetCompare1(TIM1, 0);
+  // TIM_SetCompare2(TIM1, 0);
+  // TIM_SetCompare3(TIM1, 0);
 }
 
 /**
  * @brief 获取微秒级时间戳
- * @return 当前时间戳(100微秒)
+ * @return 当前时间戳(10微秒)
  */
 uint32_t bsp_get_micros(void)
 {
@@ -192,26 +178,7 @@ void bsp_pwm_set_duty(uint16_t ha_duty, uint16_t hb_duty, uint16_t hc_duty)
   TIM_SetCompare3(TIM1, hc_duty);
 }
 
-/**
- * @brief 使能PWM输出
- */
-void bsp_pwm_enable(void)
-{
-  TIM_CtrlPWMOutputs(TIM1, ENABLE);
-}
-
-/**
- * @brief 禁用PWM输出
- */
-void bsp_pwm_disable(void)
-{
-  TIM_CtrlPWMOutputs(TIM1, DISABLE);
-  TIM_SetCompare1(TIM1, 0);
-  TIM_SetCompare2(TIM1, 0);
-  TIM_SetCompare3(TIM1, 0);
-}
-
-// 中断服务程序
+// 中断服务程序，此处后续添加状态检测等功能
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
@@ -222,37 +189,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
     // 中心对齐模式中，向下计数到0时会触发更新中断，且此时PWM输出为0
     if ((TIM1->CR1 & TIM_CR1_DIR) == TIM_CR1_DIR) // DIR=1：向下计数
     {
-      // FOC速度开环
-      // foc_open_loop_control();
-      // FOC位置闭环
-      // foc_position_control();
-      // FOC电流闭环
-      // foc_current_control();
-      // FOC速度闭环
-      foc_speed_control();
-      // 此时对应PWM占空比为0，且ADC注入组采集（通道4触发）已完成
-      #if (FOC_CONTROL_MODE == FOC_MODE_SPEED)
-      // foc_speed_control();
-      #elif (FOC_CONTROL_MODE == FOC_MODE_CURRENT)
-      // foc_current_control();
-      #elif (FOC_CONTROL_MODE == FOC_MODE_POSITION)
-      // foc_position_control();
-      #elif (FOC_CONTROL_MODE == FOC_MODE_OPEN_LOOP)
-      // foc_open_loop_control();
-      #else
-      // foc_open_loop_control();  // 默认使用开环速度控制
-      #endif
+
     }
   }
-}
-
-void TIM1_BRK_TIM9_IRQHandler(void)
-{
-  if (TIM_GetITStatus(TIM1, TIM_IT_Break) != RESET)
-    {
-      TIM_ClearITPendingBit(TIM1, TIM_IT_Break);
-      bsp_pwm_disable(); // 紧急关闭PWM
-      // 可添加故障标志位设置、日志记录等
-      debug_log("PWM Fault Error!");
-    }
 }

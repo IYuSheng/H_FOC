@@ -64,5 +64,5 @@
 .\objects\foc_gather.o: .\APP\foc_encoder.h
 .\objects\foc_gather.o: .\BSP\bsp_timer.h
 .\objects\foc_gather.o: .\APP\foc_conversion.h
-.\objects\foc_gather.o: .\APP\foc_settings.h
 .\objects\foc_gather.o: .\APP\foc_control.h
+.\objects\foc_gather.o: .\APP\foc_settings.h

@@ -14,14 +14,11 @@
 #include "bsp_timer.h"
 
 // 外部声明电角度及速度
-extern float g_speed_rpm;
 extern float g_total_angle;
-extern float g_total_rotations;
 extern float g_angle;
+extern float32_t g_speed;
 extern float32_t bemf_angle;
 extern float32_t bemf_speed;
-
-void foc_gather_init(void);
 
 void vGatherProcessTask(void *pvParameters);
 

@@ -3,15 +3,6 @@
 static char debug_buffer[512];  // 调试信息缓冲区
 
 /**
- * @brief 初始化调试功能
- */
-void debug_init(void)
-{
-  // 调试功能初始化在bsp_uart_init中已完成
-  // 这里可以添加其他调试相关的初始化
-}
-
-/**
  * @brief 格式化打印调试信息
  * @param format 格式化字符串
  * @param ... 可变参数

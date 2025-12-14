@@ -11,7 +11,7 @@
 #include "semphr.h"
 
 // 发送缓冲区大小
-#define UART_TX_BUFFER_SIZE 1024
+#define UART_TX_BUFFER_SIZE 2048
 
 // 串口调试相关函数
 void bsp_uart_init(void);

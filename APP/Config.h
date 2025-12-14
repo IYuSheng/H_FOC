@@ -11,16 +11,18 @@
 #define DEBUG_MODE  1     // 打开仿真波形打印
 
 // -------------------------- 电源与硬件限制 --------------------------
-#define VOLTAGE_LIMIT        4.3f    // 直流母线电压限制 (V)
-#define CURRENT_LIMIT        4.0f    // 最大相电流限制 (A)
+#define VOLTAGE_LIMIT        8.0f    // 直流母线电压限制 (V)
+#define CURRENT_LIMIT        20.0f    // 最大相电流限制 (A)
 #define OVER_CURRENT_THRESH  0.6f    // 过流保护阈值 (A)
 #define OVER_VOLTAGE_THRESH  3.6f    // 过压保护阈值 (V)
 #define UNDER_VOLTAGE_THRESH 2.8f   // 欠压保护阈值 (V)
 
-// -------------------------- 电机参数 (根据实际电机填写) --------------------------
-#define MOTOR_POLE_PAIRS    15       // 电机极对数
-#define MOTOR_RESISTANCE    0.98f    // 相电阻 (欧姆)
-#define MOTOR_INDUCTANCE    0.0008f  // 相电感 (H)
+// -------------------------- 电机参数 (根据实际电机填写) -------------------------- 
+#define MOTOR_POLE_PAIRS    11       // 电机极对数
+#define MOTOR_RESISTANCE    0.36f    // 相电阻 (欧姆)
+#define MOTOR_INDUCTANCE    0.000119f  // 相电感 (H)
+#define MOTOR_INDUCTANCE_Lq  0.000119f // q轴电感 (H)
+#define MOTOR_INDUCTANCE_Ld  0.000119f // d轴电感 (H)
 #define MAX_SPEED_RPM       200    // 最大转速限制 (RPM)
 
 // -------------------------- FOC控制参数 --------------------------
@@ -31,15 +33,16 @@
 
 // -------------------------- PI调节器参数 --------------------------
 // 电流环PI
-#define I_P_GAIN           5.0f
-#define I_I_GAIN           0.15f
-#define I_I_LIMIT          5.0f
+#define I_D_P_GAIN         2.23f
+#define I_Q_P_GAIN         2.67f
+#define I_I_GAIN           0.154f
+#define I_I_LIMIT          4.0f
 
 // 速度环PI
-#define SPEED_P_GAIN        0.006f
-#define SPEED_I_GAIN        0.00003f
-#define SPEED_I_LIMIT       7.0f
-#define SPEED_Cycle         50  // 速度环PI控制周期(数值越大，控制频率越低，单位：PWM周期数)
+#define SPEED_P_GAIN        0.1f
+#define SPEED_I_GAIN        0.001f
+#define SPEED_I_LIMIT       4.0f
+#define SPEED_Cycle         100  // 速度环PI控制周期(数值越大，控制频率越低，单位：PWM周期数)
 
 // 位置环PI
 #define POSITION_P_GAIN     1.0f
@@ -51,8 +54,8 @@
 #define ADC_MAX_VALUE       4096.0f    // ADC分辨率 (例如：12位ADC为4096)
 #define INA240_GAIN         20.0f   // 电流采样运放增益
 #define V_REF               1.65f    // REF1 引脚电压3.3V，单位：V
-#define A_REF               2048
-#define R_Current           0.001f    // 采样电阻阻值 (1mΩ)
+#define A_REF               2043
+#define R_Current           0.006f    // 采样电阻阻值
 
 // -------------------------- 电压采样配置 --------------------------
 #define R_Voaltage_1  56.0f   // 56KΩ
@@ -61,6 +64,7 @@
 // -------------------------- 常用常量及中间变量定义 --------------------------
 #define _PI         PI
 #define _2PI        (2.0f * PI)
+#define _PI_2        PI / 2.0f
 #define _2_PI       1.0f / (2.0f * PI)
 #define _60_angle   2.0f * PI / 6.0f  // 60度对应的弧度
 #define _SQRT3      1.732050807568877f

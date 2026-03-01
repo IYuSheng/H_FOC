@@ -16,7 +16,6 @@
 // 外部声明电角度及速度
 extern float g_total_angle;
 extern float g_angle;
-extern float32_t g_speed;
 extern float32_t bemf_angle;
 extern float32_t bemf_speed;
 

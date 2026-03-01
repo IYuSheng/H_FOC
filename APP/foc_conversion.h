@@ -43,12 +43,15 @@ typedef struct
   float32_t angle;            // 电角度(弧度)
   float32_t speed;            // 速度（rad/s）
   float32_t speed_rpm;        // 速度（rpm）
+  float32_t omega;            // 电角速度
   float32_t target_speed;     // 目标速度(rpm)
   float32_t target_position;  // 目标位置（弧度）
   struct
   {
     float32_t current_d;     // 实际D轴电流
     float32_t current_q;     // 实际Q轴电流
+    float32_t current_d_filt;
+    float32_t current_q_filt;
   }abc_dq;  // 经采集变换后的实际dq轴电流
 } foc_control_t;
 
@@ -107,25 +110,81 @@ typedef struct {
     } tPll;
 } Ppll_obj_t;
 
-// 电机参数辨识状态枚举
-typedef enum {
-    PARAM_ID_IDLE = 0,           // 空闲状态
-    PARAM_ID_RS_DC_TEST,         // 直流电阻测试
-    PARAM_ID_LD_HF_TEST,         // D轴高频电感测试
-    PARAM_ID_LQ_HF_TEST,         // Q轴高频电感测试
-    PARAM_ID_COMPLETED           // 辨识完成
-} ParamIdentState_t;
+typedef struct {
+    // 二阶巴特沃斯滤波器系数
+    float b0, b1, b2;  // 分子系数
+    float a1, a2;      // 分母系数（a0归一化为1）
+    
+    // 历史值
+    float x[2];        // 输入历史 [n-1, n-2]
+    float y[2];        // 输出历史 [n-1, n-2]
+    
+    float cutoff_freq; // 截止频率(Hz)
+    float sample_freq; // 采样频率(Hz)
+} ButterworthLPF_t;
 
+extern foc_control_t foc_ctrl;
+extern SVPWM_t svpwm;
+extern AlphaBetaTypeDef alpha_beta;
 extern Ppll_obj_t Angle_SMOPare;
 extern SMO_MotorPare_t SMO_MotorPare;
 
 // FOC变换相关函数声明
+
+/**
+ * @brief 二阶巴特沃斯低通滤波器初始化
+ * @param filt 滤波器结构体指针
+ * @param cutoff_freq 截止频率(Hz)
+ * @param sample_freq 采样频率(Hz)
+ * 
+ * 传递函数：H(s) = ωc? / (s? + √2·ωc·s + ωc?)
+ */
+void butterworth_init(ButterworthLPF_t *filt, float cutoff_freq, float sample_freq);
+
+/**
+ * @brief 二阶巴特沃斯滤波器更新
+ * @param filt 滤波器结构体指针
+ * @param input 当前输入值
+ * @return 滤波后的输出值
+ * 
+ * 差分方程：y[n] = b0·x[n] + b1·x[n-1] + b2·x[n-2] - a1·y[n-1] - a2·y[n-2]
+ */
+float butterworth_filter(ButterworthLPF_t *filt, float input);
+
 /**
  * @brief 电角度归一化（映射到0~2π范围）
  * @param angle 输入电角度（rad，范围无限制）
  * @return 归一化后电角度（rad，0~2π）
  */
 extern inline float32_t angle_normalize(float32_t angle);
+
+/**
+ * @brief 电角度归一化（映射到-π~π范围）
+ * @param angle 输入电角度（rad，范围无限制）
+ * @return 归一化后电角度（rad，-π~π）
+ */
+extern inline float32_t angle_normalize_pi(float32_t angle);
+
+/**
+ * @brief 电角度归一化（映射到0~360范围）
+ * @param angle 输入电角度（°，范围无限制）
+ * @return 归一化后电角度（°，0~360）
+ */
+extern inline float32_t angle_normalize_360(float32_t angle);
+
+/**
+ * @brief 角度制转弧度制
+ * @param deg 输入角度（°）
+ * @return 转换后弧度值（rad）
+ */
+extern inline float deg2rad(float deg);
+
+/**
+ * @brief 弧度制转角度制
+ * @param rad 输入弧度（rad）
+ * @return 转换后角度值（°）
+ */
+extern inline float rad2deg(float rad);
 
 /**
  * @brief SVPWM通用扇区判断函数
@@ -150,11 +209,13 @@ extern inline void svpwm_duty_calc(SVPWM_t *svpwm);
 
 /**
  * @brief 反Park变换
- * @param foc_ctrl FOC控制结构体指针
- * @param alpha_beta αβ坐标系下的电压指针
- * @param angle 电角度(弧度)
+ * @param d_ptr D轴输入指针
+ * @param q_ptr Q轴输入指针
+ * @param alpha_ptr Alpha轴输出指针
+ * @param beta_ptr Beta轴输出指针
+ * @param angle 电角度(角度, 0-360度)
  */
-extern inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *alpha_beta, float32_t angle);
+extern inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *alpha_beta, float32_t sin_theta, float32_t cos_theta);
 
 /**
  * @brief 将三相电压电流转换为αβ坐标系下的值
@@ -166,10 +227,10 @@ extern inline void clark_transform(void *abc_i, void *abc_v, AlphaBetaTypeDef *a
 
 /**
  * @brief 将αβ转换为dq坐标系下的电流值
- * @param alpha_beta αβ坐标系下的电流值
- * @param foc_ctrl FOC控制结构体指针
+ * @param current_abc αβ电流值
+ * @param current_αβ 输出的dq轴电流值
  */
-extern inline void park_transform(AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl);
+inline void park_transform(AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl, float32_t sin_theta, float32_t cos_theta);
 
 /**
  * @brief 将三相电流转换为dq坐标系下的电流值
@@ -222,18 +283,5 @@ void SMO_Pare_init(void);
  * @return 估算的电角度(弧度)
  */
 extern inline float32_t SMO_bemf_angle(AlphaBetaTypeDef *alpha_beta);
-
-/**
- * @brief 电机参数辨识启动
- */
-void StartMotorParameterIdentification(void);
-
-/**
- * @brief 执行一步电机参数辨识
- * @param current_tick 当前中断计数
- * @param alpha_beta αβ坐标系下的电压电流值指针
- * @param foc_ctrl FOC控制结构体指针
- */
-ParamIdentState_t MotorParamIdent_Step(uint32_t current_tick, AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl);
 
 #endif /* __FOC_CONVERSION_H */

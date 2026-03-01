@@ -1,9 +1,77 @@
 #include "foc_conversion.h"
 
+foc_control_t foc_ctrl;
+SVPWM_t svpwm;
+AlphaBetaTypeDef alpha_beta;
 pi_t iq_pid;
 pi_t id_pid;
 pi_t speed_pid;
 pi_t position_pid;
+
+/* ===================== 巴特沃斯滤波器 ===================== */
+
+/**
+ * @brief 二阶巴特沃斯低通滤波器初始化
+ * @param filt 滤波器结构体指针
+ * @param cutoff_freq 截止频率(Hz)
+ * @param sample_freq 采样频率(Hz)
+ * 
+ * 传递函数：H(s) = ωc? / (s? + √2·ωc·s + ωc?)
+ */
+void butterworth_init(ButterworthLPF_t *filt, float cutoff_freq, float sample_freq)
+{
+    filt->cutoff_freq = cutoff_freq;
+    filt->sample_freq = sample_freq;
+    
+    // 预扭曲频率（双线性变换）
+    float wc = 2.0f * PI * cutoff_freq;
+    float T = 1.0f / sample_freq;
+    float wa = (2.0f / T) * tanf(wc * T / 2.0f);  // 预扭曲后的角频率
+    
+    // 二阶巴特沃斯系数计算
+    float sqrt2 = 1.41421356f;
+    float Q = wa * wa;
+    float D = 4.0f + 2.0f * sqrt2 * wa * T + Q * T * T;
+    
+    // 分子系数（归一化，使直流增益为1）
+    filt->b0 = Q * T * T / D;
+    filt->b1 = 2.0f * Q * T * T / D;
+    filt->b2 = Q * T * T / D;
+    
+    // 分母系数（a0归一化为1，所以这里是-a1/D, -a2/D）
+    filt->a1 = (2.0f * Q * T * T - 8.0f) / D;
+    filt->a2 = (4.0f - 2.0f * sqrt2 * wa * T + Q * T * T) / D;
+    
+    // 清零历史值
+    filt->x[0] = filt->x[1] = 0.0f;
+    filt->y[0] = filt->y[1] = 0.0f;
+}
+
+/**
+ * @brief 二阶巴特沃斯滤波器更新
+ * @param filt 滤波器结构体指针
+ * @param input 当前输入值
+ * @return 滤波后的输出值
+ * 
+ * 差分方程：y[n] = b0·x[n] + b1·x[n-1] + b2·x[n-2] - a1·y[n-1] - a2·y[n-2]
+ */
+float butterworth_filter(ButterworthLPF_t *filt, float input)
+{
+    // 计算当前输出
+    float output = filt->b0 * input 
+                 + filt->b1 * filt->x[0] 
+                 + filt->b2 * filt->x[1]
+                 - filt->a1 * filt->y[0] 
+                 - filt->a2 * filt->y[1];
+    
+    // 更新历史值（移位）
+    filt->x[1] = filt->x[0];
+    filt->x[0] = input;
+    filt->y[1] = filt->y[0];
+    filt->y[0] = output;
+    
+    return output;
+}
 
 /**
  * @brief 电角度归一化（映射到0~2π范围）
@@ -15,6 +83,50 @@ inline float32_t angle_normalize(float32_t angle)
     angle = fmodf(angle, _2PI);
     if (angle < 0.0f) angle += _2PI;
     return angle;
+}
+
+/**
+ * @brief 电角度归一化（映射到-π~π范围）
+ * @param angle 输入电角度（rad，范围无限制）
+ * @return 归一化后电角度（rad，-π~π）
+ */
+inline float32_t angle_normalize_pi(float32_t angle)
+{
+    while (angle < -_PI)   angle += _2PI;
+    while (angle >= _PI)  angle -= _2PI;
+    return angle;
+}
+
+/**
+ * @brief 电角度归一化（映射到0~360范围）
+ * @param angle 输入电角度（°，范围无限制）
+ * @return 归一化后电角度（°，0~360）
+ */
+inline float32_t angle_normalize_360(float32_t angle)
+{
+    while (angle < 0.0f)   angle += 360.0f;
+    while (angle >= 360.0f) angle -= 360.0f;
+    return angle;
+}
+
+/**
+ * @brief 角度制转弧度制
+ * @param deg 输入角度（°）
+ * @return 转换后弧度值（rad）
+ */
+inline float deg2rad(float deg)
+{
+    return deg * 0.017453292519943295f;  // π / 180
+}
+
+/**
+ * @brief 弧度制转角度制
+ * @param rad 输入弧度（rad）
+ * @return 转换后角度值（°）
+ */
+inline float rad2deg(float rad)
+{
+    return rad * 57.29577951308232f;  // 180 / π
 }
 
 /**
@@ -61,44 +173,30 @@ inline uint8_t svpwm_sector_calc(AlphaBetaTypeDef *alpha_beta)
  */
 inline void svpwm_calc_times(AlphaBetaTypeDef *alpha_beta, SVPWM_t *svpwm, float32_t vdc)
 {
-    // 1. 计算目标电压矢量幅值（避免过调制）
-    float32_t u_mag;
-    float32_t alpha_sq, beta_sq, sum_sq;
-    const float32_t u_max = _1_SQRT3 * vdc; // SVPWM最大输出相电压幅值
-    
-    // 使用DSP函数计算平方和开方
-    arm_mult_f32(&alpha_beta->alpha, &alpha_beta->alpha, &alpha_sq, 1);
-    arm_mult_f32(&alpha_beta->beta, &alpha_beta->beta, &beta_sq, 1);
-    arm_add_f32(&alpha_sq, &beta_sq, &sum_sq, 1);
-    arm_sqrt_f32(sum_sq, &u_mag);
-    
-    // 2. 过调制处理
-    if (u_mag > u_max && u_mag > 1e-6f)
+    // 1) 计算幅值平方
+    float32_t alpha = alpha_beta->alpha;
+    float32_t beta  = alpha_beta->beta;
+    float32_t u_mag_sq = alpha * alpha + beta * beta;
+    const float32_t u_max = _1_SQRT3 * vdc;
+    const float32_t u_max_sq = u_max * u_max;
+
+    // 2) 过调制处理
+    if (u_mag_sq > u_max_sq && u_mag_sq > 1e-12f)
     {
+        float32_t u_mag = sqrtf(u_mag_sq);
         float32_t scale = u_max / u_mag;
-        arm_scale_f32(&alpha_beta->alpha, scale, &alpha_beta->alpha, 1);
-        arm_scale_f32(&alpha_beta->beta, scale, &alpha_beta->beta, 1);
-        u_mag = u_max;
+        alpha *= scale;
+        beta  *= scale;
+        alpha_beta->alpha = alpha;
+        alpha_beta->beta  = beta;
     }
-    
-    // 3. 计算与扇区判断完全一致的中间变量
+
+    // 3) 中间变量计算
     float32_t factor = FACTOR / vdc;
     float32_t half_factor = factor * 0.5f;
-    float32_t X, Y, Z;
-    
-    // X
-    arm_scale_f32(&alpha_beta->beta, factor, &X, 1);
-    // Y
-    float32_t temp1, temp2;
-    float32_t sqrt3_const = _SQRT3;
-    arm_scale_f32(&sqrt3_const, alpha_beta->alpha, &temp1, 1);
-    arm_add_f32(&temp1, &alpha_beta->beta, &temp2, 1);
-    arm_scale_f32(&temp2, half_factor, &Y, 1);
-    // Z
-    arm_scale_f32(&sqrt3_const, alpha_beta->alpha, &temp1, 1);
-    arm_sub_f32(&temp1, &alpha_beta->beta, &temp2, 1);
-    arm_scale_f32(&temp2, half_factor, &Z, 1);
-    arm_negate_f32(&Z, &Z, 1); // 取负值
+    float32_t X = beta * factor;
+    float32_t Y = ( _SQRT3 * alpha + beta) * half_factor;
+    float32_t Z = (beta -_SQRT3 * alpha) * half_factor;
     
     // 4. 按扇区计算T1和T2（基于X/Y/Z）
     switch (svpwm->sector)
@@ -135,6 +233,7 @@ inline void svpwm_calc_times(AlphaBetaTypeDef *alpha_beta, SVPWM_t *svpwm, float
     
     // 6. 计算零矢量时间（确保T0≥0，避免负数）
     svpwm->T0 = PWM_PERIOD_S - svpwm->T1 - svpwm->T2;
+    if (svpwm->T0 < 0.0f) svpwm->T0 = 0.0f;
 }
 
 /**
@@ -192,9 +291,10 @@ inline void svpwm_duty_calc(SVPWM_t *svpwm)
             break;
     }
     // 导通时间→比较值
-    svpwm->pwm_a = Ta * PWM_FREQ_PERIOD;
-    svpwm->pwm_b = Tb * PWM_FREQ_PERIOD;
-    svpwm->pwm_c = Tc * PWM_FREQ_PERIOD;
+    const float32_t k = PWM_FREQ_PERIOD;
+    svpwm->pwm_a = Ta * k;
+    svpwm->pwm_b = Tb * k;
+    svpwm->pwm_c = Tc * k;
 }
 
 /**
@@ -203,23 +303,14 @@ inline void svpwm_duty_calc(SVPWM_t *svpwm)
  * @param q_ptr Q轴输入指针
  * @param alpha_ptr Alpha轴输出指针
  * @param beta_ptr Beta轴输出指针
- * @param angle 电角度(弧度)
+ * @param angle 电角度(角度, 0-360度)
  */
-inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *alpha_beta, float32_t angle)
+inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *alpha_beta, float32_t sin_theta, float32_t cos_theta)
 {
-    float32_t sin_theta, cos_theta;
-    
-    // 将电角度从弧度转换为角度
-    float32_t angle_deg;
-    arm_scale_f32(&angle, RAD_TO_DEG, &angle_deg, 1);
-    arm_sin_cos_f32(angle_deg, &sin_theta, &cos_theta);
-
     // 反Park变换：将旋转DQ坐标系电压转换为静止αβ坐标系电压
     alpha_beta->alpha = foc_ctrl->out_d * cos_theta - foc_ctrl->out_q * sin_theta;
     alpha_beta->beta = foc_ctrl->out_d * sin_theta + foc_ctrl->out_q * cos_theta;
 }
-
-// ... existing code ...
 
 /**
  * @brief 将三相电压电流转换为αβ坐标系下的值
@@ -230,7 +321,6 @@ inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *al
 inline void clark_transform(void *abc_i, void *abc_v, AlphaBetaTypeDef *alpha_beta)
 {
     foc_data_i *current_abc = (foc_data_i *)abc_i;
-    foc_data_v *voltage_abc = (foc_data_v *)abc_v;
     
     // 标准幅值不变性Clarke变换
     // α = (2/3)*ia + (-1/3)*ib + (-1/3)*ic
@@ -242,10 +332,6 @@ inline void clark_transform(void *abc_i, void *abc_v, AlphaBetaTypeDef *alpha_be
     // 电流Clarke变换（a/b/c → α/β）
     alpha_beta->alpha_i = TWO_THIRD * current_abc->ia - ONE_THIRD * current_abc->ib - ONE_THIRD * current_abc->ic;
     alpha_beta->beta_i = ONE_SQRT3 * current_abc->ib - ONE_SQRT3 * current_abc->ic;
-    
-    // 电压Clarke变换（a/b/c → α/β）
-    alpha_beta->alpha_v = TWO_THIRD * voltage_abc->va - ONE_THIRD * voltage_abc->vb - ONE_THIRD * voltage_abc->vc;
-    alpha_beta->beta_v = ONE_SQRT3 * voltage_abc->vb - ONE_SQRT3 * voltage_abc->vc;
 }
 
 // ... existing code ...
@@ -255,15 +341,10 @@ inline void clark_transform(void *abc_i, void *abc_v, AlphaBetaTypeDef *alpha_be
  * @param current_abc αβ电流值
  * @param current_αβ 输出的dq轴电流值
  */
-inline void park_transform(AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl)
+void park_transform(AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl, float32_t sin_theta, float32_t cos_theta)
 {
-    float32_t sin_val, cos_val;
-    // 计算角度的正余弦值（需要将弧度转换为角度）
-    float32_t angle_deg = foc_ctrl->angle * RAD_TO_DEG;
-    arm_sin_cos_f32(angle_deg, &sin_val, &cos_val);
-
-    // 使用DSP库的Park变换将两相静止坐标系转换为两相旋转坐标系
-    arm_park_f32(alpha_beta->alpha_i, alpha_beta->beta_i, &foc_ctrl->abc_dq.current_d, &foc_ctrl->abc_dq.current_q, sin_val, cos_val);
+    // Park变换将两相静止坐标系转换为两相旋转坐标系
+    arm_park_f32(alpha_beta->alpha_i, alpha_beta->beta_i, &foc_ctrl->abc_dq.current_d, &foc_ctrl->abc_dq.current_q, sin_theta, cos_theta);
 }
 
 /**
@@ -300,16 +381,20 @@ inline float32_t foc_id_pid_calculate(float32_t target_id, float32_t actual_id)
 {
     float32_t error = target_id - actual_id;
     float32_t p_term = id_pid.kp * error;
+    float32_t id_pid_output;
     
     // 积分项计算与限幅
     id_pid.integral += id_pid.ki * error;
+
     if (id_pid.integral > id_pid.integral_limit) {
         id_pid.integral = id_pid.integral_limit;
     } else if (id_pid.integral < -id_pid.integral_limit) {
         id_pid.integral = -id_pid.integral_limit;
     }
+
+    id_pid_output = p_term + id_pid.integral;
     
-    return p_term + id_pid.integral;
+    return id_pid_output;
 }
 
 /**
@@ -322,16 +407,20 @@ inline float32_t foc_iq_pid_calculate(float32_t target_iq, float32_t actual_iq)
 {
     float32_t error = target_iq - actual_iq;
     float32_t p_term = iq_pid.kp * error;
+    float32_t iq_pid_output;
     
     // 积分项计算与限幅
     iq_pid.integral += iq_pid.ki * error;
+
     if (iq_pid.integral > iq_pid.integral_limit) {
         iq_pid.integral = iq_pid.integral_limit;
     } else if (iq_pid.integral < -iq_pid.integral_limit) {
         iq_pid.integral = -iq_pid.integral_limit;
     }
+
+    iq_pid_output = p_term + iq_pid.integral;
     
-    return p_term + iq_pid.integral;
+    return iq_pid_output;
 }
 
 /**
@@ -557,282 +646,4 @@ inline float32_t SMO_bemf_angle(AlphaBetaTypeDef *alpha_beta)
     }
 
     return Angle_SMOPare.Theta_pre;
-}
-
-/*----------------------------------------------------电机参数辨识部分-------------------------------------------------------*/
-
-// 电机参数辨识结构体
-typedef struct {
-    // 辨识结果
-    float32_t Rs;                // 相电阻 (Ω)
-    float32_t Ls;                // 相电感 (H) - 取Ld和Lq的平均值
-    float32_t Ld;                // D轴电感 (H)
-    float32_t Lq;                // Q轴电感 (H)
-    
-    // 辨识状态
-    ParamIdentState_t state;     // 当前辨识状态
-    
-    // 测试参数
-    float32_t dc_test_voltage;   // 直流测试电压 (V)
-    float32_t hf_freq;           // 高频测试频率 (Hz) - 建议500Hz
-    float32_t hf_voltage;        // 高频测试电压幅值 (V)
-    
-    // 采样数据
-    uint16_t sample_idx;         // 采样索引
-    uint16_t sample_count;       // 总采样数（2个周期=40点）
-    
-    // 时间控制
-    uint32_t start_tick;         // 当前测试开始时间（单位：中断计数）
-    uint32_t elapsed_ticks;      // 已过去时间（单位：中断计数）
-    
-    // 统计信息
-    float32_t v_sum_sq;          // 电压平方和（用于RMS计算）
-    float32_t i_sum_sq;          // 电流平方和（用于RMS计算）
-    float32_t v_max;             // 电压最大值（绝对值）
-    float32_t i_max;             // 电流最大值（绝对值）
-} MotorParamIdent_t;
-
-MotorParamIdent_t g_param_id;
-
-/**
- * @brief 初始化电机参数辨识
- * @param dc_voltage 直流测试电压(V)
- * @param hf_freq 高频测试频率(Hz)
- * @param hf_voltage 高频测试电压幅值(V)
- */
-static void MotorParamIdent_Init(float32_t dc_voltage, float32_t hf_freq, float32_t hf_voltage)
-{
-    g_param_id.Rs = 0.0f;
-    g_param_id.Ls = 0.0f;
-    g_param_id.Ld = 0.0f;
-    g_param_id.Lq = 0.0f;
-    g_param_id.state = PARAM_ID_IDLE;
-    
-    g_param_id.dc_test_voltage = dc_voltage;
-    g_param_id.hf_freq = hf_freq;
-    g_param_id.hf_voltage = hf_voltage;
-    
-    g_param_id.sample_idx = 0;
-    g_param_id.sample_count = (uint16_t)(PWM_FREQ / hf_freq * 5.0f); // 5个周期的采样点数
-    
-    // 初始化统计信息
-    g_param_id.v_sum_sq = 0.0f;
-    g_param_id.i_sum_sq = 0.0f;
-    g_param_id.v_max = 0.0f;
-    g_param_id.i_max = 0.0f;
-}
-
-/**
- * @brief 电机参数辨识
- */
-void StartMotorParameterIdentification(void)
-{
-    // 初始化辨识参数
-    // 直流电压：1V（确保电流不过大）
-    // 高频频率：600Hz（感抗占主导）
-    // 高频电压：0.5V（获得可测量的电流）
-    MotorParamIdent_Init(1.0f, 600.0f, 0.5f);
-}
-
-/**
- * @brief 执行一步电机参数辨识
- * @param current_tick 当前中断计数（20kHz递增）
- */
-ParamIdentState_t MotorParamIdent_Step(uint32_t current_tick, AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl)
-{
-    // 先将采集到的电流电压转换为alpha-beta坐标系
-    clark_transform(&foc_datai,&foc_datav, alpha_beta);
-    park_transform(alpha_beta, foc_ctrl);
-    
-    switch(g_param_id.state)
-    {
-        case PARAM_ID_IDLE:
-            g_param_id.state = PARAM_ID_RS_DC_TEST;
-            g_param_id.start_tick = current_tick;
-            g_param_id.sample_idx = 0;
-            break;
-            
-        case PARAM_ID_RS_DC_TEST:   //辨识电阻
-        {
-            // 1. 注入直流电压到D轴
-            foc_ctrl->angle = 0.0f;           // 角度设为0，D轴对齐α轴
-            foc_ctrl->out_d = g_param_id.dc_test_voltage;  // D轴注入直流电压
-            foc_ctrl->out_q = 0.0f;           // Q轴电压为0
-            
-            // 2. 等待电流稳定（2000个中断=100ms）
-            g_param_id.elapsed_ticks = current_tick - g_param_id.start_tick;
-            
-            if(g_param_id.elapsed_ticks > PWM_FREQ / 2)  // 500ms稳定时间
-            {
-                // 采样阶段：采集100个样本
-                if (g_param_id.sample_idx < 100)
-                {
-                    // 采集电流值
-                    clark_transform(&foc_datai,&foc_datav, alpha_beta);
-                    float32_t current_i = alpha_beta->alpha_i;
-                    
-                    // 累积采样值
-                    g_param_id.i_sum_sq += current_i;
-                    g_param_id.sample_idx++;
-                }
-                else
-                {
-                    // 采样完成，计算平均电流和电阻
-                    float32_t avg_current = g_param_id.i_sum_sq / 100.0f;
-                    
-                    // 计算电阻：R = V / I
-                    g_param_id.Rs = g_param_id.dc_test_voltage / avg_current;
-                    
-                    // 进入下一个状态
-                    g_param_id.state = PARAM_ID_LD_HF_TEST;
-                    g_param_id.start_tick = current_tick;
-                    g_param_id.elapsed_ticks = 0;
-                    g_param_id.sample_idx = 0;
-                    g_param_id.v_sum_sq = 0.0f;
-                    g_param_id.i_sum_sq = 0.0f;
-                    g_param_id.v_max = 0.0f;
-                    g_param_id.i_max = 0.0f;
-                }
-            }
-        }
-        break;
-        
-        case PARAM_ID_LD_HF_TEST:   // 辨识Ld
-        {
-            // 1. 注入高频正弦电压到D轴
-            foc_ctrl->angle = 0.0f;           // D轴对齐α轴
-            float32_t omega = _2PI * g_param_id.hf_freq;
-            uint32_t hf_ticks = current_tick - g_param_id.start_tick;
-            float32_t hf_time = (float32_t)hf_ticks / PWM_FREQ;
-            
-            // 生成高频正弦信号
-            float32_t v_d = g_param_id.hf_voltage * sinf(omega * hf_time);
-            foc_ctrl->out_d = v_d;
-            foc_ctrl->out_q = 0.0f;
-            
-            // 2. 7个周期数据，跳过前2个周期,一共采集5个周期
-            uint32_t skip_ticks = (uint32_t)(PWM_FREQ / g_param_id.hf_freq * 2.0f); // 跳过前2个周期
-            if(hf_ticks >= skip_ticks && (hf_ticks - skip_ticks) < g_param_id.sample_count)
-            {
-                // 采样电压和电流（d轴）
-                float32_t v_sample = v_d;
-                float32_t i_sample = foc_ctrl->abc_dq.current_d;
-                
-                // 更新统计信息
-                g_param_id.v_sum_sq += v_sample * v_sample;
-                g_param_id.i_sum_sq += i_sample * i_sample;
-                
-                float32_t v_abs = fabsf(v_sample);
-                float32_t i_abs = fabsf(i_sample);
-                if(v_abs > g_param_id.v_max) g_param_id.v_max = v_abs;
-                if(i_abs > g_param_id.i_max) g_param_id.i_max = i_abs;
-                
-                g_param_id.sample_idx++;
-            }
-            else if(hf_ticks >= skip_ticks && (hf_ticks - skip_ticks) >= g_param_id.sample_count)
-            {
-                // 采样完成，计算D轴电感
-                if(g_param_id.sample_idx > 0)
-                {
-                    // 计算RMS值
-                    float32_t v_rms = sqrtf(g_param_id.v_sum_sq / g_param_id.sample_idx);
-                    float32_t i_rms = sqrtf(g_param_id.i_sum_sq / g_param_id.sample_idx);
-                    
-                    float32_t Z = v_rms / i_rms;           // 阻抗幅值
-                    float32_t omega_L = _2PI * g_param_id.hf_freq;
-                    
-                    // L = sqrt(Z^2 - R^2) / ω
-                    float32_t Z_sq = Z * Z;
-                    float32_t R_sq = g_param_id.Rs * g_param_id.Rs;
-                        
-                    g_param_id.Ld = sqrtf(Z_sq - R_sq) / omega_L;
-                }
-                
-                // 进入下一个状态
-                g_param_id.state = PARAM_ID_LQ_HF_TEST;
-                g_param_id.start_tick = current_tick;
-                g_param_id.sample_idx = 0;
-                g_param_id.v_sum_sq = 0.0f;
-                g_param_id.i_sum_sq = 0.0f;
-                g_param_id.v_max = 0.0f;
-                g_param_id.i_max = 0.0f;
-            }
-        }
-        break;
-        
-        case PARAM_ID_LQ_HF_TEST:   // 辨识Lq
-        {
-            // 1. 注入高频正弦电压到Q轴
-            foc_ctrl->angle = _PI_2;      // Q轴对齐β轴
-            float32_t omega = _2PI * g_param_id.hf_freq;
-            uint32_t hf_ticks = current_tick - g_param_id.start_tick;
-            float32_t hf_time = (float32_t)hf_ticks / PWM_FREQ;
-            
-            // 生成高频正弦信号
-            float32_t v_q = g_param_id.hf_voltage * sinf(omega * hf_time);
-            foc_ctrl->out_d = 0.0f;
-            foc_ctrl->out_q = v_q;
-            
-            // 2. 7个周期数据，跳过前2个周期,一共采集5个周期
-            uint32_t skip_ticks = (uint32_t)(PWM_FREQ / g_param_id.hf_freq * 2.0f); // 跳过前2个周期
-            if(hf_ticks >= skip_ticks && (hf_ticks - skip_ticks) < g_param_id.sample_count)
-            {
-                // 采样电压和电流（β轴）
-                float32_t v_sample = v_q;
-                float32_t i_sample = foc_ctrl->abc_dq.current_q;
-                
-                // 更新统计信息
-                g_param_id.v_sum_sq += v_sample * v_sample;
-                g_param_id.i_sum_sq += i_sample * i_sample;
-                
-                float32_t v_abs = fabsf(v_sample);
-                float32_t i_abs = fabsf(i_sample);
-                if(v_abs > g_param_id.v_max) g_param_id.v_max = v_abs;
-                if(i_abs > g_param_id.i_max) g_param_id.i_max = i_abs;
-                
-                g_param_id.sample_idx++;
-            }
-            else if(hf_ticks >= skip_ticks && (hf_ticks - skip_ticks) >= g_param_id.sample_count)
-            {
-                // 采样完成，计算Q轴电感
-                if(g_param_id.sample_idx > 0)
-                {
-                    // 计算RMS值
-                    float32_t v_rms = sqrtf(g_param_id.v_sum_sq / g_param_id.sample_idx);
-                    float32_t i_rms = sqrtf(g_param_id.i_sum_sq / g_param_id.sample_idx);
-                    
-                    float32_t Z = v_rms / i_rms;           // 阻抗幅值
-                    float32_t omega_L = _2PI * g_param_id.hf_freq;
-                        
-                    // L = sqrt(Z^2 - R^2) / ω
-                    float32_t Z_sq = Z * Z;
-                    float32_t R_sq = g_param_id.Rs * g_param_id.Rs;
-                        
-                    g_param_id.Lq = sqrtf(Z_sq - R_sq) / omega_L;
-                }
-                
-                // 计算平均电感
-                g_param_id.Ls = (g_param_id.Ld + g_param_id.Lq) * 0.5f;
-                
-                // 完成辨识
-                g_param_id.state = PARAM_ID_COMPLETED;
-                
-                // 打印最终结果
-                debug_log("Rs=%.6f Ld=%.6f Lq=%.6f Ls=%.6f", 
-                         g_param_id.Rs, g_param_id.Ld, g_param_id.Lq, g_param_id.Ls);
-            }
-        }
-        break;
-        
-        case PARAM_ID_COMPLETED:
-            // 辨识完成，停止注入电压
-            foc_ctrl->out_d = 0.0f;
-            foc_ctrl->out_q = 0.0f;
-            break;
-            
-        default:
-            break;
-    }
-    
-    return g_param_id.state;
 }

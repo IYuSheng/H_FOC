@@ -17,12 +17,14 @@
 #define OVER_VOLTAGE_THRESH  3.6f    // 过压保护阈值 (V)
 #define UNDER_VOLTAGE_THRESH 2.8f   // 欠压保护阈值 (V)
 
-// -------------------------- 电机参数 (根据实际电机填写) -------------------------- 
-#define MOTOR_POLE_PAIRS    11       // 电机极对数
-#define MOTOR_RESISTANCE    0.36f    // 相电阻 (欧姆)
-#define MOTOR_INDUCTANCE    0.000119f  // 相电感 (H)
-#define MOTOR_INDUCTANCE_Lq  0.000119f // q轴电感 (H)
-#define MOTOR_INDUCTANCE_Ld  0.000119f // d轴电感 (H)
+// -------------------------- 电机参数 -------------------------- 
+#define MOTOR_POLE_PAIRS    15       // 电机极对数
+#define MOTOR_RESISTANCE    0.186f    // 相电阻 (欧姆)
+#define MOTOR_INDUCTANCE    0.0004f  // 相电感 (H)
+#define MOTOR_INDUCTANCE_Lq  0.0004f // q轴电感 (H)
+#define MOTOR_INDUCTANCE_Ld  0.0003f // d轴电感 (H)
+#define MOTOR_FLUX_LINKAGE   0.002481f   // 磁链 (Wb)
+
 #define MAX_SPEED_RPM       200    // 最大转速限制 (RPM)
 
 // -------------------------- FOC控制参数 --------------------------
@@ -33,10 +35,12 @@
 
 // -------------------------- PI调节器参数 --------------------------
 // 电流环PI
-#define I_D_P_GAIN         2.23f
-#define I_Q_P_GAIN         2.67f
-#define I_I_GAIN           0.154f
-#define I_I_LIMIT          4.0f
+#define CURRENT_LOOP_COUNT        PWM_FREQ
+#define CURRENT_LOOP_DT           (1.0f / CURRENT_LOOP_COUNT)  // 电流环调用周期 (单位：s)
+#define I_D_P_GAIN         (MOTOR_INDUCTANCE_Ld / (3 * PWM_PERIOD_S)) //Kp = Ld / (3*Ts)
+#define I_Q_P_GAIN         (MOTOR_INDUCTANCE_Lq / (3 * PWM_PERIOD_S)) //Kp = Lq / (3*Ts)
+#define I_I_GAIN           ((MOTOR_RESISTANCE / (3 * PWM_PERIOD_S)) * CURRENT_LOOP_DT) //KI = (Rs / (3*Ts)) * Ts(减小一个乘法)
+#define I_I_LIMIT          0.5f
 
 // 速度环PI
 #define SPEED_P_GAIN        0.1f

@@ -90,6 +90,10 @@ virtualFolder:
         - path: APP/foc_control.h
         - path: APP/foc_settings.c
         - path: APP/foc_settings.h
+        - path: APP/foc_sensorless.h
+        - path: APP/foc_sensorless.c
+        - path: APP/foc_parameter_ident.c
+        - path: APP/foc_parameter_ident.h
       folders: []
     - name: FreeRTOS
       files: []

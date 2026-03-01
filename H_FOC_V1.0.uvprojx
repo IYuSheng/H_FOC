@@ -744,6 +744,26 @@
               <FileType>5</FileType>
               <FilePath>.\APP\foc_settings.h</FilePath>
             </File>
+            <File>
+              <FileName>foc_sensorless.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\APP\foc_sensorless.c</FilePath>
+            </File>
+            <File>
+              <FileName>foc_sensorless.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\APP\foc_sensorless.h</FilePath>
+            </File>
+            <File>
+              <FileName>foc_parameter_ident.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\APP\foc_parameter_ident.c</FilePath>
+            </File>
+            <File>
+              <FileName>foc_parameter_ident.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\APP\foc_parameter_ident.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

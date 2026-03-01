@@ -85,16 +85,25 @@ void ADC_IRQHandler(void)
     arm_mult_f32(&foc_datai.ib, &I_tran, &foc_datai.ib, 1);
     arm_mult_f32(&foc_datai.ic, &I_tran, &foc_datai.ic, 1);
 
-    // FOC速度开环
-    // foc_open_loop_control();
-    // FOC位置闭环
-    // foc_position_control();
-    // FOC电流闭环
-    // foc_current_control();
-    // FOC速度闭环
-    // foc_speed_control();
-    //电机参数辨识
-    foc_motor_parameter_identification_helper();
+    // if (bsp_adc_process_data())
+    //  {
+    //    // 获取校准后的电压ADC数据
+    //    foc_datav = bsp_adc_get_calib_data();
+    //  }
+
+    // 先计算核心值
+    // float temp_value = (foc_datai.ic / 3.3f * 4095.0f) + 2048.0f;
+
+    // // 限制在有效范围内
+    // if(temp_value > 4095.0f) temp_value = 4095.0f;
+    // if(temp_value < 0.0f) temp_value = 0.0f;
+
+    // // 转换为整数并输出
+    // uint16_t dac_value = (uint16_t)temp_value;
+    // DAC_SetChannel2Data(DAC_Align_12b_R, dac_value);
+
+    // 执行FOC内环控制
+    foc_control();
   }
 }
 
@@ -136,8 +145,9 @@ void bsp_adc_init(void)
   // -------------------------- 规则组配置（连续转换） --------------------------
   ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;  // 规则组连续转换
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;  // 无外部触发（自动连续）
+  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;  // 外部触发模式
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
+  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigInjecConv_T1_TRGO;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = REG_CHANNELS;  // 4个电压通道
   ADC1->CR2 |= ADC_CR2_DDS;
@@ -217,12 +227,31 @@ void bsp_adc_init(void)
 
   // 测试注入组ADC采样时机
   // 配置PA5为调试引脚
+  // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  // GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  // GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  // 配置PA5为DAC输出
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  
+  // 使能DAC时钟
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
+  
+  // DAC配置
+  DAC_InitTypeDef DAC_InitStructure;
+  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  DAC_Init(DAC_Channel_2, &DAC_InitStructure);
+  
+  // 使能DAC通道2
+  DAC_Cmd(DAC_Channel_2, ENABLE);
 }
 
 /**

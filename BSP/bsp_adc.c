@@ -1,5 +1,7 @@
 #include "bsp_adc.h"
 
+void bsp_adc_current_offset_calibrate(void);
+
 // 配置参数：根据硬件特性调整
 #define ADC_DMA_BUFFER_SIZE 4        // 单个缓冲区大小（4个电压通道）
 #define ADC_CALIBRATION_DELAY 1000 // ADC启动校准等待延迟
@@ -8,6 +10,8 @@
 
 // ADC DMA双缓冲区（循环模式，规则组电压通道）
 static uint16_t adc_dma_buffer[2][ADC_DMA_BUFFER_SIZE];  // DMA传输为16位
+// 在文件顶部，静态变量区域添加
+static uint16_t adc1_offset[INJ_CHANNELS] = {2048, 2048, 2048};  // 电流偏置校准值
 
 // 数据标志与存储
 volatile uint8_t adc_data_ready = 0;  // 0:无新数据, 1:缓冲区0就绪, 2:缓冲区1就绪
@@ -21,7 +25,7 @@ float32_t I_tran = ADC_REF_VOLTAGE / ADC_MAX_VALUE / R_Current / INA240_GAIN;
 // 校准参数（需实际校准获取）
 typedef struct
 {
-  q15_t ia_offset;  // 电流A相零点偏移（q15_t对应int16_t）
+  q15_t ia_offset;  // 电流A相零点偏移
   q15_t ib_offset;  // 电流B相零点偏移
   q15_t ic_offset;  // 电流C相零点偏移
   float32_t v_gain; // 相电压增益（浮点）
@@ -29,83 +33,6 @@ typedef struct
 
 // 电压转换系数 = 3.3V / 4095 * (2.2+56)kΩ / 2.2kΩ
 static adc_calib_t adc_calib = {0, 0, 0, ADC_REF_VOLTAGE / ADC_MAX_VALUE * (R_Voaltage_1 + R_Voaltage_2) / R_Voaltage_2};
-
-/**
- * @brief DMA中断服务函数（处理缓冲区切换）
- */
-void DMA2_Stream0_IRQHandler(void)
-{
-  // 半传输完成（缓冲区0满）
-  if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_HTIF0))
-  {
-    DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_HTIF0);
-    // 读取缓冲区0数据（电压，uint16_t转q15_t）
-    foc_raw_data.va = (q15_t)adc_dma_buffer[0][0];
-    foc_raw_data.vb = (q15_t)adc_dma_buffer[0][1];
-    foc_raw_data.vc = (q15_t)adc_dma_buffer[0][2];
-    foc_raw_data.vbus = (q15_t)adc_dma_buffer[0][3];
-    adc_data_ready = 1;  // 标记缓冲区0数据就绪
-  }
-
-  // 传输完成（缓冲区1满）
-  if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0))
-  {
-    DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_TCIF0);
-    // 读取缓冲区1数据（电压，uint16_t转q15_t）
-    foc_raw_data.va = (q15_t)adc_dma_buffer[1][0];
-    foc_raw_data.vb = (q15_t)adc_dma_buffer[1][1];
-    foc_raw_data.vc = (q15_t)adc_dma_buffer[1][2];
-    foc_raw_data.vbus = (q15_t)adc_dma_buffer[1][3];
-    adc_data_ready = 2;  // 标记缓冲区1数据就绪
-  }
-}
-
-/**
- * @brief ADC注入组中断服务函数（处理电流数据）
- */
-void ADC_IRQHandler(void)
-{
-  // GPIO_ToggleBits(GPIOA, GPIO_Pin_5);
-
-  if (ADC_GetITStatus(ADC1, ADC_IT_JEOC))
-  {
-    ADC_ClearITPendingBit(ADC1, ADC_IT_JEOC);
-    
-    foc_raw_data.ia = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1);
-    foc_raw_data.ib = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
-    foc_raw_data.ic = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
-
-    // 手动校准零点漂移
-    foc_datai.ia = (2042 - foc_raw_data.ia);
-    foc_datai.ib = (2046 - foc_raw_data.ib);
-    foc_datai.ic = (2046 - foc_raw_data.ic);
-
-    // 3. 使用DSP库函数执行乘法：最终值 = 校准值 * 转换系数
-    arm_mult_f32(&foc_datai.ia, &I_tran, &foc_datai.ia, 1);
-    arm_mult_f32(&foc_datai.ib, &I_tran, &foc_datai.ib, 1);
-    arm_mult_f32(&foc_datai.ic, &I_tran, &foc_datai.ic, 1);
-
-    // if (bsp_adc_process_data())
-    //  {
-    //    // 获取校准后的电压ADC数据
-    //    foc_datav = bsp_adc_get_calib_data();
-    //  }
-
-    // 先计算核心值
-    // float temp_value = (foc_datai.ic / 3.3f * 4095.0f) + 2048.0f;
-
-    // // 限制在有效范围内
-    // if(temp_value > 4095.0f) temp_value = 4095.0f;
-    // if(temp_value < 0.0f) temp_value = 0.0f;
-
-    // // 转换为整数并输出
-    // uint16_t dac_value = (uint16_t)temp_value;
-    // DAC_SetChannel2Data(DAC_Align_12b_R, dac_value);
-
-    // 执行FOC内环控制
-    foc_control();
-  }
-}
 
 /**
  * @brief 初始化FOC电流和电压采样ADC
@@ -225,6 +152,9 @@ void bsp_adc_init(void)
   // 启动规则组连续转换
   ADC_SoftwareStartConv(ADC1);
 
+  // 校准ADC零位偏置
+  bsp_adc_current_offset_calibrate();
+
   // 测试注入组ADC采样时机
   // 配置PA5为调试引脚
   // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
@@ -234,24 +164,24 @@ void bsp_adc_init(void)
   // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   // GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-  // 配置PA5为DAC输出
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  // // 配置PA5为DAC输出
+  // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  // GPIO_Init(GPIOA, &GPIO_InitStructure);
   
-  // 使能DAC时钟
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
+  // // 使能DAC时钟
+  // RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
   
-  // DAC配置
-  DAC_InitTypeDef DAC_InitStructure;
-  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
-  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
-  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
-  DAC_Init(DAC_Channel_2, &DAC_InitStructure);
+  // // DAC配置
+  // DAC_InitTypeDef DAC_InitStructure;
+  // DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+  // DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+  // DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  // DAC_Init(DAC_Channel_2, &DAC_InitStructure);
   
-  // 使能DAC通道2
-  DAC_Cmd(DAC_Channel_2, ENABLE);
+  // // 使能DAC通道2
+  // DAC_Cmd(DAC_Channel_2, ENABLE);
 }
 
 /**
@@ -281,6 +211,120 @@ uint8_t bsp_adc_process_data(void)
 }
 
 /**
+ * @brief DMA中断服务函数（处理缓冲区切换）
+ */
+void DMA2_Stream0_IRQHandler(void)
+{
+  // 半传输完成（缓冲区0满）
+  if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_HTIF0))
+  {
+    DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_HTIF0);
+    // 读取缓冲区0数据（电压，uint16_t转q15_t）
+    foc_raw_data.va = (q15_t)adc_dma_buffer[0][0];
+    foc_raw_data.vb = (q15_t)adc_dma_buffer[0][1];
+    foc_raw_data.vc = (q15_t)adc_dma_buffer[0][2];
+    foc_raw_data.vbus = (q15_t)adc_dma_buffer[0][3];
+    adc_data_ready = 1;  // 标记缓冲区0数据就绪
+  }
+
+  // 传输完成（缓冲区1满）
+  if (DMA_GetITStatus(DMA2_Stream0, DMA_IT_TCIF0))
+  {
+    DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_TCIF0);
+    // 读取缓冲区1数据（电压，uint16_t转q15_t）
+    foc_raw_data.va = (q15_t)adc_dma_buffer[1][0];
+    foc_raw_data.vb = (q15_t)adc_dma_buffer[1][1];
+    foc_raw_data.vc = (q15_t)adc_dma_buffer[1][2];
+    foc_raw_data.vbus = (q15_t)adc_dma_buffer[1][3];
+    adc_data_ready = 2;  // 标记缓冲区1数据就绪
+  }
+}
+
+/**
+ * @brief ADC注入组中断服务函数（处理电流数据）
+ */
+void ADC_IRQHandler(void)
+{
+  if (ADC_GetITStatus(ADC1, ADC_IT_JEOC))
+  {
+    ADC_ClearITPendingBit(ADC1, ADC_IT_JEOC);
+    
+    foc_raw_data.ia = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1);
+    foc_raw_data.ib = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
+    foc_raw_data.ic = (q15_t)ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
+
+    // 校准零点漂移
+    foc_datai.ia = ((q15_t)adc1_offset[0] - foc_raw_data.ia);
+    foc_datai.ib = ((q15_t)adc1_offset[1] - foc_raw_data.ib);
+    foc_datai.ic = ((q15_t)adc1_offset[2] - foc_raw_data.ic);
+
+    // 3. 使用DSP库函数执行乘法：最终值 = 校准值 * 转换系数
+    arm_mult_f32(&foc_datai.ia, &I_tran, &foc_datai.ia, 1);
+    arm_mult_f32(&foc_datai.ib, &I_tran, &foc_datai.ib, 1);
+    arm_mult_f32(&foc_datai.ic, &I_tran, &foc_datai.ic, 1);
+
+    // 执行FOC内环控制
+    foc_control();
+  }
+}
+
+/**
+ * @brief ADC电流偏置校准（停止PWM，采集零点电流）
+ * @note  需在电机静止、无电流时调用
+ */
+void bsp_adc_current_offset_calibrate(void)
+{
+    uint32_t sum_ia = 0, sum_ib = 0, sum_ic = 0;
+    const uint32_t samples = 1000;  // 采样次数
+    volatile uint32_t wait_cnt;  // 用于延时
+    
+    // 停止PWM输出，确保无电流
+    bsp_pwm_stop();
+    wait_cnt = 5000000;  // 约100ms @ 168MHz，根据实际调整
+    while(wait_cnt--);
+    
+    // 临时禁用注入组中断，避免干扰
+    ADC_ITConfig(ADC1, ADC_IT_JEOC, DISABLE);
+    
+    // 临时改为软件触发注入组
+    ADC1->CR2 &= (uint32_t)~(ADC_CR2_JEXTEN_0 | ADC_CR2_JEXTEN_1);
+    
+    // 采集1000次注入组数据求平均
+    for (uint32_t i = 0; i < samples; i++)
+    {
+        // 软件启动注入组转换
+        ADC_SoftwareStartInjectedConv(ADC1);
+        
+        // 等待转换完成
+        while (ADC_GetFlagStatus(ADC1, ADC_FLAG_JEOC) == RESET);
+        ADC_ClearFlag(ADC1, ADC_FLAG_JEOC);
+        
+        // 累加三个通道的数据
+        sum_ia += ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1);
+        sum_ib += ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
+        sum_ic += ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
+    }
+    
+    // 计算平均值并保存
+    adc1_offset[0] = (q15_t)(sum_ia / samples);
+    adc1_offset[1] = (q15_t)(sum_ib / samples);
+    adc1_offset[2] = (q15_t)(sum_ic / samples);
+    
+    debug_log("%d, %d, %d", 
+           adc1_offset[0], adc1_offset[1], adc1_offset[2]);
+    
+    // 恢复配置：重新启用外部触发
+    ADC_ExternalTrigInjectedConvConfig(ADC1, ADC_ExternalTrigInjecConv_T1_TRGO);
+    ADC_ExternalTrigInjectedConvEdgeConfig(ADC1, ADC_ExternalTrigInjecConvEdge_Rising);
+    
+    // 恢复中断和DMA
+    ADC_ITConfig(ADC1, ADC_IT_JEOC, ENABLE);
+    
+    // 重新启动PWM
+    bsp_pwm_start();
+}
+
+/**
  * @brief 获取FOC采样数据（原始数据）
  * @return FOC数据结构体
  */
@@ -290,7 +334,7 @@ foc_data_t bsp_adc_get_RAW_Data(void)
 }
 
 /**
- * @brief 获取校准后的FOC电压采样数据(需手动采样)
+ * @brief 获取校准后的FOC电压采样数据
  * @return 处理后的FOC电压数据（带滤波）
  */
 foc_data_v bsp_adc_get_calib_data(void)

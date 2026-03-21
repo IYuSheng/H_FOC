@@ -3,8 +3,6 @@
 
 #define FOC_CONTROL_MODE FOC_MODE
 
-uint32_t TIM2_Clock;
-
 // 时间戳变量
 static volatile uint32_t timestamp_ms = 0;
 static volatile uint32_t timestamp_us = 0;
@@ -95,24 +93,6 @@ void bsp_timer_init(void)
   TIM_OC4Init(TIM1, &TIM_OCInitStructure);
   TIM_OC4PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
-  /*------------------------------------------中断配置----------------------------------------------------*/
-
-  // 使能更新中断,配置为中心对齐模式1，每个PWM周期将会产生两次更新中断
-  // 第一次为向下计数开始点(ARR至ARR-1)对应PWM波形峰值点
-  // 第二次为向上计数开始点(0至1)对应PWM波形最低点,此时应进行电流采样
-  TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
-
-  // 配置NVIC
-  NVIC_InitTypeDef NVIC_InitStructure;
-  NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 高优先级
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-
-  // 使能刹车中断
-  TIM_ITConfig(TIM1, TIM_IT_Break, ENABLE);
-
   // 使能TIM1主输出
   TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
@@ -120,49 +100,16 @@ void bsp_timer_init(void)
   TIM_Cmd(TIM1, ENABLE);
 }
 
-/**
- * @brief 初始化TIM2提供微秒级时间戳
- */
-void bsp_timestamp_init(void)
+void bsp_pwm_stop(void)
 {
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-    
-    // 使能TIM2时钟
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-    
-    // 获取TIM2时钟频率
-    RCC_ClocksTypeDef RCC_Clocks;
-    RCC_GetClocksFreq(&RCC_Clocks);
-    if (RCC_Clocks.PCLK1_Frequency < SystemCoreClock / 2) {
-        TIM2_Clock = 2 * RCC_Clocks.PCLK1_Frequency;
-    } else {
-        TIM2_Clock = RCC_Clocks.PCLK1_Frequency;
-    }
-    
-    // TIM2配置：10kHz计数频率，向上计数模式
-    TIM_TimeBaseStructure.TIM_Prescaler = (TIM2_Clock / 100000) - 1; // 100kHz计数频率，10us计数一次
-    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseStructure.TIM_Period = 0xFFFFFFFF; // 最大计数值
-    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
-    
-    // 启动TIM2
-    TIM_Cmd(TIM2, ENABLE);
-  
-  // 关闭PWM输出
-  // TIM_CtrlPWMOutputs(TIM1, DISABLE);
-  // TIM_SetCompare1(TIM1, 0);
-  // TIM_SetCompare2(TIM1, 0);
-  // TIM_SetCompare3(TIM1, 0);
+  TIM_Cmd(TIM1, DISABLE);
+  TIM_CtrlPWMOutputs(TIM1, DISABLE);
 }
 
-/**
- * @brief 获取微秒级时间戳
- * @return 当前时间戳(10微秒)
- */
-uint32_t bsp_get_micros(void)
+void bsp_pwm_start(void)
 {
-    return TIM_GetCounter(TIM2);
+  TIM_Cmd(TIM1, ENABLE);
+  TIM_CtrlPWMOutputs(TIM1, ENABLE);
 }
 
 /**
@@ -178,18 +125,53 @@ void bsp_pwm_set_duty(uint16_t ha_duty, uint16_t hb_duty, uint16_t hc_duty)
   TIM_SetCompare3(TIM1, hc_duty);
 }
 
-// 中断服务程序，此处后续添加状态检测等功能
-void TIM1_UP_TIM10_IRQHandler(void)
+/**
+ * @brief 初始化TIM2 1ms中断
+ */
+void bsp_timestamp_init(void)
 {
-  if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
     
-    // 判断当前计数方向：DIR=1表示向下计数，且此时计数器值为0（向下计数到0的时刻）
-    // 中心对齐模式中，向下计数到0时会触发更新中断，且此时PWM输出为0
-    if ((TIM1->CR1 & TIM_CR1_DIR) == TIM_CR1_DIR) // DIR=1：向下计数
-    {
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    
+    // 168MHz主频，APB1=42MHz，TIM2时钟=84MHz
+    // 目标：1ms = 1kHz
+    
+    // 方案：分两步
+    // Prescaler: 84MHz / 84 = 1MHz
+    // Period: 1MHz / 1000 = 1kHz = 1ms
+    
+    TIM_TimeBaseStructure.TIM_Prescaler = 84 - 1;        // 84MHz / 84 = 1MHz
+    TIM_TimeBaseStructure.TIM_Period = 1000 - 1;         // 1MHz / 1000 = 1kHz
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+    
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+    
+    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    TIM_Cmd(TIM2, ENABLE);
+}
 
+/**
+ * @brief TIM2中断服务函数
+ * @note  1ms触发一次
+ */
+void TIM2_IRQHandler(void)
+{
+    if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+    {
+        TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+        
+        // FOC外环控制
+        // foc_control_out();
+        
     }
-  }
 }

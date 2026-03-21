@@ -34,7 +34,6 @@ void foc_task_init(void)
   LED_task_create();
   Debug_task_create();
   Gather_task_create();
-  SMO_Pare_init();
   FOC_Control_task_create();
 
   debug_log("foc_task_init complete");

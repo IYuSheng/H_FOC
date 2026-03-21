@@ -78,7 +78,7 @@ float butterworth_filter(ButterworthLPF_t *filt, float input)
  * @param angle 输入电角度（rad，范围无限制）
  * @return 归一化后电角度（rad，0~2π）
  */
-inline float32_t angle_normalize(float32_t angle)
+float32_t angle_normalize(float32_t angle)
 {
     angle = fmodf(angle, _2PI);
     if (angle < 0.0f) angle += _2PI;
@@ -90,7 +90,7 @@ inline float32_t angle_normalize(float32_t angle)
  * @param angle 输入电角度（rad，范围无限制）
  * @return 归一化后电角度（rad，-π~π）
  */
-inline float32_t angle_normalize_pi(float32_t angle)
+float32_t angle_normalize_pi(float32_t angle)
 {
     while (angle < -_PI)   angle += _2PI;
     while (angle >= _PI)  angle -= _2PI;
@@ -102,7 +102,7 @@ inline float32_t angle_normalize_pi(float32_t angle)
  * @param angle 输入电角度（°，范围无限制）
  * @return 归一化后电角度（°，0~360）
  */
-inline float32_t angle_normalize_360(float32_t angle)
+float32_t angle_normalize_360(float32_t angle)
 {
     while (angle < 0.0f)   angle += 360.0f;
     while (angle >= 360.0f) angle -= 360.0f;
@@ -114,7 +114,7 @@ inline float32_t angle_normalize_360(float32_t angle)
  * @param deg 输入角度（°）
  * @return 转换后弧度值（rad）
  */
-inline float deg2rad(float deg)
+float deg2rad(float deg)
 {
     return deg * 0.017453292519943295f;  // π / 180
 }
@@ -124,7 +124,7 @@ inline float deg2rad(float deg)
  * @param rad 输入弧度（rad）
  * @return 转换后角度值（°）
  */
-inline float rad2deg(float rad)
+float rad2deg(float rad)
 {
     return rad * 57.29577951308232f;  // 180 / π
 }
@@ -135,7 +135,7 @@ inline float rad2deg(float rad)
  * @param u_beta  β轴目标电压（V）
  * @return 扇区编号（1~6，对应0~60°~360°）
  */
-inline uint8_t svpwm_sector_calc(AlphaBetaTypeDef *alpha_beta)
+uint8_t svpwm_sector_calc(AlphaBetaTypeDef *alpha_beta)
 {
     uint8_t sector, pos1, pos2, pos3 = 0;
     
@@ -171,7 +171,7 @@ inline uint8_t svpwm_sector_calc(AlphaBetaTypeDef *alpha_beta)
  * @param T2 第二个基本矢量作用时间（s）
  * @param T0 零矢量总作用时间（s）
  */
-inline void svpwm_calc_times(AlphaBetaTypeDef *alpha_beta, SVPWM_t *svpwm, float32_t vdc)
+void svpwm_calc_times(AlphaBetaTypeDef *alpha_beta, SVPWM_t *svpwm, float32_t vdc)
 {
     // 1) 计算幅值平方
     float32_t alpha = alpha_beta->alpha;
@@ -246,7 +246,7 @@ inline void svpwm_calc_times(AlphaBetaTypeDef *alpha_beta, SVPWM_t *svpwm, float
  * @param pwm_b B相比较值指针
  * @param pwm_c C相比较值指针
  */
-inline void svpwm_duty_calc(SVPWM_t *svpwm)
+void svpwm_duty_calc(SVPWM_t *svpwm)
 {
     float32_t Ta, Tb, Tc;                 // 三相桥臂导通时间（s）
     float32_t T0_half = svpwm->T0 / 2.0f;
@@ -305,7 +305,7 @@ inline void svpwm_duty_calc(SVPWM_t *svpwm)
  * @param beta_ptr Beta轴输出指针
  * @param angle 电角度(角度, 0-360度)
  */
-inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *alpha_beta, float32_t sin_theta, float32_t cos_theta)
+void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *alpha_beta, float32_t sin_theta, float32_t cos_theta)
 {
     // 反Park变换：将旋转DQ坐标系电压转换为静止αβ坐标系电压
     alpha_beta->alpha = foc_ctrl->out_d * cos_theta - foc_ctrl->out_q * sin_theta;
@@ -318,7 +318,7 @@ inline void inv_park_transform_f32(foc_control_t *foc_ctrl, AlphaBetaTypeDef *al
  * @param abc_v 三相电压指针
  * @param alpha_beta 输出的αβ轴值
  */
-inline void clark_transform(void *abc_i, void *abc_v, AlphaBetaTypeDef *alpha_beta)
+void clark_transform(void *abc_i, void *abc_v, AlphaBetaTypeDef *alpha_beta)
 {
     foc_data_i *current_abc = (foc_data_i *)abc_i;
     
@@ -353,7 +353,7 @@ void park_transform(AlphaBetaTypeDef *alpha_beta, foc_control_t *foc_ctrl, float
  * @param current_dq 输出的dq轴电流值 (id, iq)
  * @param angle 电角度(弧度)
  */
-inline void abc_to_dq_current(void *current_abc_ptr, foc_control_t *foc_ctrl, float angle)
+void abc_to_dq_current(void *current_abc_ptr, foc_control_t *foc_ctrl, float angle)
 {
     foc_data_i *current_abc = (foc_data_i *)current_abc_ptr;
 
@@ -377,7 +377,7 @@ inline void abc_to_dq_current(void *current_abc_ptr, foc_control_t *foc_ctrl, fl
  * @param actual_id 实际D轴电流
  * @return D轴电压输出
  */
-inline float32_t foc_id_pid_calculate(float32_t target_id, float32_t actual_id)
+float32_t foc_id_pid_calculate(float32_t target_id, float32_t actual_id)
 {
     float32_t error = target_id - actual_id;
     float32_t p_term = id_pid.kp * error;
@@ -403,7 +403,7 @@ inline float32_t foc_id_pid_calculate(float32_t target_id, float32_t actual_id)
  * @param actual_iq 实际Q轴电流
  * @return Q轴电压输出
  */
-inline float32_t foc_iq_pid_calculate(float32_t target_iq, float32_t actual_iq)
+float32_t foc_iq_pid_calculate(float32_t target_iq, float32_t actual_iq)
 {
     float32_t error = target_iq - actual_iq;
     float32_t p_term = iq_pid.kp * error;
@@ -429,7 +429,7 @@ inline float32_t foc_iq_pid_calculate(float32_t target_iq, float32_t actual_iq)
  * @param actual_speed 实际速度(RPM)
  * @return 输出值(Q轴电流)
  */
-inline float32_t foc_speed_pid_calculate(float32_t target_speed, float32_t actual_speed)
+float32_t foc_speed_pid_calculate(float32_t target_speed, float32_t actual_speed)
 {
     float32_t error = target_speed - actual_speed;
     float32_t p_term = speed_pid.kp * error;
@@ -451,7 +451,7 @@ inline float32_t foc_speed_pid_calculate(float32_t target_speed, float32_t actua
  * @param current_position 当前位置（弧度）
  * @return PI控制器输出（速度指令，rad/s）
  */
-inline float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position)
+float32_t foc_position_pid_calculate(float32_t target_position, float32_t current_position)
 {
     float32_t error, p_term;
     
@@ -485,165 +485,4 @@ inline float32_t foc_position_pid_calculate(float32_t target_position, float32_t
     position_pid.output = p_term + position_pid.integral;
     
     return position_pid.output;
-}
-
-/*----------------------------------------------------无感部分-------------------------------------------------------*/
-
-// 全局变量声明
-SMO_MotorPare_t SMO_MotorPare;
-Ppll_obj_t Angle_SMOPare;
-
-// 电机参数与控制参数初始化（同步删除冗余参数的初始化）
-void SMO_Pare_init(void)  
-{
-    // 1. 电机基础参数初始化（保留）
-    SMO_MotorPare.Rs = MOTOR_RESISTANCE;
-    SMO_MotorPare.Ls = MOTOR_INDUCTANCE;
-    SMO_MotorPare.Ts = PWM_PERIOD_S;
-    SMO_MotorPare.POLES = MOTOR_POLE_PAIRS;
-
-    // 2. 滑模观测器精确离散化系数计算
-    SMO_MotorPare.Fsmopos = 1.0f - (SMO_MotorPare.Rs * SMO_MotorPare.Ts / SMO_MotorPare.Ls);
-    // 精确离散化的Gsmopos公式
-    SMO_MotorPare.Gsmopos = SMO_MotorPare.Ts / SMO_MotorPare.Ls;
-
-    // 3. SMO控制参数初始化
-    Angle_SMOPare.Kslide = SMO_MotorPare.Rs * 1.5f;      // 滑模增益
-    Angle_SMOPare.Kslf_emf = 0.1f;    // 反电动势滤波系数
-    Angle_SMOPare.E0 = 0.5f;          // 电流误差饱和阈值
-    // 初始化估算电流、反电动势、控制量为0
-    Angle_SMOPare.EstIalpha = 0.0f;
-    Angle_SMOPare.EstIbeta = 0.0f;
-    Angle_SMOPare.Ealpha = 0.0f;
-    Angle_SMOPare.Ebeta = 0.0f;
-    Angle_SMOPare.Zalpha = 0.0f;
-    Angle_SMOPare.Zbeta = 0.0f;
-
-    // 4. PLL参数初始化（保留）
-    Angle_SMOPare.tPll.Kp = 150.0f;
-    Angle_SMOPare.tPll.Ki = 100.0f;
-    Angle_SMOPare.tPll.Speed_coeff = (60.0f)/(2*SMO_MotorPare.POLES*PI);
-    Angle_SMOPare.tPll.Kslf = 0.5f;
-}
-
-/**
- * @brief PLL角度和速度计算
- * @param ptHandle PLL对象指针
- * @param Coff_Sine 反电动势α轴分量
- * @param Coff_Cos 反电动势β轴分量
- */
-static void Pll_Compute(Ppll_obj_t *ptHandle, float Coff_Sine, float Coff_Cos)
-{
-    // 1. 计算估算角度的正余弦
-    float Cos_Value = arm_cos_f32(ptHandle->Theta);
-    float Sin_Value = arm_sin_f32(ptHandle->Theta);
-    
-    // 2. 计算相位误差
-    ptHandle->Err = Coff_Sine * Sin_Value - Coff_Cos * Cos_Value;
-
-    // // 4. PI积分项累加
-    ptHandle->Interg += ptHandle->Err * ptHandle->tPll.Ki;
-  
-    // 5. PI控制器输出（电角速度Ui）
-    ptHandle->Ui = ptHandle->Err * ptHandle->tPll.Kp + ptHandle->Interg;
-
-    // 6. 电角度更新（累加角度增量）
-    ptHandle->Theta += ptHandle->Ui * SMO_MotorPare.Ts;
-    // 积分过零重置
-    if(ptHandle->Theta > _2PI || ptHandle->Theta < -_2PI)
-    {
-        ptHandle->Interg = 0.0f;
-    }
-
-    // 7. 角度归一化（确保在0~2π范围）
-    if(ptHandle->Theta < 0) {
-        ptHandle->Theta += _2PI;
-    } else if(ptHandle->Theta >= _2PI) {
-        ptHandle->Theta -= _2PI;
-    }
-    
-    // 8. 转速计算（机械转速RPM）
-    ptHandle->Speed_Rpm = ptHandle->tPll.Speed_coeff * ptHandle->Ui;
- 
-    // 9. 转速低通滤波（平滑转速输出）
-    ptHandle->SpeedLpf_Rpm = ptHandle->SpeedLpf_Rpm + ptHandle->tPll.Kslf * (ptHandle->Speed_Rpm - ptHandle->SpeedLpf_Rpm);
-}
-
-/**
- * @brief 使用反正切函数提取电角度（不使用PLL）
- * @param Ealpha 反电动势α轴分量
- * @param Ebeta 反电动势β轴分量
- * @return 估算的电角度(弧度，范围0~2π)
- */
-inline float32_t atan_bemf_angle(float32_t Ealpha, float32_t Ebeta)
-{
-    float32_t angle;
-    
-    // 使用atan2函数计算角度，结果范围为[-π, π]
-    angle = atan2f(Ebeta, Ealpha);
-    
-    // 将角度范围转换为[0, 2π]
-    if (angle < 0.0f) {
-        angle += _2PI;
-    }
-    
-    return angle;
-}
-
-/**
- * @brief SMO扩展反电动势估算角度计算
- * @param alpha_beta alpha_beta坐标系下的电压电流值指针
- * @return 估算的电角度(弧度)
- */
-inline float32_t SMO_bemf_angle(AlphaBetaTypeDef *alpha_beta)
-{
-    // -------------------------- 滑模核心逻辑 --------------------------
-    // 1. 精确离散化电流估计
-    Angle_SMOPare.EstIalpha = SMO_MotorPare.Fsmopos * Angle_SMOPare.EstIalpha +
-                              SMO_MotorPare.Gsmopos * (alpha_beta->alpha_v - Angle_SMOPare.Ealpha - Angle_SMOPare.Zalpha);
-    Angle_SMOPare.EstIbeta = SMO_MotorPare.Fsmopos * Angle_SMOPare.EstIbeta +
-                             SMO_MotorPare.Gsmopos * (alpha_beta->beta_v - Angle_SMOPare.Ebeta - Angle_SMOPare.Zbeta);
-
-    // 2. 电流误差计算（估算电流 - 实际电流）
-    Angle_SMOPare.IalphaError = Angle_SMOPare.EstIalpha - alpha_beta->alpha_i;
-    Angle_SMOPare.IbetaError = Angle_SMOPare.EstIbeta - alpha_beta->beta_i;
-
-    // 3. 改进的滑模控制量Z计算（使用更平滑的符号函数）
-    // 使用连续符号函数替代离散符号函数，减少抖振
-    float32_t alpha_err_abs = fabsf(Angle_SMOPare.IalphaError);
-    float32_t beta_err_abs = fabsf(Angle_SMOPare.IbetaError);
-    
-    // 避免除零情况
-    if (alpha_err_abs < 1e-6f) alpha_err_abs = 1e-6f;
-    if (beta_err_abs < 1e-6f) beta_err_abs = 1e-6f;
-    
-    Angle_SMOPare.Zalpha = Angle_SMOPare.Kslide * (Angle_SMOPare.IalphaError / alpha_err_abs);
-    Angle_SMOPare.Zbeta = Angle_SMOPare.Kslide * (Angle_SMOPare.IbetaError / beta_err_abs);
-
-    // 4. 改进的反电动势估算（增加滤波效果）
-    // 使用更平滑的低通滤波
-    Angle_SMOPare.Ealpha = Angle_SMOPare.Ealpha + Angle_SMOPare.Kslf_emf * (Angle_SMOPare.Zalpha - Angle_SMOPare.Ealpha);
-    Angle_SMOPare.Ebeta = Angle_SMOPare.Ebeta + Angle_SMOPare.Kslf_emf * (Angle_SMOPare.Zbeta - Angle_SMOPare.Ebeta);
-
-    // 4. 反电动势估算
-    Angle_SMOPare.Ealpha += Angle_SMOPare.Kslf_emf * (Angle_SMOPare.Zalpha - Angle_SMOPare.Ealpha);
-    Angle_SMOPare.Ebeta += Angle_SMOPare.Kslf_emf * (Angle_SMOPare.Zbeta - Angle_SMOPare.Ebeta);
-    // -----------------------------------------------------------------------------------
-
-    // 5. 角度和速度估算
-    Pll_Compute(&Angle_SMOPare, Angle_SMOPare.Ealpha, Angle_SMOPare.Ebeta);
-    // Angle_SMOPare.Theta = atan_bemf_angle(Angle_SMOPare.Ealpha, Angle_SMOPare.Ebeta);
-
-    // 6. 添加角度补偿
-    #define ANGLE_COMPENSATION 0.0f  // 根据实际测试调整补偿值（弧度）
-    Angle_SMOPare.Theta_pre = Angle_SMOPare.Theta + ANGLE_COMPENSATION;
-    
-    // 7. 角度归一化
-    if(Angle_SMOPare.Theta_pre < 0) {
-        Angle_SMOPare.Theta_pre += _2PI;
-    } else if(Angle_SMOPare.Theta_pre >= _2PI) {
-        Angle_SMOPare.Theta_pre -= _2PI;
-    }
-
-    return Angle_SMOPare.Theta_pre;
 }

@@ -103,7 +103,7 @@ void foc_motor_param_ident_start(float v_align, float v_rs, float hf_freq, float
     g_ident.align_ticks     = (uint32_t)(PWM_FREQ * 0.20f); // 200ms对齐锁定
     g_ident.rs_settle_ticks = (uint32_t)(PWM_FREQ * 0.30f); // 300ms等待电流稳定
     g_ident.rs_sample_ticks = (uint32_t)(PWM_FREQ * 0.05f); // 50ms采样
-    g_ident.flux_sample_ticks = (uint32_t)(PWM_FREQ * 5.0f); // 5000ms采样
+    g_ident.flux_sample_ticks = (uint32_t)(PWM_FREQ * 10.0f); // 5000ms采样
 
     // 跳过2周期，采样5周期
     float ticks_per_cycle = PWM_FREQ / hf_freq;
@@ -131,8 +131,7 @@ void foc_motor_parameter_ident_step(void)
     hall_update_PLL(&hall_data); // 更新霍尔角度
 
     float sin_theta, cos_theta;
-    arm_sin_cos_f32(g_ident.ident_angle_deg, &sin_theta, &cos_theta);
-
+    arm_sin_cos_f32(hall_data.angle * RAD_TO_DEG, &sin_theta, &cos_theta);
     park_transform(&alpha_beta, &foc_ctrl, sin_theta, cos_theta);
 
     // 2) 状态机
@@ -202,7 +201,7 @@ void foc_motor_parameter_ident_step(void)
             float t = (float)g_ident.st_tick / PWM_FREQ;
             float vd = g_ident.v_hf * sinf(_2PI * g_ident.hf_freq * t);
 
-            foc_voltage_output(vd, 0.0f, g_ident.ident_angle_deg);
+            foc_voltage_output(vd, g_ident.v_lock_d, g_ident.ident_angle_deg);
 
             // 跳过前2周期，采样后5周期
             if (g_ident.st_tick >= g_ident.hf_skip_ticks &&
@@ -297,11 +296,11 @@ void foc_motor_parameter_ident_step(void)
 
         case PARAM_ID_FLUX_RUN:
         {
-            float Uq = 0.8f;
+            float Uq = 1.0f;
             float Ud = 0.0f;
 
-            foc_ctrl.out_q = Uq;
-            foc_ctrl.out_d = Ud;
+            foc_ctrl.out_d = foc_id_pid_calculate(Ud, foc_ctrl.abc_dq.current_d);
+            foc_ctrl.out_q = foc_iq_pid_calculate(Uq, foc_ctrl.abc_dq.current_q);
 
             foc_voltage_output(Ud, Uq, hall_data.angle * RAD_TO_DEG);
 
@@ -316,7 +315,8 @@ void foc_motor_parameter_ident_step(void)
             // U_q = R_s * I_q + w_e * L_d * I_d + w_e * flux_linkage
             // => flux_linkage = (U_q - R_s * I_q - w_e * L_d * I_d) / w_e
             float flux_linkage = 0.0f;
-            flux_linkage = (Uq - g_motor_param.Rs * Iq - we * g_motor_param.Ld * Id) / we;
+            flux_linkage = (foc_ctrl.out_q - g_motor_param.Rs * Iq - we * g_motor_param.Ld * Id) / we;
+            // debug_log("%.4f", flux_linkage);
 
             // 累计磁链值(跳过前2秒，等待稳定)
             if(g_ident.flux_linkage_cnt >= (PWM_FREQ * 2.0f))
@@ -329,7 +329,7 @@ void foc_motor_parameter_ident_step(void)
             // 计算平均磁链
             if (g_ident.flux_linkage_cnt >= g_ident.flux_sample_ticks) {
                 float avg_flux_linkage = g_ident.flux_linkage_sum / ((float)g_ident.flux_linkage_cnt - PWM_FREQ * 2.0f);
-                debug_log("Flux Linkage = %.8f", avg_flux_linkage);
+                // debug_log("Flux Linkage = %.8f", avg_flux_linkage);
                 g_motor_param.flux_linkage = avg_flux_linkage;
 
                 // 重置计数器和和

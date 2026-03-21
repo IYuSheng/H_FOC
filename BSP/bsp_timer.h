@@ -32,5 +32,7 @@ void bsp_timer_init(void);
 void bsp_timestamp_init(void);
 uint32_t bsp_get_micros(void);
 void bsp_pwm_set_duty(uint16_t ha_duty, uint16_t hb_duty, uint16_t hc_duty);
+void bsp_pwm_stop(void);
+void bsp_pwm_start(void);
 
 #endif /* __BSP_TIMER_H */

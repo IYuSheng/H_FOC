@@ -19,11 +19,19 @@
 
 // -------------------------- 电机参数 -------------------------- 
 #define MOTOR_POLE_PAIRS    15       // 电机极对数
-#define MOTOR_RESISTANCE    0.186f    // 相电阻 (欧姆)
-#define MOTOR_INDUCTANCE    0.0004f  // 相电感 (H)
-#define MOTOR_INDUCTANCE_Lq  0.0004f // q轴电感 (H)
-#define MOTOR_INDUCTANCE_Ld  0.0003f // d轴电感 (H)
-#define MOTOR_FLUX_LINKAGE   0.002481f   // 磁链 (Wb)
+#define MOTOR_RESISTANCE    0.145f    // 相电阻 (欧姆)
+#define MOTOR_INDUCTANCE    0.00039f  // 相电感 (H)
+#define MOTOR_INDUCTANCE_Lq  0.000425f // q轴电感 (H)
+#define MOTOR_INDUCTANCE_Ld  0.000355f // d轴电感 (H)
+#define MOTOR_FLUX_LINKAGE   0.0037f   // 磁链 (Wb)
+
+// #define MOTOR_POLE_PAIRS    11       // 电机极对数
+// #define MOTOR_RESISTANCE    0.09f    // 相电阻 (欧姆)
+// #define MOTOR_INDUCTANCE    0.0000462f  // 相电感 (H)
+// #define MOTOR_INDUCTANCE_Lq  0.0000575f // q轴电感 (H)
+// #define MOTOR_INDUCTANCE_Ld  0.0000349f // d轴电感 (H)
+// #define MOTOR_FLUX_LINKAGE   0.0009f   // 磁链 (Wb)
+
 
 #define MAX_SPEED_RPM       200    // 最大转速限制 (RPM)
 
@@ -40,7 +48,7 @@
 #define I_D_P_GAIN         (MOTOR_INDUCTANCE_Ld / (3 * PWM_PERIOD_S)) //Kp = Ld / (3*Ts)
 #define I_Q_P_GAIN         (MOTOR_INDUCTANCE_Lq / (3 * PWM_PERIOD_S)) //Kp = Lq / (3*Ts)
 #define I_I_GAIN           ((MOTOR_RESISTANCE / (3 * PWM_PERIOD_S)) * CURRENT_LOOP_DT) //KI = (Rs / (3*Ts)) * Ts(减小一个乘法)
-#define I_I_LIMIT          0.5f
+#define I_I_LIMIT          4.5f
 
 // 速度环PI
 #define SPEED_P_GAIN        0.1f

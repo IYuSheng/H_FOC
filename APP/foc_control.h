@@ -11,21 +11,31 @@
 #include "foc_debug.h"
 #include "foc_gather.h"
 #include "foc_conversion.h"
-#include "arm_math.h"
 #include "foc_settings.h"
 #include "foc_sensorless.h"
 #include "foc_parameter_ident.h"
 
-#define FLUX_OBSERVER_ENABLE                0   // 磁链观测器使能
-#define FOC_PARAMETER_IDENTIFICATION_ENABLE 1   // 电机参数自辨识使能
+#define FLUX_OBSERVER_ENABLE                0
+#define SMO_OBSERVER_ENABLE                 1
+#define FOC_PARAMETER_IDENTIFICATION_ENABLE 0
+#define HFI_ENABLE                          0
+#define HFI_STANDALONE_MODE                 1
 
-// 函数声明
+typedef enum {
+    SENSORLESS_STATE_HFI,
+    SENSORLESS_STATE_MIX,
+    SENSORLESS_STATE_FLUX,
+} sensorless_state_t;
+
+static enum {
+    SENSOR_HALL = 0,
+    SENSOR_BLEND,
+    SENSOR_OBSERVER
+} sensor_state_t;
+
 void foc_control_init(void);
 void foc_control(void);
-void foc_open_loop_control(void);
-void foc_current_control(void);
-void foc_speed_control(void);
-void foc_position_control(void);
+void foc_control_out(void);
 void vFOCControlTask(void *pvParameters);
 
 #endif /* __FOC_CONTROL_H */

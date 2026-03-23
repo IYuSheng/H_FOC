@@ -15,8 +15,8 @@
 #include "foc_sensorless.h"
 #include "foc_parameter_ident.h"
 
-#define FLUX_OBSERVER_ENABLE                0
-#define SMO_OBSERVER_ENABLE                 1
+#define FLUX_OBSERVER_ENABLE                1
+#define SMO_OBSERVER_ENABLE                 0
 #define FOC_PARAMETER_IDENTIFICATION_ENABLE 0
 #define HFI_ENABLE                          0
 #define HFI_STANDALONE_MODE                 1

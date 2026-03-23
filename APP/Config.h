@@ -23,17 +23,7 @@
 #define MOTOR_INDUCTANCE    0.00039f  // 相电感 (H)
 #define MOTOR_INDUCTANCE_Lq  0.000425f // q轴电感 (H)
 #define MOTOR_INDUCTANCE_Ld  0.000355f // d轴电感 (H)
-#define MOTOR_FLUX_LINKAGE   0.0037f   // 磁链 (Wb)
-
-// #define MOTOR_POLE_PAIRS    11       // 电机极对数
-// #define MOTOR_RESISTANCE    0.09f    // 相电阻 (欧姆)
-// #define MOTOR_INDUCTANCE    0.0000462f  // 相电感 (H)
-// #define MOTOR_INDUCTANCE_Lq  0.0000575f // q轴电感 (H)
-// #define MOTOR_INDUCTANCE_Ld  0.0000349f // d轴电感 (H)
-// #define MOTOR_FLUX_LINKAGE   0.0009f   // 磁链 (Wb)
-
-
-#define MAX_SPEED_RPM       200    // 最大转速限制 (RPM)
+#define MOTOR_FLUX_LINKAGE   0.019f   // 磁链 (Wb)
 
 // -------------------------- FOC控制参数 --------------------------
 #define PWM_FREQ            20000.0f   // PWM频率 (Hz)，需与定时器配置匹配
@@ -52,9 +42,9 @@
 
 // 速度环PI
 #define SPEED_P_GAIN        0.1f
-#define SPEED_I_GAIN        0.001f
-#define SPEED_I_LIMIT       4.0f
-#define SPEED_Cycle         100  // 速度环PI控制周期(数值越大，控制频率越低，单位：PWM周期数)
+#define SPEED_I_GAIN        0.0001f
+#define SPEED_I_LIMIT       0.5f
+#define SPEED_OUT_LIMIT     2.0f
 
 // 位置环PI
 #define POSITION_P_GAIN     1.0f

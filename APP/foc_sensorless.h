@@ -29,12 +29,10 @@ extern FluxObserver_t g_flux_obs;
 #define FLUX_PHI_M                MOTOR_FLUX_LINKAGE
 #define _1_FLUX_PHI_M             (1.0f / MOTOR_FLUX_LINKAGE)
 #define FLUX_PHI_M_2              (MOTOR_FLUX_LINKAGE * MOTOR_FLUX_LINKAGE)
-#define FLUX_GAMMA                1000000000.0f
+#define FLUX_GAMMA                2700000.0f
 #define FLUX_GAMMA_K              (0.5f * FLUX_GAMMA)
 #define FLUX_L_S                  MOTOR_INDUCTANCE
 #define FLUX_R_S                  MOTOR_RESISTANCE
-#define FLUX_ANGLE_OFFSET_COMP    0.0f
-#define FLUX_ANGLE_OFFSET_ACTURE  (_PI_2 - FLUX_ANGLE_OFFSET_COMP)
 
 #define PLL_BANDWIDTH_HZ          1000.0f
 #define PLL_KP                    (2.0f * 0.707f * 6.2831853f * PLL_BANDWIDTH_HZ)
@@ -48,58 +46,41 @@ void flux_observer_update(FluxObserver_t *obs, float u_alpha, float u_beta,
 /* SMO observer */
 
 typedef struct {
-    float Rs;
-    float Ls;
-    float Ts;
-    uint16_t POLES;
-    float Fsmopos;
-    float Gsmopos;
-} SMO_MotorPare_t;
+    float rs;             // 定子电阻 Rs
+    float ls;             // 定子电感 Ls
+    float ts;             // 观测器采样周期
+    float fsmopos;        // 电流离散模型系数 F
+    float gsmopos;        // 电流离散模型系数 G
+    float est_i_alpha;    // alpha 轴估计电流
+    float est_i_beta;     // beta 轴估计电流
+    float i_alpha_error;  // alpha 轴电流估计误差
+    float i_beta_error;   // beta 轴电流估估计误差
+    float z_alpha;        // alpha 轴滑模开关项
+    float z_beta;         // beta 轴滑模开关项
+    float e_alpha;        // alpha 轴估计反电动势
+    float e_beta;         // beta 轴估计反电动势
+    float theta;          // PLL 输出的原始电角度
+    float theta_comp;     // 加补偿后的电角度输出
+    float err;            // PLL 相位误差
+    float omega_integ;    // PLL 积分项
+    float omega;          // PLL 输出角速度
+    float kslide;         // 滑模增益
+    float kslf_emf;       // 反电动势低通滤波系数
+    float e0;             // 饱和函数边界层厚度
+} SMO_Observer_t;
 
-typedef struct {
-    float EstIalpha;
-    float EstIbeta;
-    float IalphaError;
-    float IbetaError;
-    float E0;
-    float Zalpha;
-    float Zbeta;
-    float Ealpha;
-    float Ebeta;
-    float Theta;
-    float Theta_pre;
-    float Err;
-    float Interg;
-    float Ui;
-    float Speed_Rpm;
-    float SpeedLpf_Rpm;
-    float Kslide;
-    float Kslf_emf;
-    struct {
-        float Kp;
-        float Ki;
-        float Speed_coeff;
-        float Kslf;
-    } tPll;
-} Ppll_obj_t;
-
-extern SMO_MotorPare_t SMO_MotorPare;
-extern Ppll_obj_t Angle_SMOPare;
+extern SMO_Observer_t g_smo_obs;
 
 #define SMO_SLIDE_GAIN_FACTOR      100.0f
 #define SMO_EMF_FILTER_COEFF       0.10f
 #define SMO_CURRENT_ERR_BAND       1.5f
 #define SMO_PLL_KP                 1500.0f
 #define SMO_PLL_KI                 1500.0f
-#define SMO_PLL_SPEED_FILTER_COEFF 0.5f
-#define SMO_PLL_INT_LIMIT          (2000)
-#define SMO_ANGLE_COMPENSATION     0.0f
+#define SMO_PLL_INT_LIMIT          2000
+#define SMO_ANGLE_COMPENSATION     _PI_2
 
 void SMO_Pare_init(void);
-void SMO_Reset(void);
 float32_t SMO_bemf_angle(AlphaBetaTypeDef *alpha_beta);
-float32_t SMO_bemf_angle_from_voltage_current(float32_t u_alpha, float32_t u_beta,
-                                              float32_t i_alpha, float32_t i_beta);
 
 /* HFI observer */
 

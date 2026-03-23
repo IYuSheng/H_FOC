@@ -54,6 +54,8 @@
 ".\objects\foc_encoder.o"
 ".\objects\foc_control.o"
 ".\objects\foc_settings.o"
+".\objects\foc_sensorless.o"
+".\objects\foc_parameter_ident.o"
 ".\objects\heap_4.o"
 ".\objects\port.o"
 ".\objects\croutine.o"

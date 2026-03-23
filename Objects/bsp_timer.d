@@ -63,5 +63,7 @@
 .\objects\bsp_timer.o: .\BSP\bsp_timer.h
 .\objects\bsp_timer.o: .\APP\foc_control.h
 .\objects\bsp_timer.o: .\APP\foc_conversion.h
-.\objects\bsp_timer.o: .\APP\foc_control.h
 .\objects\bsp_timer.o: .\APP\foc_settings.h
+.\objects\bsp_timer.o: .\APP\foc_control.h
+.\objects\bsp_timer.o: .\APP\foc_sensorless.h
+.\objects\bsp_timer.o: .\APP\foc_parameter_ident.h

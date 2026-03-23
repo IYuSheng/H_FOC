@@ -171,7 +171,6 @@ void TIM2_IRQHandler(void)
         TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
         
         // FOC外环控制
-        // foc_control_out();
-        
+        foc_control_out();
     }
 }

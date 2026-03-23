@@ -441,8 +441,11 @@ float32_t foc_speed_pid_calculate(float32_t target_speed, float32_t actual_speed
     } else if (speed_pid.integral < -speed_pid.integral_limit) {
         speed_pid.integral = -speed_pid.integral_limit;
     }
+
+    float speed_pid_out = p_term + speed_pid.integral;
+    if(speed_pid_out >= SPEED_OUT_LIMIT) speed_pid_out = SPEED_OUT_LIMIT;
     
-    return p_term + speed_pid.integral;
+    return speed_pid_out;
 }
 
 /**

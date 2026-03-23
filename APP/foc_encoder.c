@@ -5,12 +5,12 @@ hall_get_t hall_data;
 // HALL传感器电角度查找表 (单位: 弧度) - 基于实测标定
 const float hall_elec_angle_precise[8] = {
     [0b000] = 0.0f,          // 000 无效
-    [0b001] = 1.44f,         // 001 ~82.5°
-    [0b010] = -2.61f,        // 010 ~210° (3.67 - 2π = -2.61)
-    [0b011] = 2.62f,         // 011 ~150°
-    [0b100] = -0.28f,        // 100 ~344°/0° (6.00 - 2π = -0.28)
-    [0b101] = 0.63f,         // 101 ~36°
-    [0b110] = -1.57f,        // 110 ~270° (4.71 - 2π = -1.57)
+    [0b001] = 1.93f,         // 001
+    [0b010] = -2.12f,        // 010
+    [0b011] = 3.11f,         // 011
+    [0b100] = 0.21f,         // 100
+    [0b101] = 1.12f,         // 101
+    [0b110] = -1.08f,        // 110
     [0b111] = 0.0f           // 111 无效
 };
 
@@ -114,7 +114,7 @@ static inline void pll_update(float hall_angle, float dt)
  */
 void foc_encoder_init(void)
 {
-    pll_init(PLL_KP_DEFAULT, PLL_KI_DEFAULT);
+    pll_init(PLL_HALL_KP, PLL_HALL_KI);
 }
 
 /**

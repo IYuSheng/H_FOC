@@ -68,3 +68,5 @@
 .\objects\foc_conversion.o: .\APP\foc_conversion.h
 .\objects\foc_conversion.o: .\APP\foc_settings.h
 .\objects\foc_conversion.o: .\APP\foc_control.h
+.\objects\foc_conversion.o: .\APP\foc_sensorless.h
+.\objects\foc_conversion.o: .\APP\foc_parameter_ident.h

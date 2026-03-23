@@ -21,17 +21,24 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.3.0.0
 Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
-C:\Users\admin\Desktop\H_FOC_V1.0\H_FOC_V1.0.uvprojx
-Project File Date:  10/01/2025
+C:\Users\admin\Desktop\HR_Project\H_FOC_V1.0\H_FOC_V1.0.uvprojx
+Project File Date:  03/01/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keilv5\ARM\ARMCC\Bin'
 Build target 'H_FOC'
-compiling bsp_uart.c...
+compiling foc_control.c...
+APP\foc_control.c(228): warning:  #177-D: function "foc_current_control_H"  was declared but never referenced
+  static inline void foc_current_control_H(float target_current_d, float target_current_q)
+APP\foc_control.c(323): warning:  #177-D: function "foc_speed_control"  was declared but never referenced
+  static inline void foc_speed_control(float target_speed)
+APP\foc_control.c(333): warning:  #177-D: function "foc_position_control"  was declared but never referenced
+  static inline void foc_position_control(float target_position)
+APP\foc_control.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=25876 RO-data=2604 RW-data=256 ZI-data=30200  
+Program Size: Code=20552 RO-data=2508 RW-data=204 ZI-data=30828  
 FromELF: creating hex file...
-".\Objects\H_FOC_V1.0" - 0 Error(s), 0 Warning(s).
+".\Objects\H_FOC_V1.0" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -43,7 +50,7 @@ Package Vendor: Keil
 <h2>Collection of Component include folders:</h2>
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

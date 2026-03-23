@@ -12,10 +12,10 @@
 #define HALL_C_PIN GPIO_Pin_8
 #define HALL_PORT GPIOC
 
-// 滤波系数
-#define SPEED_LPF_ALPHA     0.1f    // 速度低通滤波
-#define PLL_KP_DEFAULT      20.0f   // PLL比例增益
-#define PLL_KI_DEFAULT      200.0f // PLL积分增益
+#define PLL_HALL_FBW        6                           // 带宽频率(HZ)
+#define PLL_HALL_WN         (2 * PI * PLL_HALL_FBW)     // 带宽(rad/s)
+#define PLL_HALL_KP         (2 * 0.707 * PLL_HALL_WN)   // PLL比例增益
+#define PLL_HALL_KI         (PLL_HALL_WN * PLL_HALL_WN) // PLL积分增益
 #define MAX_PLL_SPEED       1000.0f // PLL最大速度限幅 (rad/s)
 
 typedef struct {

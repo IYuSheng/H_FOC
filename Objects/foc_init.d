@@ -70,4 +70,6 @@
 .\objects\foc_init.o: .\APP\foc_conversion.h
 .\objects\foc_init.o: .\APP\foc_settings.h
 .\objects\foc_init.o: .\APP\foc_control.h
+.\objects\foc_init.o: .\APP\foc_sensorless.h
+.\objects\foc_init.o: .\APP\foc_parameter_ident.h
 .\objects\foc_init.o: .\BSP\bsp_gpio.h

@@ -1,5 +1,6 @@
 #include "foc_conversion.h"
 #include "foc_sensorless.h"
+#include <string.h>
 
 /* ---------------------非线性磁链观测器---------------------- */
 
@@ -31,9 +32,6 @@ void flux_observer_update(FluxObserver_t *obs, float u_alpha, float u_beta,
 {
     static ButterworthLPF_t omega_flux_filt;
     static uint8_t filt_inited = 0;
-
-    // 预留固定角度补偿项，便于后续修正观测器与实际相位的偏差。
-    #define ANGLE_OFFSET_COMPENSATION  0.0f
     
     // 首次进入时初始化角速度低通滤波器。
     if (!filt_inited) {
@@ -87,9 +85,7 @@ void flux_observer_update(FluxObserver_t *obs, float u_alpha, float u_beta,
     // 角度归一化到 -pi ~ pi。
     obs->theta_hat = angle_normalize_pi(obs->theta_hat);
 
-    float base_offset = (obs->omega_filt > 0) ? FLUX_ANGLE_OFFSET_ACTURE  : -FLUX_ANGLE_OFFSET_ACTURE;
-
-    obs->theta = angle_normalize(obs->theta_hat - base_offset);
+    obs->theta = angle_normalize(obs->theta_hat);
 
     // 归一化到 0~360°，用于 arm_sin_cos_f32。
     float theta_deg = angle_normalize_360(rad2deg(obs->theta_hat));
@@ -100,8 +96,7 @@ void flux_observer_update(FluxObserver_t *obs, float u_alpha, float u_beta,
 
 /* ---------------------SMO 滑模观测器---------------------- */
 
-SMO_MotorPare_t SMO_MotorPare;
-Ppll_obj_t Angle_SMOPare;
+SMO_Observer_t g_smo_obs;
 
 static float32_t smo_sat(float32_t err, float32_t band)
 {
@@ -119,141 +114,84 @@ static float32_t smo_sat(float32_t err, float32_t band)
     return err / band;
 }
 
-static void Pll_Compute(Ppll_obj_t *ptHandle, float Coff_Sine, float Coff_Cos)
+static void smo_pll_update(SMO_Observer_t *obs)
 {
     // 这里将估计反电动势矢量送入 PLL，提取电角度和电角速度。
-    float cos_value = arm_cos_f32(ptHandle->Theta);
-    float sin_value = arm_sin_f32(ptHandle->Theta);
+    float cos_value = arm_cos_f32(obs->theta);
+    float sin_value = arm_sin_f32(obs->theta);
 
-    ptHandle->Err = Coff_Sine * sin_value - Coff_Cos * cos_value;
-    ptHandle->Interg += ptHandle->Err * ptHandle->tPll.Ki;
+    obs->err = obs->e_alpha * sin_value - obs->e_beta * cos_value;
+    obs->omega_integ += obs->err * SMO_PLL_KI;
 
-    if (ptHandle->Interg > SMO_PLL_INT_LIMIT) ptHandle->Interg = SMO_PLL_INT_LIMIT;
-    if (ptHandle->Interg < -SMO_PLL_INT_LIMIT) ptHandle->Interg = -SMO_PLL_INT_LIMIT;
+    if (obs->omega_integ > SMO_PLL_INT_LIMIT) obs->omega_integ = SMO_PLL_INT_LIMIT;
+    if (obs->omega_integ < -SMO_PLL_INT_LIMIT) obs->omega_integ = -SMO_PLL_INT_LIMIT;
 
-    ptHandle->Ui = ptHandle->Err * ptHandle->tPll.Kp + ptHandle->Interg;
+    obs->omega = obs->err * SMO_PLL_KP + obs->omega_integ;
 
-    if (ptHandle->Ui > SMO_PLL_INT_LIMIT) ptHandle->Ui = SMO_PLL_INT_LIMIT;
-    if (ptHandle->Ui < -SMO_PLL_INT_LIMIT) ptHandle->Ui = -SMO_PLL_INT_LIMIT;
+    if (obs->omega > SMO_PLL_INT_LIMIT) obs->omega = SMO_PLL_INT_LIMIT;
+    if (obs->omega < -SMO_PLL_INT_LIMIT) obs->omega = -SMO_PLL_INT_LIMIT;
 
-    ptHandle->Theta += ptHandle->Ui * SMO_MotorPare.Ts;
-    ptHandle->Theta = angle_normalize(ptHandle->Theta);
-
-    ptHandle->Speed_Rpm = ptHandle->tPll.Speed_coeff * ptHandle->Ui;
-    ptHandle->SpeedLpf_Rpm += ptHandle->tPll.Kslf *
-                              (ptHandle->Speed_Rpm - ptHandle->SpeedLpf_Rpm);
-}
-
-void SMO_Reset(void)
-{
-    // 清空所有中间状态，重新启动观测器时避免带入旧状态。
-    Angle_SMOPare.EstIalpha = 0.0f;
-    Angle_SMOPare.EstIbeta = 0.0f;
-    Angle_SMOPare.IalphaError = 0.0f;
-    Angle_SMOPare.IbetaError = 0.0f;
-    Angle_SMOPare.Zalpha = 0.0f;
-    Angle_SMOPare.Zbeta = 0.0f;
-    Angle_SMOPare.Ealpha = 0.0f;
-    Angle_SMOPare.Ebeta = 0.0f;
-    Angle_SMOPare.Theta = 0.0f;
-    Angle_SMOPare.Theta_pre = 0.0f;
-    Angle_SMOPare.Err = 0.0f;
-    Angle_SMOPare.Interg = 0.0f;
-    Angle_SMOPare.Ui = 0.0f;
-    Angle_SMOPare.Speed_Rpm = 0.0f;
-    Angle_SMOPare.SpeedLpf_Rpm = 0.0f;
+    obs->theta += obs->omega * obs->ts;
+    obs->theta = angle_normalize(obs->theta);
 }
 
 void SMO_Pare_init(void)
 {
+    memset(&g_smo_obs, 0, sizeof(g_smo_obs));
+
     // 从工程配置中读取电机参数，并离散化电流模型：
     //   di/dt = (u - e - R*i - z) / L
     //   i(k+1) = F * i(k) + G * (u - e - z)
-    SMO_MotorPare.Rs = MOTOR_RESISTANCE;
-    SMO_MotorPare.Ls = MOTOR_INDUCTANCE;
-    SMO_MotorPare.Ts = PWM_PERIOD_S;
-    SMO_MotorPare.POLES = MOTOR_POLE_PAIRS;
+    g_smo_obs.rs = MOTOR_RESISTANCE;
+    g_smo_obs.ls = MOTOR_INDUCTANCE;
+    g_smo_obs.ts = PWM_PERIOD_S;
 
-    if (SMO_MotorPare.Ls < 1e-9f) {
-        SMO_MotorPare.Ls = 1e-9f;
-    }
-    if (SMO_MotorPare.POLES == 0U) {
-        SMO_MotorPare.POLES = 1U;
-    }
-
-    SMO_MotorPare.Fsmopos = 1.0f -
-                            (SMO_MotorPare.Rs * SMO_MotorPare.Ts / SMO_MotorPare.Ls);
-    SMO_MotorPare.Gsmopos = SMO_MotorPare.Ts / SMO_MotorPare.Ls;
+    g_smo_obs.fsmopos = 1.0f - (g_smo_obs.rs * g_smo_obs.ts / g_smo_obs.ls);
+    g_smo_obs.gsmopos = g_smo_obs.ts / g_smo_obs.ls;
 
     // 滑模增益 Kslide 决定观测器“拉回误差”的力度。
     // 过小会跟踪无力，过大则容易带来抖振和反电动势削顶。
-    Angle_SMOPare.Kslide = SMO_MotorPare.Rs * SMO_SLIDE_GAIN_FACTOR;
+    g_smo_obs.kslide = g_smo_obs.rs * SMO_SLIDE_GAIN_FACTOR;
     // 反电动势低通系数，用于从开关量 z 中提取平滑的 e_alpha/e_beta。
-    Angle_SMOPare.Kslf_emf = SMO_EMF_FILTER_COEFF;
+    g_smo_obs.kslf_emf = SMO_EMF_FILTER_COEFF;
     // 边界层宽度，影响饱和函数的线性区大小。
-    Angle_SMOPare.E0 = SMO_CURRENT_ERR_BAND;
-
-    // PLL 参数用于把反电动势矢量转换成角度和速度。
-    Angle_SMOPare.tPll.Kp = SMO_PLL_KP;
-    Angle_SMOPare.tPll.Ki = SMO_PLL_KI;
-    Angle_SMOPare.tPll.Speed_coeff = 60.0f /
-                                     (2.0f * SMO_MotorPare.POLES * PI);
-    Angle_SMOPare.tPll.Kslf = SMO_PLL_SPEED_FILTER_COEFF;
-
-    SMO_Reset();
-}
-
-float32_t SMO_bemf_angle_from_voltage_current(float32_t u_alpha, float32_t u_beta,
-                                              float32_t i_alpha, float32_t i_beta)
-{
-    if (SMO_MotorPare.Ls <= 0.0f || SMO_MotorPare.Ts <= 0.0f) {
-        SMO_Pare_init();
-    }
-
-    // 1. 根据离散电流模型更新估计电流。
-    //    这里的输入量均位于 alpha-beta 静止坐标系。
-    Angle_SMOPare.EstIalpha = SMO_MotorPare.Fsmopos * Angle_SMOPare.EstIalpha +
-                              SMO_MotorPare.Gsmopos *
-                              (u_alpha - Angle_SMOPare.Ealpha - Angle_SMOPare.Zalpha);
-    Angle_SMOPare.EstIbeta = SMO_MotorPare.Fsmopos * Angle_SMOPare.EstIbeta +
-                             SMO_MotorPare.Gsmopos *
-                             (u_beta - Angle_SMOPare.Ebeta - Angle_SMOPare.Zbeta);
-
-    // 2. 估计电流与采样电流作差，得到滑模面误差。
-    Angle_SMOPare.IalphaError = Angle_SMOPare.EstIalpha - i_alpha;
-    Angle_SMOPare.IbetaError = Angle_SMOPare.EstIbeta - i_beta;
-
-    // 3. 通过饱和函数生成滑模开关量。
-    //    这是 SMO 的核心校正项，负责快速抑制电流模型误差。
-    Angle_SMOPare.Zalpha = Angle_SMOPare.Kslide *
-                           smo_sat(Angle_SMOPare.IalphaError, Angle_SMOPare.E0);
-    Angle_SMOPare.Zbeta = Angle_SMOPare.Kslide *
-                          smo_sat(Angle_SMOPare.IbetaError, Angle_SMOPare.E0);
-
-    // 4. 对开关量进行一阶低通，提取平滑反电动势。
-    Angle_SMOPare.Ealpha += Angle_SMOPare.Kslf_emf *
-                            (Angle_SMOPare.Zalpha - Angle_SMOPare.Ealpha);
-    Angle_SMOPare.Ebeta += Angle_SMOPare.Kslf_emf *
-                           (Angle_SMOPare.Zbeta - Angle_SMOPare.Ebeta);
-
-    // 5. 用反电动势进入 PLL，得到角度和速度估计。
-    Pll_Compute(&Angle_SMOPare, Angle_SMOPare.Ealpha, Angle_SMOPare.Ebeta);
-    Angle_SMOPare.Theta_pre = angle_normalize(Angle_SMOPare.Theta +
-                                              SMO_ANGLE_COMPENSATION);
-
-    return Angle_SMOPare.Theta_pre;
+    g_smo_obs.e0 = SMO_CURRENT_ERR_BAND;
 }
 
 float32_t SMO_bemf_angle(AlphaBetaTypeDef *alpha_beta)
 {
-    // 保留当前 alpha-beta 电压到调试变量中，便于日志观察。
-    alpha_beta->alpha_v = alpha_beta->alpha;
-    alpha_beta->beta_v = alpha_beta->beta;
+    // 1. 根据离散电流模型更新估计电流。
+    //    这里的输入量均位于 alpha-beta 静止坐标系。
+    g_smo_obs.est_i_alpha = g_smo_obs.fsmopos * g_smo_obs.est_i_alpha +
+                            g_smo_obs.gsmopos *
+                            (alpha_beta->alpha_v - g_smo_obs.e_alpha - g_smo_obs.z_alpha);
+    g_smo_obs.est_i_beta = g_smo_obs.fsmopos * g_smo_obs.est_i_beta +
+                           g_smo_obs.gsmopos *
+                           (alpha_beta->beta_v - g_smo_obs.e_beta - g_smo_obs.z_beta);
 
-    return SMO_bemf_angle_from_voltage_current(alpha_beta->alpha_v,
-                                               alpha_beta->beta_v,
-                                               alpha_beta->alpha_i,
-                                               alpha_beta->beta_i);
+    // 2. 估计电流与采样电流作差，得到滑模面误差。
+    g_smo_obs.i_alpha_error = g_smo_obs.est_i_alpha - alpha_beta->alpha_i;
+    g_smo_obs.i_beta_error = g_smo_obs.est_i_beta - alpha_beta->beta_i;
+
+    // 3. 通过饱和函数生成滑模开关量。
+    //    这是 SMO 的核心校正项，负责快速抑制电流模型误差。
+    g_smo_obs.z_alpha = g_smo_obs.kslide *
+                        smo_sat(g_smo_obs.i_alpha_error, g_smo_obs.e0);
+    g_smo_obs.z_beta = g_smo_obs.kslide *
+                       smo_sat(g_smo_obs.i_beta_error, g_smo_obs.e0);
+
+    // 4. 对开关量进行一阶低通，提取平滑反电动势。
+    g_smo_obs.e_alpha += g_smo_obs.kslf_emf *
+                         (g_smo_obs.z_alpha - g_smo_obs.e_alpha);
+    g_smo_obs.e_beta += g_smo_obs.kslf_emf *
+                        (g_smo_obs.z_beta - g_smo_obs.e_beta);
+
+    // 5. 用反电动势进入 PLL，得到角度和速度估计。
+    smo_pll_update(&g_smo_obs);
+    g_smo_obs.theta_comp = angle_normalize(g_smo_obs.theta +
+                                           SMO_ANGLE_COMPENSATION);
+
+    return g_smo_obs.theta_comp;
 }
 
 #if HFI_ENABLE
@@ -509,3 +447,5 @@ void hfi_nsd_check(HFI_Observer_t *obs, HFI_PLL_t *pll, float i_d, float i_q)
 }
 
 #endif
+
+
